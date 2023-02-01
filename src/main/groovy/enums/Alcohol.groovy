@@ -1,7 +1,9 @@
+package enums
+
 import lombok.ToString
 
 @ToString
-enum DrinkType {
+enum Alcohol {
 
     TEQUILA("Tequila"),
     VODKA("Vodka"),
@@ -9,9 +11,9 @@ enum DrinkType {
     FROZEN("Frozen"),
     SHOOTER("Shooter")
 
-    String drinkName
-    DrinkType(drinkName) {
-        this.drinkName = drinkName
+    String alcoholName
+    Alcohol(alcoholName) {
+        this.alcoholName = alcoholName
     }
 
 }

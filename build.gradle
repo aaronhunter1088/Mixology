@@ -35,6 +35,8 @@ configurations {
 }
 
 dependencies {
+    // mysql
+    runtimeOnly 'mysql:mysql-connector-java:8.0.28'
     // https://projectlombok.org
     compileOnly 'org.projectlombok:lombok:1.18.4'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'

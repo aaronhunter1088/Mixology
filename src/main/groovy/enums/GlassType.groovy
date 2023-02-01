@@ -1,3 +1,5 @@
+package enums
+
 import lombok.ToString
 
 @ToString
