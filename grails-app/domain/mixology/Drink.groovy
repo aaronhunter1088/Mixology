@@ -9,7 +9,6 @@ class Drink {
 
     String drinkName
     int drinkNumber
-    List<Ingredient> ingredients
     String mixingInstructions
     GlassType suggestedGlass
     Alcohol drinkType
@@ -20,12 +19,13 @@ class Drink {
         drinkSymbol()
         drinkNumber()
         drinkType()
-        ingredients()
+        ingredients(display:true)
         mixingInstructions()
         suggestedGlass()
     }
 
-    static hasMany = [ingredients : Ingredient]
+    static belongsTo = Ingredient
+    static hasMany = [ingredients:Ingredient]
 
     @Override
     String toString() {
