@@ -1,6 +1,8 @@
 package mixology
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import enums.Alcohol
+import enums.GlassType
 import grails.converters.JSON
 import grails.validation.ValidationException
 
@@ -29,12 +31,12 @@ class DrinkController {
         respond drink
     }
 
-    def save(Drink drink) {
-        if (!drink) {
+    def save() { // (Drink drink)
+        if (!params) {//if (!drink) {
             notFound()
             return
         }
-
+        Drink drink = createDrinkFromParams(params)
         try {
             drinkService.save(drink)
         } catch (ValidationException e) {
@@ -102,5 +104,35 @@ class DrinkController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def createDrinkFromParams(params) {
+        List<Ingredient> ingredientsList = []
+        List<Ingredient> allIngredients = Ingredient.list()
+        params.option.each {
+            String[] o = it.split(":")
+            // ":" comes in at o[1], so ignore it
+            Ingredient i = new Ingredient([
+                    name: o[0].trim(),
+                    amount: o[1].toDouble(),
+                    unit: o[2].trim()
+            ])
+            allIngredients.each { ingredient ->
+                if (ingredient.compareTo(i) == 0) {
+                    i = ingredient // set the id for referencing
+                }
+            }
+            ingredientsList.add(i)
+        }
+        Drink drink = new Drink([
+                drinkName: params.drinkName,
+                drinkNumber: params.drinkNumber as Integer,
+                drinkType: Alcohol.valueOf(params.drinkType),
+                drinkSymbol: params.drinkSymbol,
+                suggestedGlass: GlassType.valueOf(params.glass),
+                mixingInstructions: params.instructions,
+                ingredients: ingredientsList
+        ])
+        return drink
     }
 }

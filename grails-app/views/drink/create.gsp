@@ -1,3 +1,4 @@
+<%@ page import="enums.Alcohol; enums.GlassType; mixology.Ingredient" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,7 +20,7 @@
             </section>
             <section class="row">
                 <div id="create-drink" class="col-12 content scaffold-create" role="main">
-                    <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+%{--                    <h1><g:message code="default.create.label" args="[entityName]" /></h1>--}%
                     <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
                     </g:if>
@@ -30,15 +31,65 @@
                         </g:eachError>
                     </ul>
                     </g:hasErrors>
-                    <g:form resource="${this.drink}" method="POST">
-                        <fieldset class="form">
-                            <f:all bean="drink"/>
-                        </fieldset>
-                        <fieldset class="buttons">
-                            <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
-                        </fieldset>
-                    </g:form>
+%{--                    <g:form resource="${this.drink}" method="POST">--}%
+%{--                        <fieldset class="form">--}%
+%{--                            <f:all bean="drink"/>--}%
+%{--                        </fieldset>--}%
+%{--                    <fieldset class="buttons">--}%
+%{--                        <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />--}%
+%{--                    </fieldset>--}%
+%{--                    </g:form>--}%
                 </div>
+                <form action="/mixology/drink/save" method="POST" id="newDrink" class="form">
+                    <fieldset>
+                        <legend><h1><g:message code="default.create.label" args="[entityName]" /></h1></legend>
+                        <label for='drinkName'>Drink Name<span class='required-indicator'>*</span></label>
+                        <input type="text" name="drinkName" value="" required="" id="drinkName" />
+                    </fieldset>
+                    <fieldset>
+                        <label for='drinkNumber'>Drink Number<span class='required-indicator'>*</span></label>
+                        <input type="text" name="drinkNumber" value="" required="" id="drinkNumber" />
+                    </fieldset>
+                    <fieldset>
+                        <label for='alcoholType'>Drink Type<span class='required-indicator'>*</span></label>
+                        <select name="drinkType">
+                            <option label="Select One" selected disabled>Select One</option>
+                            <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
+                                <option value="${alcohol}">${alcohol}</option>
+                            </g:each>
+                        </select>
+                    </fieldset>
+                    <fieldset>
+                        <label for='drinkSymbol'>Drink Symbol<span class='required-indicator'>*</span></label>
+                        <input type="text" name="drinkSymbol" value="" required="" id="drinkSymbol" />
+                    </fieldset>
+                    <fieldset>
+                        <label for="glassType">Suggested Glass<span class='required-indicator'>*</span></label>
+                        <select name="glass">
+                            <option label="Select One" selected disabled>Select One</option>
+                            <g:each in="${GlassType.values()}" var="glass" name="glassType">
+                                <option value="${glass}">${glass}</option>
+                            </g:each>
+                        </select>
+                    </fieldset>
+                    <fieldset>
+                        <label for='instructions'>Mixing Instructions<span class='required-indicator'>*</span></label>
+                        <g:textArea form="newDrink" name="instructions" value="" rows="5" cols="40"/>
+                    </fieldset>
+                    <fieldset>
+                        <label>Ingredients<span class='required-indicator'>*</span></label> <br>
+                        <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
+                            <g:checkBox name="option" value="${ingredient}" checked="false"/>
+                            <label for="option">${ingredient}</label>
+                            <g:if test="${i%4==0 && i>0}">
+                                <br>
+                            </g:if>
+                        </g:each>
+                    </fieldset>
+                    <fieldset>
+                        <button type="submit" formaction="/mixology/drink/save">Create</button>
+                    </fieldset>
+                </form>
             </section>
         </div>
     </div>

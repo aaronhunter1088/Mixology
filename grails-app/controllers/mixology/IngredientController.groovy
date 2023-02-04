@@ -42,6 +42,7 @@ class IngredientController {
                 respond ingredient.errors, view:'create'
                 return
             }
+
             ingredientService.save(ingredient)
         } catch (ValidationException e) {
             respond ingredient.errors, view:'create'
@@ -118,7 +119,15 @@ class IngredientController {
         boolean exists = false;
         List<Ingredient> ingredients = ingredient.list()
         ingredients.each {
-            if (ingredient.compareTo(it) == 0) exists = true
+            if (ingredient.compareTo(it) == 0) {
+                if (it.drinks.size() == 0) {
+                    exists = false
+                } else if (it.drinks.size() > 0) {
+                   println "Drinks size is more than 0: Determine what to do!"
+                } else {
+                    exists = true
+                }
+            }
         }
         return exists;
     }

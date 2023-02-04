@@ -9,6 +9,11 @@ class UrlMappings {
             }
         }
 
+        "/mixology/drink/save" {
+            controller = "drink"
+            action = "save"
+        }
+
         "/"(view:"/index")
         "500"(view:'/error')
         "404"(view:'/notFound')

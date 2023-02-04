@@ -7,12 +7,12 @@ class Ingredient implements Comparable<Ingredient> {
 
     String name
     String unit
-    double amount
+    Double amount
 
     static constraints = {
         name()
-        unit()
-        amount()
+        unit(nullable: true)
+        amount(nullable: true)
     }
 
     static belongsTo = Drink
@@ -20,7 +20,7 @@ class Ingredient implements Comparable<Ingredient> {
 
     @Override
     String toString() {
-        name + " : " + amount + " " + unit
+        name + " : " + amount + " : " + unit
     }
 
     @Override
