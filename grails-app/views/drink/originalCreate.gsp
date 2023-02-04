@@ -5,6 +5,7 @@
   Time: 2:26 PM
 --%>
 
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="enums.Alcohol; enums.GlassType; mixology.Ingredient" %>
 <!DOCTYPE html>
 <html>

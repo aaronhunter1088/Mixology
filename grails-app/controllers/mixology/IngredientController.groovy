@@ -29,11 +29,12 @@ class IngredientController {
         respond ingredient
     }
 
-    def save(Ingredient ingredient) {
-        if (!ingredient) {
+    def save() { //(Ingredient ingredient) {
+        if (!params) {
             notFound()
             return
         }
+        Ingredient ingredient = createIngredientFromParams(params)
         try {
             if (alreadyExists(ingredient)) {
                 ingredient.errors.reject('default.invalid.ingredient.instance',
@@ -115,17 +116,30 @@ class IngredientController {
         }
     }
 
+    def createIngredientFromParams(params) {
+        Ingredient ingredient = new Ingredient([
+                name: params.ingredientName,
+                unit: params.ingredientUnit,
+                amount: params.ingredientAmount
+        ])
+        return ingredient
+    }
+
     def alreadyExists(ingredient) {
         boolean exists = false;
         List<Ingredient> ingredients = ingredient.list()
         ingredients.each {
             if (ingredient.compareTo(it) == 0) {
+                exists = true
                 if (it.drinks.size() == 0) {
                     exists = false
                 } else if (it.drinks.size() > 0) {
-                   println "Drinks size is more than 0: Determine what to do!"
+                    println "Drinks size is more than 0: Determine what to do!"
+                    exists = true
+                    return
                 } else {
                     exists = true
+                    return
                 }
             }
         }
