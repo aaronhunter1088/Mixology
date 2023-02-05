@@ -61,35 +61,124 @@
                     </ul>
                 </g:hasErrors>
             </div>
-            <fieldset style="border:thick solid #000080;">
+            <fieldset style="border:thick solid #008011;" class="no-before">
                 <legend style="width:auto;">
-                    &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
-                    <hr style="height:1px;background-color:#000080">
+                    &emsp14;Create An Ingredient&emsp14;
+                    <hr style="height:1px;background-color:#008011">
                 </legend>
                 <form action="/mixology/ingredient/save" method="POST" id="newIngredient">
-                    <div class="formfield">
-                        <label for='ingredientName'>Ingredient Name<span class='required-indicator'>*</span></label>
-                        <div class="input-wrapper">
-                            <input type="text" name="ingredientName" value="" required="" id="ingredientName" />
-                        </div>
-                    </div>
-                    <div class="formfield">
-                        <label for='ingredientUnit'>Unit<span class='required-indicator'>*</span></label>
-                        <div class="input-wrapper">
-                            <input type="text" name="ingredientUnit" value="" required="" id="ingredientUnit" />
-                        </div>
-                    </div>
-                    <div class="formfield">
-                        <label for='ingredientAmount'>Amount<span class='required-indicator'>*</span></label>
-                        <div class="input-wrapper">
-                            <input type="text" name="ingredientAmount" value="" required="" id="ingredientAmount" />
-                        </div>
-                    </div>
+                    <table class="table" style="width:100%;">
+                        <thead>
+                            <th>Name<span class='required-indicator'>*</span></th>
+                            <th>Unit</th>
+                            <th>Amount</th>
+                            <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
+                        </thead>
+                        <script>
+                            let i = 0;
+                            function addRow(tbody, prefix) {
+                                console.log("clicked +... adding row")
+                                i++;
+                                // create Name
+                                let tr = document.createElement('tr');
+                                tr.setAttribute('id', prefix + 'Row' + i);
+                                let td = document.createElement('td');
+                                let input = document.createElement('input');
+                                input.setAttribute('type', 'text');
+                                input.setAttribute('id', prefix + 'Name');
+                                input.setAttribute('name', prefix + 'Name');
+                                input.setAttribute('class', 'form-control');
+                                input.setAttribute('required', '');
+                                td.appendChild(input);
+                                tr.appendChild(td);
+                                // create Unit
+                                td = document.createElement('td');
+                                input = document.createElement('input');
+                                input.setAttribute('type', 'text');
+                                input.setAttribute('id', prefix + 'Unit');
+                                input.setAttribute('name', prefix + 'Unit');
+                                input.setAttribute('class', 'form-control');
+                                td.appendChild(input);
+                                tr.appendChild(td);
+                                // create Amount
+                                td = document.createElement('td');
+                                input = document.createElement('input');
+                                input.setAttribute('type', 'text');
+                                input.setAttribute('id', prefix + 'Amount');
+                                input.setAttribute('name', prefix + 'Amount');
+                                input.setAttribute('class', 'form-control');
+                                td.appendChild(input);
+                                tr.appendChild(td);
+                                // create X button
+                                td = document.createElement('td');
+                                let a = document.createElement('a');
+                                a.setAttribute('class', 'btn btn-outline-danger');
+                                a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + i + '")');
+                                a.setAttribute('style', 'color:black;text-decoration:none;');
+                                let bold = document.createElement('B');
+                                let X = document.createTextNode('X');
+                                bold.appendChild(X);
+                                a.appendChild(bold);
+                                td.appendChild(a);
+                                tr.appendChild(td);
+                                $('#'+tbody).append(tr);
+                            }
+                        </script>
+                        <tbody id="stringOptsBody">
+                            <tr id="row">
+                                <td>
+                                    <input type="text" id="ingredientName" name="ingredientName" class="form-control" required>
+                                </td>
+                            <td>
+                                <input type="text" id="ingredientUnit" name="ingredientUnit" class="form-control">
+                            </td>
+                                <td>
+                                    <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control">
+                                </td>
+                            <td>
+                                <a style="color:black;text-decoration:none;" class="btn btn-outline-danger" href="javascript:removeRow('optRow')"><b>X</b></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <script>
+                            function removeRow(trId) {
+                                console.log("clicked X... removing row")
+                                $('#'+trId).remove();
+                            }
+                        </script>
+                    </table>
                 </form>
-                <div class="formfield" style="margin-top:25px;">
-                    <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create</button>
-                </div>
+                <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>
             </fieldset>
+%{--            <fieldset style="border:thick solid #000080;">--}%
+%{--                <legend style="width:auto;">--}%
+%{--                    &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;--}%
+%{--                    <hr style="height:1px;background-color:#000080">--}%
+%{--                </legend>--}%
+%{--                <form action="/mixology/ingredient/save" method="POST" id="newIngredient">--}%
+%{--                    <div class="formfield">--}%
+%{--                        <label for='ingredientName'>Ingredient Name<span class='required-indicator'>*</span></label>--}%
+%{--                        <div class="input-wrapper">--}%
+%{--                            <input type="text" name="ingredientName" value="" required="" id="ingredientName" />--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                    <div class="formfield">--}%
+%{--                        <label for='ingredientUnit'>Unit<span class='required-indicator'>*</span></label>--}%
+%{--                        <div class="input-wrapper">--}%
+%{--                            <input type="text" name="ingredientUnit" value="" required="" id="ingredientUnit" />--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                    <div class="formfield">--}%
+%{--                        <label for='ingredientAmount'>Amount<span class='required-indicator'>*</span></label>--}%
+%{--                        <div class="input-wrapper">--}%
+%{--                            <input type="text" name="ingredientAmount" value="" required="" id="ingredientAmount" />--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                </form>--}%
+%{--                <div class="formfield" style="margin-top:25px;">--}%
+%{--                    <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create</button>--}%
+%{--                </div>--}%
+%{--            </fieldset>--}%
         </div>
     </div>
     </body>

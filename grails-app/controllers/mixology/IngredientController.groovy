@@ -2,6 +2,10 @@ package mixology
 
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
+import io.micronaut.http.annotation.Error
+import org.springframework.validation.ObjectError
+
+import java.util.function.Predicate
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -34,29 +38,61 @@ class IngredientController {
             notFound()
             return
         }
-        Ingredient ingredient = createIngredientFromParams(params)
+        Ingredient errorI = new Ingredient()
+        List<Ingredient> ingredients = createIngredientsFromParams(params)
+        int savedCount = 0
         try {
-            if (alreadyExists(ingredient)) {
-                ingredient.errors.reject('default.invalid.ingredient.instance',
-                                        [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
-                                        '[Ingredient has already been created]')
-                respond ingredient.errors, view:'create'
-                return
+            ingredients.each { ingredient ->
+                if (alreadyExists(ingredient)) {
+                    errorI.name = ingredient.name
+                    errorI.unit = ingredient.unit
+                    errorI.amount = ingredient.amount
+                    errorI.errors.reject('default.invalid.ingredient.instance',
+                            [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                            '[Ingredient has already been created]')
+                    //respond ingredient.errors, view:'create'
+                    //return
+                }
+                else {
+                    ingredientService.save(ingredient)
+                    savedCount++
+                }
             }
-
-            ingredientService.save(ingredient)
-        } catch (ValidationException e) {
-            respond ingredient.errors, view:'create'
+            //ingredientService.save(ingredient)
+        }
+        catch (ValidationException e) {
+            redirect(controller: "ingredient", action: "create") //respond ingredient.errors, view:'create'
             return
         }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.id])
-                redirect ingredient
+//        if (savedCount == ingredients.size()) {
+//
+//        }
+        if (ingredients.size() == 1) {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredients.get(0).id])
+                    //redirect ingredients.get(0)
+                }
+                '*' { respond ingredients.get(0), [status: CREATED] }
             }
-            '*' { respond ingredient, [status: CREATED] }
         }
+        else {
+            Predicate<Long> isNull = id -> id == null as Predicate<Long>
+            List<Long> ingredientIds = ingredients*.id
+            ingredientIds.removeAll([null])
+            request.withFormat {
+                form multipartForm {
+                    if (ingredientIds.size() == 1) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+                    } else {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds])
+                    }
+                    //redirect(controller: "ingredient", action: "index")
+                }
+                '*' { respond ingredientIds, [status: CREATED] }
+            }
+        }
+        respond errorI.errors, view:'create'
     }
 
     def edit(Long id) {
@@ -116,33 +152,46 @@ class IngredientController {
         }
     }
 
-    def createIngredientFromParams(params) {
-        Ingredient ingredient = new Ingredient([
-                name: params.ingredientName,
-                unit: params.ingredientUnit,
-                amount: params.ingredientAmount
-        ])
-        return ingredient
+    def createIngredientsFromParams(params) {
+        List<String> ingredientNames = new ArrayList<>()
+        List<String> units = new ArrayList<>()
+        List<Double> ingredientAmounts = new ArrayList<>()
+        List<Ingredient> ingredients = new ArrayList<>()
+        if (params.ingredientName.size() > 1 && !(params.ingredientName instanceof String)) {
+            params.ingredientName.each {
+                ingredientNames.add(it as String)
+            }
+            params.ingredientUnit.each {
+                units.add(it as String)
+            }
+            params.ingredientAmount.each {
+                ingredientAmounts.add(Double.parseDouble(it as String))
+            }
+        } else {
+            ingredientNames.add(params.ingredientName as String)
+            units.add(params.ingredientUnit as String)
+            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+        }
+        int createNum = ingredientNames.size()
+        for (int i=0; i<createNum; i++) {
+            Ingredient ingredient = new Ingredient([
+                    name: ingredientNames.get(i),
+                    unit: units.get(i),
+                    amount: ingredientAmounts.get(i)
+            ])
+            ingredients.add(ingredient)
+        }
+        return ingredients
     }
 
     def alreadyExists(ingredient) {
-        boolean exists = false;
+        boolean exists = false
         List<Ingredient> ingredients = ingredient.list()
         ingredients.each {
             if (ingredient.compareTo(it) == 0) {
-                exists = true
-                if (it.drinks.size() == 0) {
-                    exists = false
-                } else if (it.drinks.size() > 0) {
-                    println "Drinks size is more than 0: Determine what to do!"
-                    exists = true
-                    return
-                } else {
-                    exists = true
-                    return
-                }
+                return (exists = true)
             }
         }
-        return exists;
+        return exists
     }
 }
