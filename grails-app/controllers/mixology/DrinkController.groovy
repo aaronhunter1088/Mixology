@@ -14,6 +14,7 @@ import static org.springframework.http.HttpStatus.OK
 class DrinkController {
 
     DrinkService drinkService
+    IngredientService ingredientService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -109,7 +110,9 @@ class DrinkController {
     def createDrinkFromParams(params) {
         List<Ingredient> ingredientsList = []
         List<Ingredient> allIngredients = Ingredient.list()
-        params.option.each {
+        //int count = 0
+        // params["ingredient${count}]
+        params["ingredients"].each {
             String[] o = it.split(":")
             // ":" comes in at o[1], so ignore it
             Ingredient i = new Ingredient([
@@ -124,6 +127,7 @@ class DrinkController {
             }
             ingredientsList.add(i)
         }
+        ingredientsList.addAll(createIngredientsFromParams(params))
         Drink drink = new Drink([
                 drinkName: params.drinkName,
                 drinkNumber: params.drinkNumber as Integer,
@@ -133,6 +137,44 @@ class DrinkController {
                 mixingInstructions: params.instructions,
                 ingredients: ingredientsList
         ])
+        // Associate all ingredients with this drink
+        ingredientsList.each {
+            if (!it.drinks) it.drinks = new HashSet<Drink>()
+            if (!it.drinks.contains(drink)) it.drinks.add(drink)
+        }
         return drink
     }
+
+    def createIngredientsFromParams(params) {
+        List<String> ingredientNames = new ArrayList<>()
+        List<String> units = new ArrayList<>()
+        List<Double> ingredientAmounts = new ArrayList<>()
+        List<Ingredient> ingredients = new ArrayList<>()
+        if (params.ingredientName.size() > 1 && !(params.ingredientName instanceof String)) {
+            params.ingredientName.each {
+                ingredientNames.add(it as String)
+            }
+            params.ingredientUnit.each {
+                units.add(it as String)
+            }
+            params.ingredientAmount.each {
+                ingredientAmounts.add(Double.parseDouble(it as String))
+            }
+        } else {
+            ingredientNames.add(params.ingredientName as String)
+            units.add(params.ingredientUnit as String)
+            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+        }
+        int createNum = ingredientNames.size()
+        for (int i=0; i<createNum; i++) {
+            Ingredient ingredient = new Ingredient([
+                    name: ingredientNames.get(i),
+                    unit: units.get(i),
+                    amount: ingredientAmounts.get(i)
+            ])
+            ingredients.add(ingredient)
+        }
+        return ingredients
+    }
+
 }

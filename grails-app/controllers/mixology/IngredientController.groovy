@@ -58,15 +58,12 @@ class IngredientController {
                     savedCount++
                 }
             }
-            //ingredientService.save(ingredient)
         }
         catch (ValidationException e) {
             redirect(controller: "ingredient", action: "create") //respond ingredient.errors, view:'create'
             return
         }
-//        if (savedCount == ingredients.size()) {
-//
-//        }
+
         if (ingredients.size() == 1) {
             request.withFormat {
                 form multipartForm {
