@@ -1,9 +1,8 @@
 package mixology
 
-import com.fasterxml.jackson.annotation.JsonAlias
+
 import enums.Alcohol
 import enums.GlassType
-import grails.converters.JSON
 import grails.validation.ValidationException
 
 import static org.springframework.http.HttpStatus.CREATED
@@ -37,10 +36,30 @@ class DrinkController {
             notFound()
             return
         }
+        Drink drinkError = new Drink()
+        def newIngredients
+//        try {
+            newIngredients = createNewIngredientsFromParams(params)
+            newIngredients.each { ingredient ->
+                if (alreadyExists(ingredient)) {
+                    drinkError.errors.reject('default.invalid.ingredient.instance',
+                            [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                            '[Ingredient has already been created]')
+                    respond drinkError.errors, view:'create'
+                    return
+                }
+            }
+//        }
+//        catch (ValidationException e) {
+//            respond errorI.errors, view:'create'
+//            return
+//        }
         Drink drink = createDrinkFromParams(params)
+        newIngredients.each { drink.addToIngredients(it) }
         try {
             drinkService.save(drink)
-        } catch (ValidationException e) {
+        }
+        catch (ValidationException e) {
             respond drink.errors, view:'create'
             return
         }
@@ -127,7 +146,7 @@ class DrinkController {
             }
             ingredientsList.add(i)
         }
-        ingredientsList.addAll(createIngredientsFromParams(params))
+
         Drink drink = new Drink([
                 drinkName: params.drinkName,
                 drinkNumber: params.drinkNumber as Integer,
@@ -145,7 +164,7 @@ class DrinkController {
         return drink
     }
 
-    def createIngredientsFromParams(params) {
+    def createNewIngredientsFromParams(params) {
         List<String> ingredientNames = new ArrayList<>()
         List<String> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
@@ -175,6 +194,17 @@ class DrinkController {
             ingredients.add(ingredient)
         }
         return ingredients
+    }
+
+    def alreadyExists(ingredient) {
+        boolean exists = false
+        List<Ingredient> ingredients = ingredient.list()
+        ingredients.each {
+            if (ingredient.compareTo(it) == 0) {
+                return (exists = true)
+            }
+        }
+        return exists
     }
 
 }

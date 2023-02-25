@@ -28,4 +28,8 @@ class Ingredient implements Comparable<Ingredient> {
         if (this.name == i.name && this.unit == i.unit && this.amount == i.amount) return 0
         else return 1
     }
+
+    boolean idIsNull() {
+        !this.id
+    }
 }

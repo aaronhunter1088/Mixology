@@ -39,6 +39,7 @@ class IngredientController {
             return
         }
         Ingredient errorI = new Ingredient()
+        List<Ingredient> ingredientErrors = []
         List<Ingredient> ingredients = createIngredientsFromParams(params)
         int savedCount = 0
         try {
@@ -50,11 +51,14 @@ class IngredientController {
                     errorI.errors.reject('default.invalid.ingredient.instance',
                             [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
                             '[Ingredient has already been created]')
+                    println "ingredient.name ${ingredient.name} already exists"
+                    ingredientErrors.add(errorI)
                     //respond ingredient.errors, view:'create'
                     //return
                 }
                 else {
                     ingredientService.save(ingredient)
+                    println "ingredient.id ${ingredient.id} saved"
                     savedCount++
                 }
             }
@@ -64,32 +68,48 @@ class IngredientController {
             return
         }
 
-        if (ingredients.size() == 1) {
+        Predicate<Ingredient> isNull = id -> id == null
+        List<Long> ingredientIds = ingredients*.id
+        ingredientIds.removeAll([null])
+        //ingredients.removeAll([isNull])
+        if (ingredientIds.size() == 1) {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredients.get(0).id])
-                    //redirect ingredients.get(0)
+                    if (ingredientIds.size() == 1) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+                        //redirect ingredients.get(0)
+                    } else {
+                        flash.message = ''
+                    }
                 }
                 '*' { respond ingredients.get(0), [status: CREATED] }
             }
         }
         else {
-            Predicate<Long> isNull = id -> id == null as Predicate<Long>
-            List<Long> ingredientIds = ingredients*.id
-            ingredientIds.removeAll([null])
             request.withFormat {
                 form multipartForm {
                     if (ingredientIds.size() == 1) {
                         flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+                    } else if (ingredientIds.size() > 1) {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds.each { id ->
+                            id + " "
+                        }])
                     } else {
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds])
+                        flash.message = ''
                     }
                     //redirect(controller: "ingredient", action: "index")
                 }
                 '*' { respond ingredientIds, [status: CREATED] }
             }
         }
-        respond errorI.errors, view:'create'
+        if (ingredientErrors.size() == 1) {
+            respond ingredientErrors.get(0).errors, view:'create'
+        } else {
+            ingredientErrors.each { err ->
+                respond err.errors, view:'create'
+            }
+        }
+        //respond errorI.errors, view:'create'
     }
 
     def edit(Long id) {

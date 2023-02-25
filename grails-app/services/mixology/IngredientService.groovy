@@ -13,7 +13,5 @@ interface IngredientService {
 
     void delete(Serializable id)
 
-
-
     Ingredient save(Ingredient ingredient)
 }

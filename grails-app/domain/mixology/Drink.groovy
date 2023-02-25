@@ -13,7 +13,7 @@ class Drink {
     GlassType suggestedGlass
     Alcohol drinkType
     String drinkSymbol
-    List<Ingredient> ingredients
+    Set<Ingredient> ingredients
 
     static constraints = {
         drinkName()
