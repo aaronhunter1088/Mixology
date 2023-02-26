@@ -1,18 +1,19 @@
 package mixology
 
+import enums.Unit
 import groovy.transform.ToString
 
 @ToString
 class Ingredient implements Comparable<Ingredient> {
 
     String name
-    String unit
+    Unit unit
     Double amount
 
     static constraints = {
-        name()
-        unit(nullable: true)
-        amount(nullable: true)
+        name(nullable: false)
+        unit(nullable: false)
+        amount(nullable: false)
     }
 
     static belongsTo = Drink
@@ -20,12 +21,12 @@ class Ingredient implements Comparable<Ingredient> {
 
     @Override
     String toString() {
-        name + " : " + amount + " : " + unit
+        name + " : " + amount + " : " + unit.value
     }
 
     @Override
     int compareTo(Ingredient i) {
-        if (this.name == i.name && this.unit == i.unit && this.amount == i.amount) return 0
+        if (this.name == i.name && this.unit.value == i.unit.value && this.amount == i.amount) return 0
         else return 1
     }
 

@@ -1,11 +1,8 @@
 package mixology
 
-import grails.converters.JSON
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
-import io.micronaut.http.annotation.Error
-import org.springframework.http.HttpStatus
-import org.springframework.validation.ObjectError
+import enums.Unit
 
 import javax.servlet.http.HttpServletResponse
 import java.util.function.Predicate
@@ -18,7 +15,6 @@ import static org.springframework.http.HttpStatus.OK
 class IngredientController {
 
     IngredientService ingredientService
-    DrinkService drinkService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

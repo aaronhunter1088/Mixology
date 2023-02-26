@@ -1,4 +1,4 @@
-<%@ page import="enums.Alcohol; enums.GlassType; mixology.Ingredient" %>
+<%@ page import="enums.*; mixology.Ingredient" %>
 <!DOCTYPE html>
 <html>
     <head>

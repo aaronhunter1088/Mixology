@@ -43,7 +43,7 @@ class DrinkController {
             newIngredients.each { ingredient ->
                 if (alreadyExists(ingredient)) {
                     drinkError.errors.reject('default.invalid.ingredient.instance',
-                            [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                            [ingredient.name, ingredient.unit.value, ingredient.amount] as Object[],
                             '[Ingredient has already been created]')
                     respond drinkError.errors, view:'create'
                     return
@@ -137,7 +137,7 @@ class DrinkController {
             Ingredient i = new Ingredient([
                     name: o[0].trim(),
                     amount: o[1].toDouble(),
-                    unit: o[2].trim()
+                    unit: Unit.valueOf(o[2].trim())
             ])
             allIngredients.each { ingredient ->
                 if (ingredient.compareTo(i) == 0) {

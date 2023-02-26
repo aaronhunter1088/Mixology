@@ -1,3 +1,4 @@
+<%@ page import="enums.Unit;" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -130,7 +131,13 @@
                                     <input type="text" id="ingredientName" name="ingredientName" class="form-control" required>
                                 </td>
                             <td>
-                                <input type="text" id="ingredientUnit" name="ingredientUnit" class="form-control">
+%{--                                <input type="text" id="ingredientUnit" name="ingredientUnit" class="form-control">--}%
+                                <select name="unitType">
+                                    <option label="Select One" selected disabled>Select One</option>
+                                    <g:each in="${Unit.values()}" var="unit" name="unitType">
+                                        <option value="${unit}">${unit}</option>
+                                    </g:each>
+                                </select>
                             </td>
                                 <td>
                                     <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control">
@@ -150,35 +157,6 @@
                 </form>
                 <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>
             </fieldset>
-%{--            <fieldset style="border:thick solid #000080;">--}%
-%{--                <legend style="width:auto;">--}%
-%{--                    &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;--}%
-%{--                    <hr style="height:1px;background-color:#000080">--}%
-%{--                </legend>--}%
-%{--                <form action="/mixology/ingredient/save" method="POST" id="newIngredient">--}%
-%{--                    <div class="formfield">--}%
-%{--                        <label for='ingredientName'>Ingredient Name<span class='required-indicator'>*</span></label>--}%
-%{--                        <div class="input-wrapper">--}%
-%{--                            <input type="text" name="ingredientName" value="" required="" id="ingredientName" />--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                    <div class="formfield">--}%
-%{--                        <label for='ingredientUnit'>Unit<span class='required-indicator'>*</span></label>--}%
-%{--                        <div class="input-wrapper">--}%
-%{--                            <input type="text" name="ingredientUnit" value="" required="" id="ingredientUnit" />--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                    <div class="formfield">--}%
-%{--                        <label for='ingredientAmount'>Amount<span class='required-indicator'>*</span></label>--}%
-%{--                        <div class="input-wrapper">--}%
-%{--                            <input type="text" name="ingredientAmount" value="" required="" id="ingredientAmount" />--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                </form>--}%
-%{--                <div class="formfield" style="margin-top:25px;">--}%
-%{--                    <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create</button>--}%
-%{--                </div>--}%
-%{--            </fieldset>--}%
         </div>
     </div>
     </body>
