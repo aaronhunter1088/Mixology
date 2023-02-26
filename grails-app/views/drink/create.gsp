@@ -6,6 +6,7 @@
         <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
 
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <style>
             .formfield {
                 display: table;
@@ -56,6 +57,12 @@
         </style>
     </head>
     <body>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                console.log("page loaded");
+            });
+            let rowId = 0;
+        </script>
         <div id="content" role="main">
             <div class="container">
                 <section class="row" name="navigation">
@@ -84,7 +91,7 @@
                         &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                         <hr style="height:1px;background-color:#000080">
                     </legend>
-                    <g:form url="[controller:'drink', action:'save']" name="newDrink">
+                    <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid()">
                         <div id="create-drink" style="width:55%;float:left;">
 %{--                        <form action="/mixology/drink/save" method="POST" id="newDrink" class="form">--}%
                             <div class="formfield">
@@ -149,95 +156,138 @@
                             </div>
                         </div>
                         <div id="create-ingredient" style="width:45%;float:right;">
-                        <fieldset style="border:thick solid #008011;" class="no-before">
-                            <legend style="width:auto;">
-                                &emsp14;Create A New Ingredient&emsp14;
-                                <hr style="height:1px;background-color:#008011">
-                            </legend>
-%{--                            <form action="/mixology/ingredient/save" method="POST" id="newIngredient">--}%
-%{--                            <mix:formRemote id="newIngredient" name="newIngredient" method="POST" url="[controller:'ingredient', action:'save']"--}%
-%{--                                    before="before()" after="after()">--}%
-                                <table class="table" style="width:100%;">
-                                    <thead>
+                            <form id="ingredientForm" name="ingredientForm">
+                                <fieldset style="border:thick solid #008011;" class="no-before">
+                                    <legend style="width:auto;">
+                                        &emsp14;Create A New Ingredient&emsp14;
+                                        <hr style="height:1px;background-color:#008011">
+                                    </legend>
+                                    <div id="ingredientErrorMessages" class="col-12 content scaffold-create" role="main">
+                                        <h3 role="alert">${errorMessage}</h3>
+                                    </div>
+                                    <table id="ingredientTable" class="table" style="width:100%;">
+                                        <thead>
                                         <th>Name</th>
                                         <th>Unit</th>
                                         <th>Amount</th>
                                         <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
-                                    </thead>
-                                    <script>
-                                        let i = 0;
-                                        function addRow(tbody, prefix) {
-                                            console.log("clicked +... adding row")
-                                            i++;
-                                            // create Name
-                                            let tr = document.createElement('tr');
-                                            tr.setAttribute('id', prefix + 'Row' + i);
-                                            let td = document.createElement('td');
-                                            let input = document.createElement('input');
-                                            input.setAttribute('type', 'text');
-                                            input.setAttribute('id', prefix + 'Name');
-                                            input.setAttribute('name', prefix + 'Name');
-                                            input.setAttribute('class', 'form-control');
-                                            input.setAttribute('required', '');
-                                            td.appendChild(input);
-                                            tr.appendChild(td);
-                                            // create Unit
-                                            td = document.createElement('td');
-                                            input = document.createElement('input');
-                                            input.setAttribute('type', 'text');
-                                            input.setAttribute('id', prefix + 'Unit');
-                                            input.setAttribute('name', prefix + 'Unit');
-                                            input.setAttribute('class', 'form-control');
-                                            td.appendChild(input);
-                                            tr.appendChild(td);
-                                            // create Amount
-                                            td = document.createElement('td');
-                                            input = document.createElement('input');
-                                            input.setAttribute('type', 'text');
-                                            input.setAttribute('id', prefix + 'Amount');
-                                            input.setAttribute('name', prefix + 'Amount');
-                                            input.setAttribute('class', 'form-control');
-                                            td.appendChild(input);
-                                            tr.appendChild(td);
-                                            // create X button
-                                            td = document.createElement('td');
-                                            let a = document.createElement('a');
-                                            a.setAttribute('class', 'btn btn-outline-danger');
-                                            a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + i + '")');
-                                            a.setAttribute('style', 'color:black;text-decoration:none;');
-                                            let bold = document.createElement('B');
-                                            let X = document.createTextNode('X');
-                                            bold.appendChild(X);
-                                            a.appendChild(bold);
-                                            td.appendChild(a);
-                                            tr.appendChild(td);
-                                            $('#'+tbody).append(tr);
-                                        }
-                                    </script>
-                                    <tbody id="stringOptsBody"></tbody>
-                                    <script>
-                                        function removeRow(trId) {
-                                            console.log("clicked X... removing row")
-                                            $('#'+trId).remove();
-                                        }
-                                    </script>
-                                </table>
-%{--                            </form>--}%
-%{--                            </mix:formRemote>--}%
-%{--                            <button id="createIngredients" class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>--}%
-                        </fieldset>
-                    </div>
+                                        </thead>
+                                        <script>
+                                            function addRow(tbody, prefix) {
+                                                console.log("clicked +... adding row")
+                                                rowId++;
+                                                // create Name
+                                                let tr = document.createElement('tr');
+                                                tr.setAttribute('id', prefix + 'Row' + rowId);
+                                                tr.setAttribute('name', prefix + 'Row' + rowId);
+                                                let td = document.createElement('td');
+                                                let input = document.createElement('input');
+                                                input.setAttribute('type', 'text');
+                                                input.setAttribute('id', prefix + 'Name');
+                                                input.setAttribute('name', prefix + 'Name');
+                                                input.setAttribute('class', 'form-control');
+                                                input.setAttribute('required', 'true');
+                                                td.appendChild(input);
+                                                tr.appendChild(td);
+                                                // create Unit
+                                                td = document.createElement('td');
+                                                input = document.createElement('input');
+                                                input.setAttribute('type', 'text');
+                                                input.setAttribute('id', prefix + 'Unit');
+                                                input.setAttribute('name', prefix + 'Unit');
+                                                input.setAttribute('class', 'form-control');
+                                                input.setAttribute('required', 'true');
+                                                td.appendChild(input);
+                                                tr.appendChild(td);
+                                                // create Amount
+                                                td = document.createElement('td');
+                                                input = document.createElement('input');
+                                                input.setAttribute('type', 'text');
+                                                input.setAttribute('id', prefix + 'Amount');
+                                                input.setAttribute('name', prefix + 'Amount');
+                                                input.setAttribute('class', 'form-control');
+                                                input.setAttribute('required', 'true');
+                                                td.appendChild(input);
+                                                tr.appendChild(td);
+                                                // create X button
+                                                td = document.createElement('td');
+                                                let a = document.createElement('a');
+                                                a.setAttribute('class', 'btn btn-outline-danger');
+                                                a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
+                                                a.setAttribute('style', 'color:black;text-decoration:none;');
+                                                let bold = document.createElement('B');
+                                                let X = document.createTextNode('X');
+                                                bold.appendChild(X);
+                                                a.appendChild(bold);
+                                                td.appendChild(a);
+                                                tr.appendChild(td);
+                                                $('#'+tbody).append(tr);
+                                            }
+                                        </script>
+                                        <tbody id="stringOptsBody"></tbody>
+                                        <script>
+                                            function removeRow(trId) {
+                                                console.log("clicked X... removing rowId " + rowId)
+                                                $('#'+trId).remove();
+                                                rowId--;
+                                                console.log("rowId count is at " + rowId)
+                                            }
+                                        </script>
+                                    </table>
+                                </fieldset>
+                            </form>
+                        </div>
                     </g:form>
                 </fieldset>
             </div>
         </div>
+        <script type="text/javascript">
+            function isValid() {
+                let tableRows = $("#ingredientTable > tbody > tr")
+                let result = false;
+                tableRows.each(function () {
+                    let row = $(this)
+                    let cellValue1 = row.find('td:nth-child(1) > input').val()
+                    let cellValue2 = row.find('td:nth-child(2) > input').val()
+                    let cellValue3 = row.find('td:nth-child(3) > input').val()
+                    //let bankName = $("[id='deleteBankForm']").find('input:nth-child(3)').text();
+                    $.ajax({
+                        headers: {
+                            accept: "application/json",
+                            contentType: "application/json"
+                        },
+                        async: false,
+                        //type: "GET",
+                        url: "${createLink(controller:'ingredient', action:'validate')}",
+                        data: {
+                            ingredientName: cellValue1,
+                            ingredientUnit: cellValue2,
+                            ingredientAmount: cellValue3
+                        },
+                        statusCode: {
+                            200: function(data) {
+                                console.log(JSON.stringify(data))
+                                result = true;
+                            },
+                            400: function(data) {
+                                let response = JSON.parse(JSON.stringify(data['responseJSON']))
+                                let message = response.message
+                                console.log("FAILED: " + message)
+                                $("#ingredientErrorMessages").addClass("errors")
+                                $("#ingredientErrorMessages > h3").html(response.message);
+                            },
+                            404: function(data) {
+                                console.log(JSON.stringify(data));
+                            },
+                            500: function(data) {
+                                console.log(JSON.stringify(data));
+                            }
+                        }
+                    });
+                });
+                return result;
+            }
+        </script>
+        </script>
     </body>
-    <script>
-        $(function() {
-            console.log("page loaded");
-        });
-        function createDrink() {
-
-        }
-    </script>
 </html>

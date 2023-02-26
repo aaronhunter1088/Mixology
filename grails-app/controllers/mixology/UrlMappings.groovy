@@ -17,6 +17,10 @@ class UrlMappings {
             controller = "ingredient"
             action = "save"
         }
+        "/mixology/validate" {
+            controller = "ingredient"
+            action = "validate"
+        }
 
         "/"(view:"/index")
         "500"(view:'/error')

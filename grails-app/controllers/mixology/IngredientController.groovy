@@ -1,10 +1,13 @@
 package mixology
 
+import grails.converters.JSON
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import io.micronaut.http.annotation.Error
+import org.springframework.http.HttpStatus
 import org.springframework.validation.ObjectError
 
+import javax.servlet.http.HttpServletResponse
 import java.util.function.Predicate
 
 import static org.springframework.http.HttpStatus.CREATED
@@ -106,7 +109,7 @@ class IngredientController {
             respond ingredientErrors.get(0).errors, view:'create'
         } else {
             ingredientErrors.each { err ->
-                respond err.errors, view:'create'
+                respond err.errors, view: 'create'
             }
         }
         //respond errorI.errors, view:'create'
@@ -210,5 +213,27 @@ class IngredientController {
             }
         }
         return exists
+    }
+
+    def validate(params) {
+        Ingredient ingredient = createIngredientsFromParams(params).get(0)
+        boolean result = alreadyExists(ingredient)
+        response.setContentType("text/json")
+        if (result) {
+//            ingredient.errors.reject('default.invalid.ingredient.instance',
+//                    [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+//                    '[Ingredient has already been created]')
+//            request.withFormat {
+//                form multipartForm {
+//                    flash.message = "Ingredient has already been created"
+//                }
+//                '*' { respond ingredient.errors, [status: HttpStatus.BAD_REQUEST] }
+//            }
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient has already been created")
+        } else {
+            response.getWriter().append("Ingredient is valid")
+            response.getWriter().flush();
+            response.setStatus(HttpServletResponse.SC_OK) // 200
+        }
     }
 }
