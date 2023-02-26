@@ -244,37 +244,50 @@
         <script type="text/javascript">
             function isValid() {
                 let tableRows = $("#ingredientTable > tbody > tr")
-                let result = false;
+                let rowCount = tableRows.length;
+                let successCount = 0;
+                let failCount = 0;
+                let ajaxCalls = 0;
                 tableRows.each(function () {
                     let row = $(this)
                     let cellValue1 = row.find('td:nth-child(1) > input').val()
                     let cellValue2 = row.find('td:nth-child(2) > input').val()
                     let cellValue3 = row.find('td:nth-child(3) > input').val()
-                    //let bankName = $("[id='deleteBankForm']").find('input:nth-child(3)').text();
+                    ajaxCalls += 1;
                     $.ajax({
                         headers: {
                             accept: "application/json",
                             contentType: "application/json"
                         },
                         async: false,
-                        //type: "GET",
+                        type: "GET",
                         url: "${createLink(controller:'ingredient', action:'validate')}",
                         data: {
                             ingredientName: cellValue1,
                             ingredientUnit: cellValue2,
-                            ingredientAmount: cellValue3
+                            ingredientAmount: cellValue3,
+                            apiCallCount: ajaxCalls
                         },
                         statusCode: {
                             200: function(data) {
                                 console.log(JSON.stringify(data))
-                                result = true;
+                                successCount += 1;
                             },
                             400: function(data) {
+                                failCount += 1;
                                 let response = JSON.parse(JSON.stringify(data['responseJSON']))
-                                let message = response.message
-                                console.log("FAILED: " + message)
-                                $("#ingredientErrorMessages").addClass("errors")
-                                $("#ingredientErrorMessages > h3").html(response.message);
+                                let message;
+                                if (failCount === 1) {
+                                    message = response.message;
+                                } else {
+                                    let messageArr = response.message.split(" ");
+                                    let firstPart = "Some ingredients have ";
+                                    message = firstPart + messageArr.slice(2).toString().replaceAll(",", " ");
+                                }
+                                console.log("FAILED: " + message);
+                                row.addClass("errors");
+                                $("#ingredientErrorMessages").addClass("errors");
+                                $("#ingredientErrorMessages > h3").html(message);
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));
@@ -285,7 +298,11 @@
                         }
                     });
                 });
-                return result;
+                if (successCount == rowCount) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         </script>
         </script>

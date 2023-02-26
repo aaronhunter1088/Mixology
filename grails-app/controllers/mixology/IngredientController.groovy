@@ -216,19 +216,11 @@ class IngredientController {
     }
 
     def validate(params) {
+        println "API call # ${params.apiCallCount}"
         Ingredient ingredient = createIngredientsFromParams(params).get(0)
         boolean result = alreadyExists(ingredient)
         response.setContentType("text/json")
         if (result) {
-//            ingredient.errors.reject('default.invalid.ingredient.instance',
-//                    [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
-//                    '[Ingredient has already been created]')
-//            request.withFormat {
-//                form multipartForm {
-//                    flash.message = "Ingredient has already been created"
-//                }
-//                '*' { respond ingredient.errors, [status: HttpStatus.BAD_REQUEST] }
-//            }
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient has already been created")
         } else {
             response.getWriter().append("Ingredient is valid")
