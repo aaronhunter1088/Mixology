@@ -199,7 +199,7 @@
                                                 //input.setAttribute('required', 'true');
                                                 //td.appendChild(input);
                                                 let select = document.createElement('select');
-                                                select.setAttribute('name', 'unitType');
+                                                select.setAttribute('name', 'ingredientUnit');
                                                 select.setAttribute('required', 'true');
                                                 select.setAttribute('class', 'form-control');
                                                 let first = document.createElement('option');

@@ -76,10 +76,10 @@ class IngredientController {
                 form multipartForm {
                     if (ingredientIds.size() == 1) {
                         flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
-                        //redirect ingredients.get(0)
                     } else {
                         flash.message = ''
                     }
+                    redirect(controller: "ingredient", action: "create")
                 }
                 '*' { respond ingredients.get(0), [status: CREATED] }
             }
@@ -96,7 +96,7 @@ class IngredientController {
                     } else {
                         flash.message = ''
                     }
-                    //redirect(controller: "ingredient", action: "index")
+                    redirect(controller: "ingredient", action: "create")
                 }
                 '*' { respond ingredientIds, [status: CREATED] }
             }
@@ -170,22 +170,20 @@ class IngredientController {
 
     def createIngredientsFromParams(params) {
         List<String> ingredientNames = new ArrayList<>()
-        List<String> units = new ArrayList<>()
+        List<Unit> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
         if (params.ingredientName.size() > 1 && !(params.ingredientName instanceof String)) {
             params.ingredientName.each {
                 ingredientNames.add(it as String)
             }
-            params.ingredientUnit.each {
-                units.add(it as String)
-            }
+            params.ingredientUnit.each {units.add(it as Unit)} //{units.add(Unit.valueOf(it as String))}
             params.ingredientAmount.each {
                 ingredientAmounts.add(Double.parseDouble(it as String))
             }
         } else {
             ingredientNames.add(params.ingredientName as String)
-            units.add(params.ingredientUnit as String)
+            units.add(params.ingredientUnit as Unit)
             ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
         }
         int createNum = ingredientNames.size()

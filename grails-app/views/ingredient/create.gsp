@@ -101,7 +101,7 @@
                                 //input.setAttribute('class', 'form-control');
                                 //td.appendChild(input);
                                 let select = document.createElement('select');
-                                select.setAttribute('name', 'unitType');
+                                select.setAttribute('name', 'ingredientUnit');
                                 select.setAttribute('required', 'true');
                                 let first = document.createElement('option');
                                 first.setAttribute('label', 'Select One');
@@ -148,9 +148,9 @@
                                     <input type="text" id="ingredientName" name="ingredientName" class="form-control" required>
                                 </td>
                             <td>
-                                <select name="unitType" class="form-control" required="required">
+                                <select name="ingredientUnit" class="form-control" required="required">
                                     <option value="" label="Select One" selected disabled>Select One</option>
-                                    <g:each in="${Unit.values()}" var="unit" name="unitType">
+                                    <g:each in="${Unit.values()}" var="unit" name="ingredientUnit">
                                         <option value="${unit}">${unit}</option>
                                     </g:each>
                                 </select>
