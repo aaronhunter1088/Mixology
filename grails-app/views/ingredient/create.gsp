@@ -71,8 +71,8 @@
                     <table class="table" style="width:100%;">
                         <thead>
                             <th>Name<span class='required-indicator'>*</span></th>
-                            <th>Unit</th>
-                            <th>Amount</th>
+                            <th>Unit<span class='required-indicator'>*</span></th>
+                            <th>Amount<span class='required-indicator'>*</span></th>
                             <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
                         </thead>
                         <script>
@@ -94,12 +94,29 @@
                                 tr.appendChild(td);
                                 // create Unit
                                 td = document.createElement('td');
-                                input = document.createElement('input');
-                                input.setAttribute('type', 'text');
-                                input.setAttribute('id', prefix + 'Unit');
-                                input.setAttribute('name', prefix + 'Unit');
-                                input.setAttribute('class', 'form-control');
-                                td.appendChild(input);
+                                //input = document.createElement('input');
+                                //input.setAttribute('type', 'text');
+                                //input.setAttribute('id', prefix + 'Unit');
+                                //input.setAttribute('name', prefix + 'Unit');
+                                //input.setAttribute('class', 'form-control');
+                                //td.appendChild(input);
+                                let select = document.createElement('select');
+                                select.setAttribute('name', 'unitType');
+                                select.setAttribute('required', 'true');
+                                let first = document.createElement('option');
+                                first.setAttribute('label', 'Select One');
+                                first.selected = true;
+                                first.disabled = true;
+                                first.setAttribute('text', 'Select One');
+                                select.appendChild(first);
+                                let option = document.createElement('option');
+                                <g:each in="${Unit.values()}" status="i" var="unit">
+                                    option.value = '${unit}';
+                                    option.text = '${unit}';
+                                    select.appendChild(option);
+                                    option = document.createElement('option');
+                                </g:each>
+                                td.appendChild(select);
                                 tr.appendChild(td);
                                 // create Amount
                                 td = document.createElement('td');
@@ -131,16 +148,15 @@
                                     <input type="text" id="ingredientName" name="ingredientName" class="form-control" required>
                                 </td>
                             <td>
-%{--                                <input type="text" id="ingredientUnit" name="ingredientUnit" class="form-control">--}%
-                                <select name="unitType">
-                                    <option label="Select One" selected disabled>Select One</option>
+                                <select name="unitType" class="form-control" required="required">
+                                    <option value="" label="Select One" selected disabled>Select One</option>
                                     <g:each in="${Unit.values()}" var="unit" name="unitType">
                                         <option value="${unit}">${unit}</option>
                                     </g:each>
                                 </select>
                             </td>
                                 <td>
-                                    <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control">
+                                    <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control" required>
                                 </td>
                             <td>
                                 <a style="color:black;text-decoration:none;" class="btn btn-outline-danger" href="javascript:removeRow('optRow')"><b>X</b></a>

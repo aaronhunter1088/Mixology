@@ -109,7 +109,7 @@
                             <div class="formfield">
                                 <label for='alcoholType'>Drink Type<span class='required-indicator'>*</span></label>
                                 <div class="input-wrapper">
-                                    <select name="drinkType">
+                                    <select name="drinkType" class="form-control" style="width:43%;">
                                         <option label="Select One" selected disabled>Select One</option>
                                         <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
                                             <option value="${alcohol}">${alcohol}</option>
@@ -126,7 +126,7 @@
                             <div class="formfield">
                                 <label for="glassType">Suggested Glass<span class='required-indicator'>*</span></label>
                                 <div class="input-wrapper">
-                                    <select name="glass">
+                                    <select name="glass" class="form-control" style="width:43%;">
                                         <option label="Select One" selected disabled>Select One</option>
                                         <g:each in="${GlassType.values()}" var="glass" name="glassType">
                                             <option value="${glass}">${glass}</option>
@@ -191,13 +191,31 @@
                                                 tr.appendChild(td);
                                                 // create Unit
                                                 td = document.createElement('td');
-                                                input = document.createElement('input');
-                                                input.setAttribute('type', 'text');
-                                                input.setAttribute('id', prefix + 'Unit');
-                                                input.setAttribute('name', prefix + 'Unit');
-                                                input.setAttribute('class', 'form-control');
-                                                input.setAttribute('required', 'true');
-                                                td.appendChild(input);
+                                                //input = document.createElement('input');
+                                                //input.setAttribute('type', 'text');
+                                                //input.setAttribute('id', prefix + 'Unit');
+                                                //input.setAttribute('name', prefix + 'Unit');
+                                                //input.setAttribute('class', 'form-control');
+                                                //input.setAttribute('required', 'true');
+                                                //td.appendChild(input);
+                                                let select = document.createElement('select');
+                                                select.setAttribute('name', 'unitType');
+                                                select.setAttribute('required', 'true');
+                                                select.setAttribute('class', 'form-control');
+                                                let first = document.createElement('option');
+                                                first.setAttribute('label', 'Select One');
+                                                first.selected = true;
+                                                first.disabled = true;
+                                                first.setAttribute('text', 'Select One');
+                                                select.appendChild(first);
+                                                let option = document.createElement('option');
+                                                <g:each in="${Unit.values()}" status="i" var="unit">
+                                                    option.value = '${unit}';
+                                                    option.text = '${unit}';
+                                                    select.appendChild(option);
+                                                    option = document.createElement('option');
+                                                </g:each>
+                                                td.appendChild(select);
                                                 tr.appendChild(td);
                                                 // create Amount
                                                 td = document.createElement('td');

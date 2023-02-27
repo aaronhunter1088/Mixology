@@ -21,7 +21,7 @@ class Ingredient implements Comparable<Ingredient> {
 
     @Override
     String toString() {
-        name + " : " + amount + " : " + unit.value
+        name + " : " + amount + " : " + unit.getValue()
     }
 
     @Override
