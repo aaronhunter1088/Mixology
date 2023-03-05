@@ -13,7 +13,6 @@ class Drink implements Serializable{
     GlassType suggestedGlass
     Alcohol drinkType
     String drinkSymbol
-    Set<Ingredient> ingredients
 
     static constraints = {
         drinkName()

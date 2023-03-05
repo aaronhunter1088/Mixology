@@ -122,10 +122,10 @@ class IngredientController {
         }
 
         try {
-            if (alreadyExists(ingredient)) {
-                throw new ValidationException("Cannot create ingredient because it already exists",
-                        new ValidationErrors(ingredient))
-            }
+//            if (alreadyExists(ingredient)) {
+//                throw new ValidationException("Cannot create ingredient because it already exists",
+//                        new ValidationErrors(ingredient))
+//            }
             ingredientService.save(ingredient)
         } catch (ValidationException e) {
             respond ingredient.errors, view:'edit'
@@ -134,7 +134,7 @@ class IngredientController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.toString()])
                 redirect ingredient
             }
             '*'{ respond ingredient, [status: OK] }
