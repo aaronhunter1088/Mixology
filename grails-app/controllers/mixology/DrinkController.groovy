@@ -89,12 +89,18 @@ class DrinkController {
             notFound()
             return
         }
+        Drink drink = Drink.findById(id)
+        List<Ingredient> ingredients = drink.ingredients.toArray()
+        ingredients.each { ingredient ->
+            ingredient.removeFromDrinks(drink)
+            drink.removeFromIngredients(ingredient)
+        }
 
         drinkService.delete(id)
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'drink'), id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'drink'), drink.drinkName])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }

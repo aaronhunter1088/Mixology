@@ -5,7 +5,7 @@ import enums.Alcohol
 import groovy.transform.ToString
 
 @ToString
-class Drink {
+class Drink implements Serializable{
 
     String drinkName
     int drinkNumber
