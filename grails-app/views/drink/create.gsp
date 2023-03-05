@@ -162,15 +162,15 @@
                                         &emsp14;Create A New Ingredient&emsp14;
                                         <hr style="height:1px;background-color:#008011">
                                     </legend>
-                                    <div id="ingredientErrorMessages" class="col-12 content scaffold-create" role="main">
-                                        <h3 role="alert">${errorMessage}</h3>
+                                    <div id="ingredientErrorMessagesDiv" class="col-12 content scaffold-create" role="main">
+                                        <h3 id="ingredientErrorMessage" role="alert">${errorMessage}</h3>
                                     </div>
                                     <table id="ingredientTable" class="table" style="width:100%;">
                                         <thead>
-                                        <th>Name</th>
-                                        <th>Unit</th>
-                                        <th>Amount</th>
-                                        <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
+                                            <th>Name</th>
+                                            <th>Unit</th>
+                                            <th>Amount</th>
+                                            <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
                                         </thead>
                                         <script>
                                             function addRow(tbody, prefix) {
@@ -191,13 +191,6 @@
                                                 tr.appendChild(td);
                                                 // create Unit
                                                 td = document.createElement('td');
-                                                //input = document.createElement('input');
-                                                //input.setAttribute('type', 'text');
-                                                //input.setAttribute('id', prefix + 'Unit');
-                                                //input.setAttribute('name', prefix + 'Unit');
-                                                //input.setAttribute('class', 'form-control');
-                                                //input.setAttribute('required', 'true');
-                                                //td.appendChild(input);
                                                 let select = document.createElement('select');
                                                 select.setAttribute('name', 'ingredientUnit');
                                                 select.setAttribute('required', 'true');
@@ -261,17 +254,17 @@
         </div>
         <script type="text/javascript">
             function isValid() {
-                let tableRows = $("#ingredientTable > tbody > tr")
-                let rowCount = tableRows.length;
+                let tableRows = $("#ingredientTable > tbody > tr");
+                let row;
+                let numberOfRows = tableRows.length
                 let successCount = 0;
                 let failCount = 0;
                 let ajaxCalls = 0;
                 tableRows.each(function () {
-                    let row = $(this)
-                    let cellValue1 = row.find('td:nth-child(1) > input').val()
-                    let cellValue2 = row.find('td:nth-child(2) > input').val()
-                    let cellValue3 = row.find('td:nth-child(3) > input').val()
-                    ajaxCalls += 1;
+                    row = $(this);
+                    let cellValue1 = row.find('td:nth-child(1) > input').val();
+                    let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
+                    let cellValue3 = row.find('td:nth-child(3) > input').val();
                     $.ajax({
                         headers: {
                             accept: "application/json",
@@ -279,12 +272,12 @@
                         },
                         async: false,
                         type: "GET",
-                        url: "${createLink(controller:'ingredient', action:'validate')}",
+                        url: "${createLink(controller:'drink', action:'validateIngredients')}",
                         data: {
                             ingredientName: cellValue1,
                             ingredientUnit: cellValue2,
                             ingredientAmount: cellValue3,
-                            apiCallCount: ajaxCalls
+                            apiCallCount: ++ajaxCalls
                         },
                         statusCode: {
                             200: function(data) {
@@ -304,8 +297,9 @@
                                 }
                                 console.log("FAILED: " + message);
                                 row.addClass("errors");
-                                $("#ingredientErrorMessages").addClass("errors");
-                                $("#ingredientErrorMessages > h3").html(message);
+                                let errorMessage = $("#ingredientErrorMessage")
+                                errorMessage.addClass("errors");
+                                errorMessage.html(message);
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));
@@ -316,7 +310,7 @@
                         }
                     });
                 });
-                if (successCount == rowCount) {
+                if (successCount === numberOfRows) {
                     return true;
                 } else {
                     return false;

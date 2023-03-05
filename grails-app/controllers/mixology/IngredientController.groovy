@@ -67,7 +67,7 @@ class IngredientController {
             return
         }
 
-        Predicate<Ingredient> isNull = id -> id == null
+        //Predicate<Ingredient> isNull = id -> id == null
         List<Long> ingredientIds = ingredients*.id
         ingredientIds.removeAll([null])
         //ingredients.removeAll([isNull])
@@ -210,7 +210,7 @@ class IngredientController {
     }
 
     def validate(params) {
-        println "API call # ${params.apiCallCount}"
+        println "Ingredients: API call # ${params.apiCallCount}"
         Ingredient ingredient = createIngredientsFromParams(params).get(0)
         boolean result = alreadyExists(ingredient)
         response.setContentType("text/json")

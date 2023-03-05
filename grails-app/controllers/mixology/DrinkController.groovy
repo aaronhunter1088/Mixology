@@ -1,9 +1,9 @@
 package mixology
 
-
-import enums.Alcohol
-import enums.GlassType
+import enums.*
 import grails.validation.ValidationException
+
+import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -14,6 +14,8 @@ class DrinkController {
 
     DrinkService drinkService
     IngredientService ingredientService
+
+    Set<Ingredient> validIngredients = []
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -36,26 +38,7 @@ class DrinkController {
             notFound()
             return
         }
-        Drink drinkError = new Drink()
-        def newIngredients
-//        try {
-            newIngredients = createNewIngredientsFromParams(params)
-            newIngredients.each { ingredient ->
-                if (alreadyExists(ingredient)) {
-                    drinkError.errors.reject('default.invalid.ingredient.instance',
-                            [ingredient.name, ingredient.unit.value, ingredient.amount] as Object[],
-                            '[Ingredient has already been created]')
-                    respond drinkError.errors, view:'create'
-                    return
-                }
-            }
-//        }
-//        catch (ValidationException e) {
-//            respond errorI.errors, view:'create'
-//            return
-//        }
         Drink drink = createDrinkFromParams(params)
-        newIngredients.each { drink.addToIngredients(it) }
         try {
             drinkService.save(drink)
         }
@@ -66,11 +49,13 @@ class DrinkController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'drink'), drink.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'drink'), drink.drinkName])
                 redirect drink
             }
             '*' { respond drink, [status: CREATED] }
         }
+        // clear the list
+        validIngredients = []
     }
 
     def edit(Long id) {
@@ -127,24 +112,45 @@ class DrinkController {
     }
 
     def createDrinkFromParams(params) {
-        List<Ingredient> ingredientsList = []
         List<Ingredient> allIngredients = Ingredient.list()
-        //int count = 0
-        // params["ingredient${count}]
-        params["ingredients"].each {
-            String[] o = it.split(":")
-            // ":" comes in at o[1], so ignore it
-            Ingredient i = new Ingredient([
-                    name: o[0].trim(),
-                    amount: o[1].toDouble(),
-                    unit: Unit.valueOf(o[2].trim())
+
+        Ingredient newIngredientFromParams
+        String ingredients = params.ingredients
+        ingredients = ingredients.replace('[','').replace(']','')
+        if (ingredients.indexOf(',') >= 0) {
+            println "has a comma"
+            String[] list = ingredients.split(',')
+            println list
+            for (it in list) {
+                String[] parts = it.split ':'
+                newIngredientFromParams = new Ingredient([
+                        name: parts[0].trim(),
+                        amount: parts[1].trim(),
+                        unit  : Unit.valueOf(parts[2].trim().toUpperCase())
+                ])
+                for (ingredient in allIngredients) {
+                    if (ingredient == newIngredientFromParams) {
+                        newIngredientFromParams = ingredient // set the id for referencing
+                        break
+                    }
+                }
+                validIngredients.add(newIngredientFromParams)
+            }
+        }
+        else {
+            String[] parts = ingredients.split ':'
+            newIngredientFromParams = new Ingredient([
+                    name  : parts[0].trim(),
+                    amount: parts[1].trim(),
+                    unit  : Unit.valueOf(parts[2].trim().toUpperCase())
             ])
-            allIngredients.each { ingredient ->
-                if (ingredient.compareTo(i) == 0) {
-                    i = ingredient // set the id for referencing
+            for (ingredient in allIngredients) {
+                if (ingredient == newIngredientFromParams) {
+                    newIngredientFromParams = ingredient // set the id for referencing
+                    break
                 }
             }
-            ingredientsList.add(i)
+            validIngredients.add(newIngredientFromParams)
         }
 
         Drink drink = new Drink([
@@ -154,10 +160,10 @@ class DrinkController {
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass),
                 mixingInstructions: params.instructions,
-                ingredients: ingredientsList
+                ingredients: validIngredients
         ])
         // Associate all ingredients with this drink
-        ingredientsList.each {
+        validIngredients.each {
             if (!it.drinks) it.drinks = new HashSet<Drink>()
             if (!it.drinks.contains(drink)) it.drinks.add(drink)
         }
@@ -205,6 +211,23 @@ class DrinkController {
             }
         }
         return exists
+    }
+
+    def validateIngredients(params) {
+        println "API Call # ${params.apiCallCount}"
+        Ingredient ingredient = createNewIngredientsFromParams(params).get(0)
+        boolean result = false
+        if (alreadyExists(ingredient)) { result = true }
+        response.setContentType("text/plain")
+        if (result) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient has already been created")
+        }
+        else {
+            validIngredients.add(ingredient)
+            response.getWriter().append("Ingredient is valid")
+            response.getWriter().flush()
+            response.setStatus(HttpServletResponse.SC_OK) // 200
+        }
     }
 
 }
