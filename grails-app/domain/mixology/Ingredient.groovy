@@ -4,7 +4,7 @@ import enums.Unit
 import groovy.transform.ToString
 
 @ToString
-class Ingredient implements Comparable<Ingredient> {
+class Ingredient implements Comparable<Ingredient>, Serializable {
 
     String name
     Unit unit

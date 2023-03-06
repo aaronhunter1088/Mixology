@@ -175,8 +175,8 @@ class DrinkController {
         // Associate all ingredients with this drink
         validIngredients.each {
             if (!it.drinks) it.drinks = new HashSet<Drink>()
-            if (!it.drinks.contains(drink)) it.drinks.add(drink)
-            ingredientService.save(it)
+            if (!it.drinks.contains(drink)) it.addToDrinks(drink)
+            it.save()
         }
         return drink
     }
