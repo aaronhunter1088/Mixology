@@ -120,12 +120,12 @@ class IngredientController {
             notFound()
             return
         }
-
+        Set<Drink> ingredientsDrinks = ingredient.drinks
+        ingredientsDrinks.each { drink ->
+            drink.addToIngredients(ingredient)
+            drink.save()
+        }
         try {
-//            if (alreadyExists(ingredient)) {
-//                throw new ValidationException("Cannot create ingredient because it already exists",
-//                        new ValidationErrors(ingredient))
-//            }
             ingredientService.save(ingredient)
         } catch (ValidationException e) {
             respond ingredient.errors, view:'edit'

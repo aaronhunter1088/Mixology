@@ -13,7 +13,6 @@ import static org.springframework.http.HttpStatus.OK
 class DrinkController {
 
     DrinkService drinkService
-    IngredientService ingredientService
 
     Set<Ingredient> validIngredients = []
 
