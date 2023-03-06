@@ -71,7 +71,11 @@ class DrinkController {
             notFound()
             return
         }
-
+        drink.ingredients.each {
+            if (!it.drinks) it.drinks = new HashSet<Drink>()
+            if (!it.drinks.contains(drink)) it.addToDrinks(drink)
+            it.save()
+        }
         try {
             drinkService.save(drink)
         } catch (ValidationException e) {
