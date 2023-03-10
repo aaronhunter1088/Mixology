@@ -2,9 +2,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="layout" content="main" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        %{--    <meta name="layout" content="main"/>--}%
+        <title>Create Drinks</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <asset:stylesheet src="application.css"/>
+        <asset:javascript src="application.js"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
+        %{--        <asset:link rel="icon" href="cocktailRed.png" type="image/png" id="icon"/>--}%
+        %{--        <link rel="icon" type="image/x-ico" href="../../assets/images/cocktail.ico">--}%
+        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'cocktail.ico')}" />
+%{--        <meta name="layout" content="main" />--}%
         <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
-        <title><g:message code="default.create.label" args="[entityName]" /></title>
+%{--        <title><g:message code="default.create.label" args="[entityName]" /></title>--}%
 
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <style>
