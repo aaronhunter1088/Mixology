@@ -29,8 +29,8 @@
             background-blend-mode: soft-light;
         }
     </style>
-    <body style="overflow-x:scroll;">
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
+    <body style="overflow-x:scroll;padding:0;margin:0;">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation" style="width:100%;">
             <div class="container-fluid">
     %{--            <a class="navbar-brand" href="/#"><asset:image src="cocktail.ico" alt="Grails Logo"/></a>--}%
     %{--            <img src="../assets/images/cocktail.ico" alt="Cocktail Logo"/>--}%
@@ -88,34 +88,34 @@
             </div>
         </nav>
 
-        <div id="periodicTable" style="display:inline-flex;">
-            <div id="column1">
-                <div id="tequilaDrinks" style="padding:2em;width:700px;">
-                <p style="text-align:center;margin-bottom:0px;">Tequila Drinks</p>
-                <g:each var="card" in="{1..6}">
-                    <div style="display:inline-flex">
-                        <div class="card" style="">
-                            <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                <div class="card" style="width:50%;">
-                                    <p>hello i'm on the left</p>
+        <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
+            <div id="column1" style="margin:0;padding:0;width:615px;">
+                <div id="tequilaDrinks" style="">
+                    <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
+                    <g:each var="card" in="{1..6}">
+                        <div style="display:inline-flex;">
+                            <div class="card" style="">
+                                <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                    <div class="card" style="width:50%;">
+                                        <p>hello i'm on the left</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                <div class="card" style="width:50%;">
-                                    <p>hello i'm on the right</p>
+                                <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                    <div class="card" style="width:50%;">
+                                        <p>hello i'm on the right</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </g:each>
-            </div>
-            </div>
-            <div id="column2" style="width:2400px;">
-                <div id="title" style="padding:2em;width:1200px;height:600px;">
-                    <h1 style="width:2400px;font-size:180px;">Periodic Table of Mixology</h1>
+                    </g:each>
                 </div>
-                <div style="display:inline-flex;">
-                    <div id="vodka" style="padding:2em;width:1200px;">
+            </div>
+            <div id="column2" style="margin:0;padding:0;width:2090px;">
+                <div id="title" style="width:1200px;height:600px;">
+                    <h1 style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
+                </div>
+                <div id="vodkaAndGin" style="display:inline-flex;">
+                    <div id="vodka" style="margin:0;padding:0;width:1200px;">
                         <div class="card" style="">
                             <p style="text-align:center;margin-bottom:0px;">Vodka Drinks</p>
                             <g:each var="card" in="{1}">
@@ -143,8 +143,7 @@
                                 </div>
                             </g:each>
                         </div>
-                    </div>
-                    <div id="gin" style="padding:2em;width:900px;">
+                    </div><div id="gin" style="padding:0;width:900px;">
                         <div class="card" style="">
                             <p style="text-align:center;margin-bottom:0px;">Gin Drinks</p>
                             <g:each var="card" in="{1}">
@@ -169,9 +168,56 @@
                         </div>
                     </div>
                 </div>
+                <div id="shooterDrinks" style="width:2550px;padding:5em;">
+                    <div class="card">
+                        <p style="text-align:center;margin-bottom:0;">Shooter Drinks</p>
+                        <g:each var="card" in="${(1..2)}">
+                            <div style="display:inline-flex;">
+                                <g:each var="card2" in="${(1..8)}">
+                                    <div class="card" style="background-color:#6610f2;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                        <div class="card" style="width:50%;">
+                                            <p>hello i'm on the right</p>
+                                        </div>
+                                    </div>
+                                </g:each>
+                                <!-- two cards -->
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
             </div>
-            <div id="column3">
-
+            <div id="column3" style="margin:0;padding:0;width:600px;">
+                <div id="frozenDrinks" style="">
+                    <div class="card">
+                        <p style="text-align:center;margin-bottom:0;">Frozen Drinks</p>
+                        <div style="display:inline-flex;">
+                            <div class="card" style="padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                <div class="card" style="width:50%;">
+                                    <p>hello i'm left blank</p>
+                                </div>
+                            </div>
+                            <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                <div class="card" style="width:50%;">
+                                    <p>hello i'm on the right</p>
+                                </div>
+                            </div>
+                        </div>
+                        <g:each var="card" in="${(1..4)}">
+                            <div style="display:inline-flex;">
+                                <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                    <div class="card" style="width:50%;">
+                                        <p>hello i'm on the left</p>
+                                    </div>
+                                </div>
+                                <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                    <div class="card" style="width:50%;">
+                                        <p>hello i'm on the right</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
             </div>
         </div>
 
