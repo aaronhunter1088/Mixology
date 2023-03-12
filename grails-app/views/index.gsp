@@ -24,17 +24,55 @@
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'cocktail.ico')}" />
     </head>
     <style>
-        img {
-            mix-blend-mode: color-burn;
-            background-blend-mode: soft-light;
+        /*img {*/
+        /*    mix-blend-mode: color-burn;*/
+        /*    background-blend-mode: soft-light;*/
+        /*}*/
+        .arrow-right:after {
+            content: "";
+            display: inline-block !important;
+            width: 0;
+            height: 0;
+            border-left: 8px solid red;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            vertical-align: middle;
+        }
+
+        .arrow-right:before {
+            width: 75px;
+            height: 2px;
+            background: red;
+            content: "";
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .arrow-left:before {
+            content: "";
+            display: inline-block !important;
+            width: 0px;
+            height: 0px;
+            border-left: 8px solid red;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            vertical-align: middle;
+            transform: rotate(-180deg);
+        }
+        .arrow-left:after {
+            width: 75px;
+            height: 2px;
+            background: red;
+            content: "";
+            display: inline-block;
+            vertical-align: middle;
         }
     </style>
     <body style="overflow-x:scroll;padding:0;margin:0;">
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation" style="width:100%;">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
     %{--            <a class="navbar-brand" href="/#"><asset:image src="cocktail.ico" alt="Grails Logo"/></a>--}%
     %{--            <img src="../assets/images/cocktail.ico" alt="Cocktail Logo"/>--}%
-                <img src="${resource(dir:'../assets/images',file:'cocktail.ico')}" alt="Cocktail Logo"/>
+                <img style="mix-blend-mode:color-burn;background-blend-mode:soft-light;" src="${resource(dir:'../assets/images',file:'cocktail.ico')}" alt="Cocktail Logo"/>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -89,80 +127,119 @@
         </nav>
 
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
-            <div id="column1" style="margin:0;padding:0;width:615px;">
-                <div id="tequilaDrinks" style="">
-                    <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
-                    <g:each var="card" in="{1..6}">
-                        <div style="display:inline-flex;">
-                            <div class="card" style="">
-                                <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                    <div class="card" style="width:50%;">
-                                        <p>hello i'm on the left</p>
+            <div id="column1" style="margin:0;padding:2px;width:600px;">
+                <div id="tequilaDrinks" style="margin:0;padding:0;">
+                    <div class="card">
+                        <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
+                        <g:each var="card" in="${(1..6)}">
+                            <div style="display:inline-flex;">
+                                <g:each var="card2" in="${(1..2)}">
+                                    <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                        <div class="card" style="width:50%;">
+                                            <p>i'm some tequila drink</p>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
+                <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
+                <div id="key" style="text-align:center;padding:0;">
+                    <h2><b>KEY</b></h2>
+                    <div style="display:inline-flex;">
+                        <div id="leftColumn" style="width:100px;height:280px;">
+                            <p></p>
+                            <p></p>
+                            <h6>Cocktail</h6>
+                            <h6 style="margin-bottom:-5px;">Number</h6>
+                            <span class="arrow-right"></span>
+                            <p style="height:20px;"></p>
+                            <h6>Cocktail</h6>
+                            <h6 style="margin-bottom:-5px;">Ingredients</h6>
+                            <span class="arrow-right"></span>
+                            <p style="height:30px;"></p>
+                            <span class="arrow-right"></span>
+                            <h6 style="margin-top:-5px;">Cocktail</h6>
+                            <h6>Mixing</h6>
+                            <h6>Instructions</h6>
+                        </div>
+                        <div id="middleColumn" style="text-align:center;display:inline-flex;">
+                            <div class="card" style="border:double #000000;background-color:#95999c;width:300px;height:300px;">
+                                <div style="display:inline-block;">
+                                    <div id="innerLeft" style="height:260px;float:left;">
+                                        <div style="padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                            <p style="font-size:5em;margin:0;color:navy;"><b>20</b></p>
+                                            <p style="margin:0;">1.5 oz Tequila</p>
+                                            <p style="margin:0;">0.5 oz Triple Sec</p>
+                                            <p style="margin:0;">1 oz Lemon Juice</p>
+                                            <p style="margin:10px;"></p>
+                                            <p style="margin:0;">Mix ingredients and enjoy!</p>
+                                        </div>
+                                    </div>
+                                    <div id="innerRight" style="height:260px;float:right;">
+                                        <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                            <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                            <p style="font-size:5em;margin-top:10px;color:#155724;"><b>Mg</b></p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                    <div class="card" style="width:50%;">
-                                        <p>hello i'm on the right</p>
-                                    </div>
+                                <div>
+                                    <p style="font-size:2em;margin:0;color:#a60000;"><b>MARGARITA</b></p>
                                 </div>
                             </div>
                         </div>
-                    </g:each>
+                        <div id="rightColumn" style="width:100px;height:280px;">
+                            <p></p>
+                            <p></p>
+                            <h6>Suggested</h6>
+                            <h6 style="margin-bottom:-5px;">Glass</h6>
+                            <span class="arrow-left"></span>
+                            <p style="margin:50px;"></p>
+                            <h6>Cocktail</h6>
+                            <h6 style="margin-bottom:-5px;">Symbol</h6>
+                            <span class="arrow-left"></span>
+                            <p style="margin:60px;"></p>
+                            <h6>Cocktail</h6>
+                            <h6 style="margin-bottom:-5px;">Name</h6>
+                            <span class="arrow-left"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="column2" style="margin:0;padding:0;width:2090px;">
+            <div id="column2" style="margin:0;padding:2px;width:2101px;">
                 <div id="title" style="width:1200px;height:600px;">
                     <h1 style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                 </div>
                 <div id="vodkaAndGin" style="display:inline-flex;">
-                    <div id="vodka" style="margin:0;padding:0;width:1200px;">
+                    <div id="vodkaDrinks" style="margin:0;padding:0;width:1200px;">
                         <div class="card" style="">
-                            <p style="text-align:center;margin-bottom:0px;">Vodka Drinks</p>
-                            <g:each var="card" in="{1}">
+                            <p style="text-align:center;margin-bottom:0;">Vodka Drinks</p>
+                            <g:each var="card" in="${(1..3)}">
                                 <div style="display:inline-flex">
-                                    <div class="card" style="background-color:#ffdf7e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the left</p>
+                                    <g:each var="card2" in="${(1..4)}">
+                                        <div class="card" style="background-color:#ffdf7e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                            <div class="card" style="width:50%;">
+                                                <p>i'm some vodka drink</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card" style="background-color:#ffdf7e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the right</p>
-                                        </div>
-                                    </div>
-                                    <div class="card" style="background-color:#ffdf7e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the left</p>
-                                        </div>
-                                    </div>
-                                    <div class="card" style="background-color:#ffdf7e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the right</p>
-                                        </div>
-                                    </div>
+                                    </g:each>
                                 </div>
                             </g:each>
                         </div>
-                    </div><div id="gin" style="padding:0;width:900px;">
+                    </div>
+                    <div id="gin" style="margin:0;padding:0;width:900px;">
                         <div class="card" style="">
                             <p style="text-align:center;margin-bottom:0px;">Gin Drinks</p>
-                            <g:each var="card" in="{1}">
+                            <g:each var="card" in="${(1..3)}">
                                 <div style="display:inline-flex;">
-                                    <div class="card" style="background-color:#006dba;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the left</p>
+                                    <g:each var="card2" in="${(1..3)}">
+                                        <div class="card" style="background-color:#006dba;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                            <div class="card" style="width:50%;">
+                                                <p>i'm some gin drink</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card" style="background-color:#006dba;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm in the middle</p>
-                                        </div>
-                                    </div>
-                                    <div class="card" style="background-color:#006dba;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>hello i'm on the right</p>
-                                        </div>
-                                    </div>
+                                    </g:each>
                                 </div>
                             </g:each>
                         </div>
@@ -176,44 +253,38 @@
                                 <g:each var="card2" in="${(1..8)}">
                                     <div class="card" style="background-color:#6610f2;padding-left:5px;padding-top:5px;width:300px;height:300px;">
                                         <div class="card" style="width:50%;">
-                                            <p>hello i'm on the right</p>
+                                            <p>i'm some shooter drink</p>
                                         </div>
                                     </div>
                                 </g:each>
-                                <!-- two cards -->
                             </div>
                         </g:each>
                     </div>
                 </div>
             </div>
-            <div id="column3" style="margin:0;padding:0;width:600px;">
+            <div id="column3" style="margin:0;padding:2px;width:600px;">
                 <div id="frozenDrinks" style="">
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Frozen Drinks</p>
                         <div style="display:inline-flex;">
-                            <div class="card" style="padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                <div class="card" style="width:50%;">
-                                    <p>hello i'm left blank</p>
-                                </div>
+                            <div style="width:300px;height:300px;">
+                                <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
                                 <div class="card" style="width:50%;">
-                                    <p>hello i'm on the right</p>
+                                    <p>i'm a frozen drink</p>
                                 </div>
                             </div>
                         </div>
                         <g:each var="card" in="${(1..4)}">
                             <div style="display:inline-flex;">
-                                <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                    <div class="card" style="width:50%;">
-                                        <p>hello i'm on the left</p>
+                                <g:each var="card2" in="${(1..2)}">
+                                    <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                        <div class="card" style="width:50%;">
+                                            <p>i'm some frozen drink</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                    <div class="card" style="width:50%;">
-                                        <p>hello i'm on the right</p>
-                                    </div>
-                                </div>
+                                </g:each>
                             </div>
                         </g:each>
                     </div>
@@ -222,25 +293,10 @@
         </div>
 
 
-
-%{--        <div id="controllers" style="text-align:center;">--}%
-%{--            <h2>Available Controllers:</h2>--}%
-%{--            <ul>--}%
-%{--                <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">--}%
-%{--                    <li class="controller">--}%
-%{--                        <g:link controller="${c.logicalPropertyName}">${c.name}</g:link>--}%
-%{--                    </li>--}%
-%{--                </g:each>--}%
-%{--            </ul>--}%
-%{--        </div>--}%
         <script type="text/javascript">
         $(document).ready(function() {
             console.log("index loaded");
-            //$("#controllers").show(); // by default
         });
-        // function showControllers() {
-        //     $("#controllers").show();
-        // }
     </script>
     </body>
 </html>
