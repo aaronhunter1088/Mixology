@@ -125,7 +125,7 @@
         </nav>
 
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
-            <div id="column1" style="margin:0;padding:2px;width:600px;">
+            <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
@@ -205,15 +205,15 @@
                     </div>
                 </div>
             </div>
-            <div id="column2" style="margin:0;padding:2px;width:2101px;">
+            <div id="column2" style="margin:0;padding:0;width:2099px;">
                 <div id="title" style="width:1200px;height:600px;">
                     <h1 style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                     <div id="reference" style="display:inline-flex;">
-                        <div id="chart" style="padding-left:70px;">
+                        <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
                             <g:render template="referenceChart"/>
                         </div>
-                        <div id="measurements">
-
+                        <div id="measurements" style="margin-left:50px;margin-right:50px;">
+                            <g:render template="measurementsCard"/>
                         </div>
                         <div id="glasses">
 
@@ -271,7 +271,7 @@
                     </div>
                 </div>
             </div>
-            <div id="column3" style="margin:0;padding:2px;width:600px;">
+            <div id="column3" style="margin:0;padding:0;width:600px;">
                 <div id="frozenDrinks" style="">
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Frozen Drinks</p>
