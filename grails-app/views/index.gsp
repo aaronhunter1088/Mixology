@@ -70,8 +70,6 @@
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
-    %{--            <a class="navbar-brand" href="/#"><asset:image src="cocktail.ico" alt="Grails Logo"/></a>--}%
-    %{--            <img src="../assets/images/cocktail.ico" alt="Cocktail Logo"/>--}%
                 <img style="mix-blend-mode:color-burn;background-blend-mode:soft-light;" src="${resource(dir:'../assets/images',file:'cocktail.ico')}" alt="Cocktail Logo"/>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -210,6 +208,17 @@
             <div id="column2" style="margin:0;padding:2px;width:2101px;">
                 <div id="title" style="width:1200px;height:600px;">
                     <h1 style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
+                    <div id="reference" style="display:inline-flex;">
+                        <div id="chart" style="padding-left:70px;">
+                            <g:render template="referenceChart"/>
+                        </div>
+                        <div id="measurements">
+
+                        </div>
+                        <div id="glasses">
+
+                        </div>
+                    </div>
                 </div>
                 <div id="vodkaAndGin" style="display:inline-flex;">
                     <div id="vodkaDrinks" style="margin:0;padding:0;width:1200px;">
