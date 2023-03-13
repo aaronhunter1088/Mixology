@@ -205,7 +205,7 @@
                     </div>
                 </div>
             </div>
-            <div id="column2" style="margin:0;padding:0;width:2099px;">
+            <div id="column2" style="margin:0;padding:0;width:2100px;">
                 <div id="title" style="width:1200px;height:600px;">
                     <h1 style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                     <div id="reference" style="display:inline-flex;">
@@ -215,8 +215,9 @@
                         <div id="measurements" style="margin-left:50px;margin-right:50px;">
                             <g:render template="measurementsCard"/>
                         </div>
-                        <div id="glasses">
-
+                        <div id="glasses" style="text-align:center;">
+                            <img title="Click me to make me bigger!" onclick="makeBigger();" width="450px" height="300px" style="mix-blend-mode:initial;" src="${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}" alt="All Cocktails"/>
+                            <p style="font-size:2em;margin:0;color:#a60000;"><b>Suggested Glass Options</b></p>
                         </div>
                     </div>
                 </div>
@@ -243,7 +244,7 @@
                             <g:each var="card" in="${(1..3)}">
                                 <div style="display:inline-flex;">
                                     <g:each var="card2" in="${(1..3)}">
-                                        <div class="card" style="background-color:#006dba;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                        <div class="card" style="background-color:#46a5c8;padding-left:5px;padding-top:5px;width:300px;height:300px;">
                                             <div class="card" style="width:50%;">
                                                 <p>i'm some gin drink</p>
                                             </div>
@@ -279,7 +280,7 @@
                             <div style="width:300px;height:300px;">
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
-                            <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                            <div class="card" style="background-color:#20800B;padding-left:0;padding-top:5px;width:300px;height:300px;">
                                 <div class="card" style="width:50%;">
                                     <p>i'm a frozen drink</p>
                                 </div>
@@ -288,7 +289,7 @@
                         <g:each var="card" in="${(1..4)}">
                             <div style="display:inline-flex;">
                                 <g:each var="card2" in="${(1..2)}">
-                                    <div class="card" style="background-color:#19692c;padding-left:5px;padding-top:5px;width:300px;height:300px;">
+                                    <div class="card" style="background-color:#20800B;padding-left:0;padding-top:5px;width:300px;height:300px;">
                                         <div class="card" style="width:50%;">
                                             <p>i'm some frozen drink</p>
                                         </div>
@@ -306,6 +307,12 @@
         $(document).ready(function() {
             console.log("index loaded");
         });
+        function makeBigger() {
+            let newWindow = window.open("", "glasses", "width=1000,height=800");
+            newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
+            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
+            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
+        }
     </script>
     </body>
 </html>
