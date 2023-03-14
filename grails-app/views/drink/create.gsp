@@ -37,6 +37,13 @@
             .formfield .input-wrapper .table-form {
                 width: 100%;
             }
+            .btn-xs
+            {
+                padding: 1px 5px !important;
+                font-size: 12px !important;
+                line-height: 1.5 !important;
+                border-radius: 3px !important;
+            }
             hr {
                 margin-bottom: 10px;
             }
@@ -46,7 +53,7 @@
             fieldset::before {
                 content: "Use this form to create a new drink";
                 position: absolute;
-                margin-top: -35px;
+                margin-top: -45px;
                 right: 10px;
                 background: #fff;
                 padding: 0 5px;
@@ -100,7 +107,7 @@
                     </g:hasErrors>
                 </div>
                 <fieldset style="border:thick solid #000080;">
-                    <legend style="width:auto;">
+                    <legend style="margin-left:25px;width:auto;">
                         &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                         <hr style="height:1px;background-color:#000080">
                     </legend>
@@ -158,7 +165,7 @@
                                 <div style="margin-top:-25px; height:200px; overflow-y:auto;">
                                     <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
                                         <input type="checkbox" name="ingredients" id="ingredients" value="${ingredient}"/> ${ingredient} &emsp14;
-%{--                                        <g:if test="${i%2!=0 && i!=0 || i==1}"><br></g:if> Print <br> every two checkboxes --}%
+                                        <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
                                         <br>
                                     </g:each>
                                 </div>
@@ -171,7 +178,7 @@
                         <div id="create-ingredient" style="width:45%;float:right;">
                             <form id="ingredientForm" name="ingredientForm">
                                 <fieldset style="border:thick solid #008011;" class="no-before">
-                                    <legend style="width:auto;">
+                                    <legend style="margin-left:25px;width:auto;">
                                         &emsp14;Create A New Ingredient&emsp14;
                                         <hr style="height:1px;background-color:#008011">
                                     </legend>
@@ -183,11 +190,21 @@
                                             <th>Name</th>
                                             <th>Unit</th>
                                             <th>Amount</th>
-                                            <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient')"><b>+</b></a></th>
+                                            <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
                                         </thead>
                                         <script>
-                                            function addRow(tbody, prefix) {
+                                            function addRow(tbody, prefix, ingredient) {
                                                 console.log("clicked +... adding row")
+                                                console.log("ingredientVal: "+ingredient);
+                                                let ingredientName = '';
+                                                let ingredientAmt = '';
+                                                let ingredientUnit = '';
+                                                if (ingredient != '') {
+                                                    let values = ingredient.split(':');
+                                                    ingredientName = values[0].trim();
+                                                    ingredientAmt = values[1].trim();
+                                                    ingredientUnit = values[2].trim().toUpperCase();
+                                                }
                                                 rowId++;
                                                 // create Name
                                                 let tr = document.createElement('tr');
@@ -200,6 +217,7 @@
                                                 input.setAttribute('name', prefix + 'Name');
                                                 input.setAttribute('class', 'form-control');
                                                 input.setAttribute('required', 'true');
+                                                if (ingredient !== '') { input.setAttribute('value', ingredientName); }
                                                 td.appendChild(input);
                                                 tr.appendChild(td);
                                                 // create Unit
@@ -221,6 +239,14 @@
                                                     select.appendChild(option);
                                                     option = document.createElement('option');
                                                 </g:each>
+                                                if (ingredient !== '') {
+                                                    for (let i=0; i<select.options.length; i++) {
+                                                        if (select.options.item(i).value === ingredientUnit) {
+                                                            select.options.item(i).selected = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
                                                 td.appendChild(select);
                                                 tr.appendChild(td);
                                                 // create Amount
@@ -231,6 +257,7 @@
                                                 input.setAttribute('name', prefix + 'Amount');
                                                 input.setAttribute('class', 'form-control');
                                                 input.setAttribute('required', 'true');
+                                                if (ingredient !== '') { input.setAttribute('value', ingredientAmt); }
                                                 td.appendChild(input);
                                                 tr.appendChild(td);
                                                 // create X button

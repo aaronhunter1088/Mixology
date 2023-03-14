@@ -6,8 +6,8 @@
         %{--    <meta name="layout" content="main"/>--}%
         <title>Drinks</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <asset:stylesheet src="application.css"/>
-        <asset:javascript src="application.js"/>
+%{--        <asset:stylesheet src="application.css"/>--}%
+%{--        <asset:javascript src="application.js"/>--}%
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
@@ -20,7 +20,7 @@
 %{--        <title><g:message code="default.list.label" args="[entityName]" /></title>--}%
     </head>
     <body>
-    <div id="content" role="main">
+    <div id="content">
         <div class="container">
             <section class="row">
                 <a href="#list-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -32,7 +32,7 @@
                 </div>
             </section>
             <section class="row">
-                <div id="list-drink" class="col-12 content scaffold-list" role="main">
+                <div id="list-drink" class="col-12 content scaffold-list">
                     <h1><g:message code="default.list.label" args="[entityName]" /></h1>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
