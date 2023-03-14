@@ -21,7 +21,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
 
     @Override
     String toString() {
-        name + " : " + amount + " : " + unit.getValue()
+        name + " : " + amount + " : " + unit.getValue().toUpperCase()
     }
 
     @Override
