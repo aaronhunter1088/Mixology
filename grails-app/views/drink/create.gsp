@@ -55,9 +55,15 @@
             fieldset .no-before::before {
                 content: "";
             }
-            th {
-                text-align: center;
-            }
+            /* th {text-align: center;} */
+            /* Fix table head */
+            .tableFixHead    { overflow: auto; height: 600px; }
+            .tableFixHead th { position: sticky; top: 0; }
+
+            /* Just common table stuff. */
+            table  { border-collapse: collapse; width: 100%; }
+            th, td { padding: 8px 16px; text-align: center; }
+            th     { background:#eee; }
             /*Keeps scroll bar present*/
             ::-webkit-scrollbar {
                 -webkit-appearance: none;
@@ -171,7 +177,7 @@
                         </div>
                         <div id="create-ingredient" style="width:45%;float:right;">
                             <form id="ingredientForm" name="ingredientForm">
-                                <fieldset style="border:thick solid #008011;" class="no-before">
+                                <fieldset id="ingredientFieldSet" style="height:150px;border:thick solid #008011;" class="no-before">
                                     <legend style="margin-left:25px;width:auto;">
                                         &emsp14;Create A New Ingredient&emsp14;
                                         <hr style="height:1px;background-color:#008011">
@@ -179,106 +185,121 @@
                                     <div id="ingredientErrorMessagesDiv" class="col-12 content scaffold-create" role="main">
                                         <h3 id="ingredientErrorMessage" role="alert">${errorMessage}</h3>
                                     </div>
-                                    <table id="ingredientTable" class="table" style="width:100%;">
-                                        <thead>
+                                    <div id="ingredientTableDiv" class="tableFixHead" style="">
+                                        <table id="ingredientTable" style="width:100%;">
+                                            <thead>
                                             <th>Name</th>
                                             <th>Unit</th>
                                             <th>Amount</th>
                                             <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
-                                        </thead>
-                                        <script>
-                                            function addRow(tbody, prefix, ingredient) {
-                                                console.log("clicked +... adding row")
-                                                console.log("ingredientVal: "+ingredient);
-                                                let ingredientName = '';
-                                                let ingredientAmt = '';
-                                                let ingredientUnit = '';
-                                                if (ingredient != '') {
-                                                    let values = ingredient.split(':');
-                                                    ingredientName = values[0].trim();
-                                                    ingredientAmt = values[1].trim();
-                                                    ingredientUnit = values[2].trim().toUpperCase();
-                                                }
-                                                rowId++;
-                                                // create Name
-                                                let tr = document.createElement('tr');
-                                                tr.setAttribute('id', prefix + 'Row' + rowId);
-                                                tr.setAttribute('name', prefix + 'Row' + rowId);
-                                                let td = document.createElement('td');
-                                                let input = document.createElement('input');
-                                                input.setAttribute('type', 'text');
-                                                input.setAttribute('id', prefix + 'Name');
-                                                input.setAttribute('name', prefix + 'Name');
-                                                input.setAttribute('class', 'form-control');
-                                                input.setAttribute('required', 'true');
-                                                if (ingredient !== '') { input.setAttribute('value', ingredientName); }
-                                                td.appendChild(input);
-                                                tr.appendChild(td);
-                                                // create Unit
-                                                td = document.createElement('td');
-                                                let select = document.createElement('select');
-                                                select.setAttribute('name', 'ingredientUnit');
-                                                select.setAttribute('required', 'true');
-                                                select.setAttribute('class', 'form-control');
-                                                let first = document.createElement('option');
-                                                first.setAttribute('label', 'Select One');
-                                                first.selected = true;
-                                                first.disabled = true;
-                                                first.setAttribute('text', 'Select One');
-                                                select.appendChild(first);
-                                                let option = document.createElement('option');
-                                                <g:each in="${Unit.values()}" status="i" var="unit">
+                                            </thead>
+                                            <script>
+                                                function addRow(tbody, prefix, ingredient) {
+                                                    console.log("clicked +... adding row")
+                                                    // increase field set size as table grows until 10 rows. then it stops and table is scrollable
+                                                    if (rowId <= 9) {
+                                                        let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
+                                                        tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
+                                                        let newFieldSetHeight = rowId === 9 ? Number.parseInt(tableFieldSetHeight) + 75 : Number.parseInt(tableFieldSetHeight) + 50;
+                                                        document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
+                                                    }
+                                                    let ingredientName = '';
+                                                    let ingredientAmt = '';
+                                                    let ingredientUnit = '';
+                                                    if (ingredient != '') {
+                                                        let values = ingredient.split(':');
+                                                        ingredientName = values[0].trim();
+                                                        ingredientAmt = values[1].trim();
+                                                        ingredientUnit = values[2].trim().toUpperCase();
+                                                    }
+                                                    rowId++;
+                                                    // create Name
+                                                    let tr = document.createElement('tr');
+                                                    tr.setAttribute('id', prefix + 'Row' + rowId);
+                                                    tr.setAttribute('name', prefix + 'Row' + rowId);
+                                                    let td = document.createElement('td');
+                                                    let input = document.createElement('input');
+                                                    input.setAttribute('type', 'text');
+                                                    input.setAttribute('id', prefix + 'Name');
+                                                    input.setAttribute('name', prefix + 'Name');
+                                                    input.setAttribute('class', 'form-control');
+                                                    input.setAttribute('required', 'true');
+                                                    if (ingredient !== '') { input.setAttribute('value', ingredientName); }
+                                                    td.appendChild(input);
+                                                    tr.appendChild(td);
+                                                    // create Unit
+                                                    td = document.createElement('td');
+                                                    let select = document.createElement('select');
+                                                    select.setAttribute('name', 'ingredientUnit');
+                                                    select.setAttribute('required', 'true');
+                                                    select.setAttribute('class', 'form-control');
+                                                    let first = document.createElement('option');
+                                                    first.setAttribute('label', 'Select One');
+                                                    first.selected = true;
+                                                    first.disabled = true;
+                                                    first.setAttribute('text', 'Select One');
+                                                    select.appendChild(first);
+                                                    let option = document.createElement('option');
+                                                    <g:each in="${Unit.values()}" status="i" var="unit">
                                                     option.value = '${unit}';
                                                     option.text = '${unit}';
                                                     select.appendChild(option);
                                                     option = document.createElement('option');
-                                                </g:each>
-                                                if (ingredient !== '') {
-                                                    for (let i=0; i<select.options.length; i++) {
-                                                        if (select.options.item(i).value === ingredientUnit) {
-                                                            select.options.item(i).selected = true;
-                                                            break;
+                                                    </g:each>
+                                                    if (ingredient !== '') {
+                                                        for (let i=0; i<select.options.length; i++) {
+                                                            if (select.options.item(i).value === ingredientUnit) {
+                                                                select.options.item(i).selected = true;
+                                                                break;
+                                                            }
                                                         }
                                                     }
+                                                    td.appendChild(select);
+                                                    tr.appendChild(td);
+                                                    // create Amount
+                                                    td = document.createElement('td');
+                                                    input = document.createElement('input');
+                                                    input.setAttribute('type', 'text');
+                                                    input.setAttribute('id', prefix + 'Amount');
+                                                    input.setAttribute('name', prefix + 'Amount');
+                                                    input.setAttribute('class', 'form-control');
+                                                    input.setAttribute('required', 'true');
+                                                    if (ingredient !== '') { input.setAttribute('value', ingredientAmt); }
+                                                    td.appendChild(input);
+                                                    tr.appendChild(td);
+                                                    // create X button
+                                                    td = document.createElement('td');
+                                                    let a = document.createElement('a');
+                                                    a.setAttribute('class', 'btn btn-outline-danger');
+                                                    a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
+                                                    a.setAttribute('style', 'color:black;text-decoration:none;');
+                                                    let bold = document.createElement('B');
+                                                    let X = document.createTextNode('X');
+                                                    bold.appendChild(X);
+                                                    a.appendChild(bold);
+                                                    td.appendChild(a);
+                                                    tr.appendChild(td);
+                                                    $('#'+tbody).append(tr);
                                                 }
-                                                td.appendChild(select);
-                                                tr.appendChild(td);
-                                                // create Amount
-                                                td = document.createElement('td');
-                                                input = document.createElement('input');
-                                                input.setAttribute('type', 'text');
-                                                input.setAttribute('id', prefix + 'Amount');
-                                                input.setAttribute('name', prefix + 'Amount');
-                                                input.setAttribute('class', 'form-control');
-                                                input.setAttribute('required', 'true');
-                                                if (ingredient !== '') { input.setAttribute('value', ingredientAmt); }
-                                                td.appendChild(input);
-                                                tr.appendChild(td);
-                                                // create X button
-                                                td = document.createElement('td');
-                                                let a = document.createElement('a');
-                                                a.setAttribute('class', 'btn btn-outline-danger');
-                                                a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
-                                                a.setAttribute('style', 'color:black;text-decoration:none;');
-                                                let bold = document.createElement('B');
-                                                let X = document.createTextNode('X');
-                                                bold.appendChild(X);
-                                                a.appendChild(bold);
-                                                td.appendChild(a);
-                                                tr.appendChild(td);
-                                                $('#'+tbody).append(tr);
-                                            }
-                                        </script>
-                                        <tbody id="stringOptsBody"></tbody>
-                                        <script>
-                                            function removeRow(trId) {
-                                                console.log("clicked X... removing rowId " + rowId)
-                                                $('#'+trId).remove();
-                                                rowId--;
-                                                console.log("rowId count is at " + rowId)
-                                            }
-                                        </script>
-                                    </table>
+                                            </script>
+                                            <tbody id="stringOptsBody"></tbody>
+                                            <script>
+                                                function removeRow(trId) {
+                                                    console.log("clicked X... removing rowId " + rowId)
+                                                    $('#'+trId).remove();
+                                                    rowId--;
+                                                    // decrease field set size as table shrinks until 0 rows. then it returns to original height
+                                                    if (rowId >= 0) {
+                                                        let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
+                                                        tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
+                                                        let newFieldSetHeight = rowId === 0 ? 150 : Number.parseInt(tableFieldSetHeight) - 50;
+                                                        document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
+                                                    }
+                                                    console.log("rowId count is at " + rowId)
+                                                }
+                                            </script>
+                                        </table>
+                                    </div>
                                 </fieldset>
                             </form>
                         </div>
