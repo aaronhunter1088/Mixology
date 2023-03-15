@@ -16,7 +16,7 @@ class Drink implements Serializable{
 
     static constraints = {
         drinkName()
-        drinkSymbol()
+        drinkSymbol(size:2..2)
         drinkNumber()
         drinkType()
         ingredients()

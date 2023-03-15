@@ -40,10 +40,6 @@ class DrinkController {
         Drink drink = createDrinkFromParams(params)
         try {
             drinkService.save(drink)
-//            drink.ingredients.each { ingredient ->
-//                ingredient.drinks.add(drink)
-//                ingredientService.save(ingredient)
-//            }
         }
         catch (ValidationException e) {
             respond drink.errors, view:'create'
