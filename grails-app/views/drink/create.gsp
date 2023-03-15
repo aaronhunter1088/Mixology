@@ -166,8 +166,8 @@
                                     <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
                                         <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
                                             <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
-                                            <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}', $(this));">Add</button>
-                                            <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}', $(this));">Remove</button>
+                                            <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
+                                            <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
                                             <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient}"/> ${ingredient} &emsp14;
                                             <br>
                                         </div>
@@ -317,16 +317,16 @@
             function addIngredient(ingredientId, button) {
                 document.getElementById('ingredient'+ingredientId).checked = true;
                 console.log('checkbox for ingredient'+ingredientId+ ' checked');
-                //button.removeClass('btn-outline-info'); thought was needed but it's not
-                button.addClass('btn-success');
+                document.getElementById('addIngredientBtn'+ingredientId).classList.remove('btn-outline-info');
+                document.getElementById('addIngredientBtn'+ingredientId).classList.add('btn-success');
                 document.getElementById('addIngredientBtn'+ingredientId).innerHTML = "Added";
                 document.getElementById('removeIngredientBtn'+ingredientId).hidden = false;
             }
             function removeIngredient(ingredientId, button) {
                 document.getElementById('ingredient'+ingredientId).checked = false;
                 console.log('checkbox for ingredient'+ingredientId+ ' unchecked');
-                button.removeClass('btn-success');
-                //button.addClass('btn btn-outline-info'); thought was needed but it's not
+                document.getElementById('addIngredientBtn'+ingredientId).classList.remove('btn-success');
+                document.getElementById('addIngredientBtn'+ingredientId).classList.add('btn-outline-info');
                 document.getElementById('addIngredientBtn'+ingredientId).innerHTML = "Add";
                 document.getElementById('removeIngredientBtn'+ingredientId).hidden = true;
             }
