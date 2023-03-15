@@ -27,6 +27,7 @@
             }
             .formfield label {
                 width: 150px;
+                padding-left: 10px;
             }
             .formfield .input-wrapper .table-form {
                 width: 100%;
@@ -113,23 +114,22 @@
                     </legend>
                     <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid()">
                         <div id="create-drink" style="width:55%;float:left;">
-%{--                        <form action="/mixology/drink/save" method="POST" id="newDrink" class="form">--}%
                             <div class="formfield">
-                                <label for='drinkName'>Drink Name<span class='required-indicator'>*</span></label>
+                                <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
                                 <div class="input-wrapper">
                                     <input type="text" name="drinkName" value="" required="" id="drinkName" />
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='drinkNumber'>Drink Number<span class='required-indicator'>*</span></label>
+                                <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
                                 <div class="input-wrapper">
                                     <input type="text" name="drinkNumber" value="" required="" id="drinkNumber" />
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='alcoholType'>Drink Type<span class='required-indicator'>*</span></label>
+                                <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
                                 <div class="input-wrapper">
-                                    <select name="drinkType" class="form-control" style="width:43%;">
+                                    <select name="drinkType" class="form-control" style="width:37%;">
                                         <option label="Select One" selected disabled>Select One</option>
                                         <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
                                             <option value="${alcohol}">${alcohol}</option>
@@ -138,15 +138,15 @@
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='drinkSymbol'>Drink Symbol<span class='required-indicator'>*</span></label>
+                                <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                 <div class="input-wrapper">
                                     <input type="text" name="drinkSymbol" value="" required="" id="drinkSymbol" />
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for="glassType">Suggested Glass<span class='required-indicator'>*</span></label>
+                                <label for="glassType"><span class='required-indicator'>*</span> Suggested Glass</label>
                                 <div class="input-wrapper">
-                                    <select name="glass" class="form-control" style="width:43%;">
+                                    <select name="glass" class="form-control" style="width:37%;">
                                         <option label="Select One" selected disabled>Select One</option>
                                         <g:each in="${GlassType.values()}" var="glass" name="glassType">
                                             <option value="${glass}">${glass}</option>
@@ -155,13 +155,13 @@
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='instructions'>Mixing Instructions<span class='required-indicator'>*</span></label>
+                                <label for='instructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
                                 <div class="input-wrapper">
                                     <g:textArea form="newDrink" name="instructions" value="" rows="5" cols="40"/>
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label>Ingredients<span class='required-indicator'>*</span></label><br>
+                                <label><span class='required-indicator'>*</span> Ingredients</label><br>
                                 <div style="margin-top:-25px;height:200px;overflow-y:auto;">
                                     <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
                                         <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
@@ -174,8 +174,10 @@
                                     </g:each>
                                 </div>
                             </div>
-%{--                        </form>--}%
-                            <div class="formfield" style="margin-top:25px;">
+%{--                            <div class="formfield" style="margin-top:25px;">--}%
+%{--                                <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button> --}%%{-- formaction="/mixology/drink/save"--}%
+%{--                            </div>--}%
+                            <div class="formfield" style="margin-top:25px;padding-left:50%;">
                                 <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button> %{-- formaction="/mixology/drink/save"--}%
                             </div>
                         </div>
@@ -192,9 +194,9 @@
                                     <div id="ingredientTableDiv" class="tableFixHead" style="">
                                         <table id="ingredientTable" style="width:100%;">
                                             <thead>
-                                                <th style="width:144px;">Name</th>
-                                                <th style="width:175px;">Unit</th>
-                                                <th style="width:100px;">Amount</th>
+                                                <th style="width:144px;"><span class='required-indicator'>*</span>Name</th>
+                                                <th style="width:175px;"><span class='required-indicator'>*</span>Unit</th>
+                                                <th style="width:100px;"><span class='required-indicator'>*</span>Amount</th>
                                                 <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
                                             </thead>
                                             <script>
