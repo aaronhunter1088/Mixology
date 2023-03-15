@@ -26,7 +26,7 @@
                 vertical-align: top;
             }
             .formfield label {
-                width: 200px;
+                width: 150px;
             }
             .formfield .input-wrapper .table-form {
                 width: 100%;
@@ -161,12 +161,16 @@
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label>Ingredients<span class='required-indicator'>*</span></label> <br>
-                                <div style="margin-top:-25px; height:200px; overflow-y:auto;">
+                                <label>Ingredients<span class='required-indicator'>*</span></label><br>
+                                <div style="margin-top:-25px;height:200px;overflow-y:auto;">
                                     <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
-                                        <input type="checkbox" name="ingredients" id="ingredients" value="${ingredient}"/> ${ingredient} &emsp14;
-                                        <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
-                                        <br>
+                                        <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
+                                            <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
+                                            <button id="addIngredientBtn" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}', $(this));">Add</button>
+                                            <button hidden id="removeIngredientBtn" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}', $(this));">Remove</button>
+                                            <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient}"/> ${ingredient} &emsp14;
+                                            <br>
+                                        </div>
                                     </g:each>
                                 </div>
                             </div>
@@ -189,8 +193,8 @@
                                         <table id="ingredientTable" style="width:100%;">
                                             <thead>
                                                 <th style="width:144px;">Name</th>
-                                                <th style="width:124px;">Unit</th>
-                                                <th style="width:150px;">Amount</th>
+                                                <th style="width:175px;">Unit</th>
+                                                <th style="width:100px;">Amount</th>
                                                 <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
                                             </thead>
                                             <script>
@@ -279,6 +283,8 @@
                                                     a.appendChild(bold);
                                                     td.appendChild(a);
                                                     tr.appendChild(td);
+                                                    // used to identify as added by clicking Edit Me
+                                                    if (ingredient !== '') { tr.style.backgroundColor = 'lightblue'; }
                                                     $('#'+tbody).append(tr);
                                                 }
                                             </script>
@@ -308,6 +314,22 @@
             </div>
         </div>
         <script type="text/javascript">
+            function addIngredient(ingredientId, button) {
+                document.getElementById('ingredient'+ingredientId).checked = true;
+                console.log('checkbox for ingredient'+ingredientId+ ' checked');
+                button.removeClass('btn-outline-info');
+                button.addClass('btn-success');
+                document.getElementById('addIngredientBtn').innerHTML = "Added";
+                document.getElementById('removeIngredientBtn').hidden = false;
+            }
+            function removeIngredient(ingredientId, button) {
+                document.getElementById('ingredient'+ingredientId).checked = false;
+                console.log('checkbox for ingredient'+ingredientId+ ' unchecked');
+                button.removeClass('btn-success');
+                button.addClass('btn-outline-info');
+                document.getElementById('addIngredientBtn').innerHTML = "Add";
+                document.getElementById('removeIngredientBtn').hidden = true;
+            }
             function isValid() {
                 let tableRows = $("#ingredientTable > tbody > tr");
                 let row;
@@ -371,7 +393,6 @@
                     return false;
                 }
             }
-        </script>
         </script>
     </body>
 </html>
