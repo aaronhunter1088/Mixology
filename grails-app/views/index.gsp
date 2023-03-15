@@ -19,9 +19,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-%{--        <asset:link rel="icon" href="cocktailRed.png" type="image/png" id="icon"/>--}%
-%{--        <link rel="icon" type="image/x-ico" href="../../assets/images/cocktail.ico">--}%
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'cocktail.ico')}" />
+        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'exampleGlass.png')}" />
     </head>
     <style>
         /*img {*/
@@ -70,7 +68,7 @@
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
-                <img style="mix-blend-mode:color-burn;background-blend-mode:soft-light;" src="${resource(dir:'../assets/images',file:'cocktail.ico')}" alt="Cocktail Logo"/>
+                <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
