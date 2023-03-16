@@ -4,70 +4,64 @@
   Date: 3/11/23
   Time: 7:22 PM
 --%>
+<%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
 <p style="font-size:35px;margin:0;color:#a60000;"><b>NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART</b></p>
 <div style="display:inline-flex;">
     <div style="display:block;">
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>1</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>As</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Alamo Splash (T)</p>
-        </div><br/> <!-- 1 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>2</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Rh</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Red Hooter (T)</p>
-        </div><br/> <!-- 2 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>3</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Br</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Blushin' Russian (T)</p>
-        </div><br/> <!-- 3 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>4</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bm</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Blue Margarita (T)</p>
-        </div><br/> <!-- 4 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>5</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Cb</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Cactus Berry (T)</p>
-        </div><br/> <!-- 5 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>6</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bl</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Blue Cloud Cocktail (F)</p>
-        </div><br/> <!-- 6 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>7</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bv</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Blue Velvet (F)</p>
-        </div><br/> <!-- 7 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>8</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Cm</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Catalina Margarita (T)</p>
-        </div><br/> <!-- 8 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>9</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Hs</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Hairy Sunrise (T)</p>
-        </div><br/> <!-- 9 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>10</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bb</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Beer Buster (V)</p>
-        </div><br/> <!-- 10 -->
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>11</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Br</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Black Russian (V)</p>
-        </div><br/> <!-- 11 -->
+        <!-- Change from i=1; i<13 i++ when done. Remove if-->
+        <% for (int i=0; i<25; i++) { Drink drink = Drink.findById(i); if (drink == null) continue %>
+            <div style="display:inline-flex;padding:0;">
+                <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>
+                <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>
+                <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>
+            </div><br/>
+        <% } %>
         <div style="display:inline-flex;padding:0;">
             <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>12</b></p><br/>
             <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bf</b></p>
             <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Bull Frog (V)</p>
-        </div><br/> <!-- 12 -->
+        </div><br/> <!-- 12 Remove this when all drinks created! -->
     </div>
+    <!-- Uncomment when done creating all drinks -->
+    %{--    <div style="display:block;">--}%
+    %{--        <% for (int i=13; i<25; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <div style="display:inline-flex;padding:0;">--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>--}%
+    %{--        </div><br/>--}%
+    %{--        <% } %>--}%
+    %{--    </div>--}%
+    <!-- Uncomment when done creating all drinks -->
+    %{--    <div style="display:block;">--}%
+    %{--        <% for (int i=25; i<37; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <div style="display:inline-flex;padding:0;">--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>--}%
+    %{--        </div><br/>--}%
+    %{--        <% } %>--}%
+    %{--    </div>--}%
+    <!-- Uncomment when done creating all drinks -->
+    %{--    <div style="display:block;">--}%
+    %{--        <% for (int i=37; i<49; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <div style="display:inline-flex;padding:0;">--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>--}%
+    %{--        </div><br/>--}%
+    %{--        <% } %>--}%
+    %{--    </div>--}%
+    <!-- Uncomment when done creating all drinks -->
+    %{--    <div style="display:block;">--}%
+    %{--        <% for (int i=49; i<59; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <div style="display:inline-flex;padding:0;">--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
+    %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>--}%
+    %{--        </div><br/>--}%
+    %{--        <% } %>--}%
+    %{--    </div>--}%
     <div style="display:block;">
         <div style="display:inline-flex;padding:0;">
             <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>13</b></p><br/>

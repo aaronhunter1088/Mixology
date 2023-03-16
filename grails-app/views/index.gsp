@@ -136,7 +136,7 @@
                             <div style="display:inline-flex;">
                                 <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
-                                        <div id="tequilaLeft1" style="height:260px;float:left;">
+                                        <div id="tequilaLeft1" style="height:200px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                                                 <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
                                                 <div style="overflow-y:auto;height:80px;">
@@ -144,16 +144,17 @@
                                                         <p style="margin:0;">${ingredientOption}</p>
                                                     </g:each>
                                                 </div>
-                                                <p style="margin:10px;"></p>
-                                                <p style="margin:0;overflow-y:auto;height:50px;">${drink1.mixingInstructions}</p>
                                             </div>
                                         </div>
-                                        <div id="tequilaRight1" style="text-align:center;height:260px;float:right;">
+                                        <div id="tequilaRight1" style="text-align:center;height:200px;float:right;">
                                             <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
                                                 <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
                                                 <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div style="padding-left:10px;padding-top:10px;">
+                                        <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
                                     </div>
                                     <div>
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
@@ -162,7 +163,7 @@
                                 <% if (drink2 != null) { %>
                                 <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
-                                        <div id="tequilaLeft2" style="height:260px;float:left;">
+                                        <div id="tequilaLeft2" style="height:200px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                                                 <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
                                                 <div style="overflow-y:auto;height:80px;">
@@ -170,16 +171,17 @@
                                                         <p style="margin:0;">${ingredientOption}</p>
                                                     </g:each>
                                                 </div>
-                                                <p style="margin:10px;"></p>
-                                                <p style="margin:0;overflow-y:auto;height:50px;">${drink2.mixingInstructions}</p>
                                             </div>
                                         </div>
-                                        <div id="tequilaRight2" style="text-align:center;height:260px;float:right;">
+                                        <div id="tequilaRight2" style="text-align:center;height:200px;float:right;">
                                             <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
                                                 <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
                                                 <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div style="padding-left:10px;padding-top:10px;">
+                                        <p style="margin:0;overflow-y:auto;height:45px;">${drink2.mixingInstructions}</p>
                                     </div>
                                     <div>
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
@@ -214,22 +216,23 @@
                         <div id="middleColumn" style="text-align:center;display:inline-flex;">
                             <div class="card" style="border:double #000000;background-color:#95999c;width:300px;height:300px;">
                                 <div style="display:inline-block;">
-                                    <div id="innerLeft" style="height:260px;float:left;">
+                                    <div id="innerLeft" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                                             <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>20</b></p>
                                             <p style="margin:0;">1.5 oz Tequila</p>
                                             <p style="margin:0;">0.5 oz Triple Sec</p>
                                             <p style="margin:0;">1 oz Lemon Juice</p>
-                                            <p style="margin:10px;"></p>
-                                            <p style="margin:0;">Mix ingredients and enjoy!</p>
                                         </div>
                                     </div>
-                                    <div id="innerRight" style="height:260px;float:right;">
+                                    <div id="innerRight" style="height:200px;float:right;">
                                         <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
                                             <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
                                             <p style="font-size:5em;margin-top:10px;color:#155724;"><b>Mg</b></p>
                                         </div>
                                     </div>
+                                </div>
+                                <div style="padding-left:10px;padding-top:10px;"> <!-- text-align:left; looked funny. keep centered -->
+                                    <p style="margin:0;height:50px;">Mix ingredients and enjoy!</p>
                                 </div>
                                 <div>
                                     <p style="font-size:2em;margin:0;color:#a60000;"><b>MARGARITA</b></p>
