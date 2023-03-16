@@ -8,7 +8,7 @@ enum GlassType {
     SHOT("Shot glass"),
     OLDFASHIONED("Old Fashioned glass"),
     HIGHBALL("Highball glass"),
-    COCKTAIL("Cocktail glass"),
+    MARTINI("Martini glass"),
     TOMCOLLINS("Tom Collins glass"),
     WINE("Wine glass"),
     HURRICANE("Hurricane glass")

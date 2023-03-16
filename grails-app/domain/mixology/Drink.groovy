@@ -38,7 +38,7 @@ class Drink implements Serializable{
     String getGlassImage() {
         String glassImage = ""
         switch (this.getSuggestedGlass()) {
-            case (GlassType.COCKTAIL) : {
+            case (GlassType.MARTINI) : {
                 glassImage = "martiniGlass.png"
                 break
             }
