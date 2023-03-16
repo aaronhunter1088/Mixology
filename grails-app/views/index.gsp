@@ -5,6 +5,7 @@
   Time: 9:43 PM
 --%>
 
+<%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!doctype html>
 <html>
@@ -22,10 +23,6 @@
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'exampleGlass.png')}" />
     </head>
     <style>
-        /*img {*/
-        /*    mix-blend-mode: color-burn;*/
-        /*    background-blend-mode: soft-light;*/
-        /*}*/
         .arrow-right:after {
             content: "";
             display: inline-block !important;
@@ -36,7 +33,6 @@
             border-bottom: 8px solid transparent;
             vertical-align: middle;
         }
-
         .arrow-right:before {
             width: 75px;
             height: 2px;
@@ -125,19 +121,74 @@
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
-                    <div class="card">
+                    <div class="card" style="">
                         <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
-                        <g:each var="card" in="${(1..6)}">
+                        %{--<g:set var="drinkService" bean="${grailsApplication.mainContext.getBean('drinkService')}"/>--}%
+                        <% def drinkService = grailsApplication.mainContext.getBean('drinkService')  %>
+                        <div style="display:block;">
+                        <%
+                            List tequilaDrinks = drinkService.list().each { Drink d -> d.drinkType==Alcohol.TEQUILA}
+                            for (int i=0; i<tequilaDrinks.size(); i+=2) {
+                                Drink drink1 = (Drink)tequilaDrinks.get(i)
+                                Drink drink2 = null
+                                if (i+1 < tequilaDrinks.size()) { drink2 = (Drink)tequilaDrinks.get(i+1) }
+                                %>
                             <div style="display:inline-flex;">
-                                <g:each var="card2" in="${(1..2)}">
-                                    <div class="card" style="background-color:#ed969e;padding-left:5px;padding-top:5px;width:300px;height:300px;">
-                                        <div class="card" style="width:50%;">
-                                            <p>i'm some tequila drink</p>
+                                <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
+                                    <div style="display:inline-flex;">
+                                        <div id="tequilaLeft1" style="height:260px;float:left;">
+                                            <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
+                                                <div style="overflow-y:auto;height:75px;">
+                                                    <g:each in="${drink1.ingredients}" var="ingredientOption">
+                                                        <p style="margin:0;">${ingredientOption}</p>
+                                                    </g:each>
+                                                </div>
+                                                <p style="margin:10px;"></p>
+                                                <p style="margin:0;overflow-y:auto;height:50px;">${drink1.mixingInstructions}</p>
+                                            </div>
+                                        </div>
+                                        <div id="tequilaRight1" style="text-align:center;height:260px;float:right;">
+                                            <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                                <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                                            </div>
                                         </div>
                                     </div>
-                                </g:each>
+                                    <div>
+                                        <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                    </div>
+                                </div>
+                                <% if (drink2 != null) { %>
+                                <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
+                                    <div style="display:inline-flex;">
+                                        <div id="tequilaLeft2" style="height:260px;float:left;">
+                                            <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
+                                                <div style="overflow-y:auto;height:75px;">
+                                                    <g:each in="${drink1.ingredients}" var="ingredientOption">
+                                                        <p style="margin:0;">${ingredientOption}</p>
+                                                    </g:each>
+                                                </div>
+                                                <p style="margin:10px;"></p>
+                                                <p style="margin:0;overflow-y:auto;height:50px;">${drink2.mixingInstructions}</p>
+                                            </div>
+                                        </div>
+                                        <div id="tequilaRight2" style="text-align:center;height:260px;float:right;">
+                                            <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                                <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
+                                    </div>
+                                </div>
+                                <% } %>
                             </div>
-                        </g:each>
+                        <% } %>
+                        </div>
                     </div>
                 </div>
                 <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
@@ -164,8 +215,8 @@
                             <div class="card" style="border:double #000000;background-color:#95999c;width:300px;height:300px;">
                                 <div style="display:inline-block;">
                                     <div id="innerLeft" style="height:260px;float:left;">
-                                        <div style="padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                            <p style="font-size:5em;margin:0;color:navy;"><b>20</b></p>
+                                        <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                            <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>20</b></p>
                                             <p style="margin:0;">1.5 oz Tequila</p>
                                             <p style="margin:0;">0.5 oz Triple Sec</p>
                                             <p style="margin:0;">1 oz Lemon Juice</p>
