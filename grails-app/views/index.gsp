@@ -20,7 +20,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'exampleGlass.png')}" />
+        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
     </head>
     <style>
         .arrow-right:after {
@@ -64,7 +64,7 @@
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
-                <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -139,7 +139,7 @@
                                         <div id="tequilaLeft1" style="height:260px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                                                 <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
-                                                <div style="overflow-y:auto;height:75px;">
+                                                <div style="overflow-y:auto;height:80px;">
                                                     <g:each in="${drink1.ingredients}" var="ingredientOption">
                                                         <p style="margin:0;">${ingredientOption}</p>
                                                     </g:each>
@@ -150,7 +150,7 @@
                                         </div>
                                         <div id="tequilaRight1" style="text-align:center;height:260px;float:right;">
                                             <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                                <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
                                                 <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
                                             </div>
                                         </div>
@@ -165,7 +165,7 @@
                                         <div id="tequilaLeft2" style="height:260px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                                                 <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
-                                                <div style="overflow-y:auto;height:75px;">
+                                                <div style="overflow-y:auto;height:80px;">
                                                     <g:each in="${drink1.ingredients}" var="ingredientOption">
                                                         <p style="margin:0;">${ingredientOption}</p>
                                                     </g:each>
@@ -176,7 +176,7 @@
                                         </div>
                                         <div id="tequilaRight2" style="text-align:center;height:260px;float:right;">
                                             <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                                <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
                                                 <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
                                             </div>
                                         </div>
@@ -226,7 +226,7 @@
                                     </div>
                                     <div id="innerRight" style="height:260px;float:right;">
                                         <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                            <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'exampleGlass.png')}" alt="Cocktail Logo"/>
+                                            <img width="75px" height="75px" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
                                             <p style="font-size:5em;margin-top:10px;color:#155724;"><b>Mg</b></p>
                                         </div>
                                     </div>
