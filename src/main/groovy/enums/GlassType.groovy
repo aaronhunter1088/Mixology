@@ -10,7 +10,8 @@ enum GlassType {
     HIGHBALL("Highball glass"),
     MARTINI("Martini glass"),
     TOMCOLLINS("Tom Collins glass"),
-    WINE("Wine glass"),
+    RED_WINE("Red wine glass"),
+    WHITE_WINE("White wine glass"),
     HURRICANE("Hurricane glass")
 
     String glassName

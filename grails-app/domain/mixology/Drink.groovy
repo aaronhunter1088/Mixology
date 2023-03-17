@@ -54,12 +54,20 @@ class Drink implements Serializable{
                 glassImage = "oldFashionedGlass.png"
                 break
             }
+            case (GlassType.RED_WINE) : {
+                glassImage = "redWineGlass.png"
+                break
+            }
             case (GlassType.SHOT) : {
                 glassImage = "shotGlass.png"
                 break
             }
             case (GlassType.TOMCOLLINS) : {
                 glassImage = "tomCollinsGlass.png"
+                break
+            }
+            case (GlassType.WHITE_WINE) : {
+                glassImage = "whiteWineGlass.png"
                 break
             }
         }
