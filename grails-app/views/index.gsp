@@ -119,7 +119,7 @@
         </nav>
 
         <% def drinkService = grailsApplication.mainContext.getBean('drinkService')  %>
-        <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
+        <div id="periodicTable" style="justify-content:center;display:inline-flex;padding-left:15em;padding-top:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
                     <div class="card" style="">
@@ -406,9 +406,9 @@
                             </div>
                         </div>
                     </div>
-                    <div id="gin" style="margin:0;padding:0;width:900px;">
-                        <div class="card" style="">
-                            <p style="text-align:center;margin-bottom:0px;">Gin Drinks</p>
+                    <div id="gin" style="margin:0;padding:0;width:905px;">
+                        <div class="card">
+                            <p style="text-align:center;margin-bottom:0;">Gin Drinks</p>
                             <%
                                 List ginDrinks = drinkService.list().each { Drink d -> d.drinkType==Alcohol.TEQUILA}
                                 ginDrinks = ginDrinks.stream().limit(9).collect()
@@ -531,7 +531,7 @@
                                 if (i+1 < shooterDrinks.size()) { drink8 = (Drink)shooterDrinks.get(i+7) }
                         %>
                         <div style="display:inline-flex;">
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft1" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -558,7 +558,7 @@
                                 </div>
                             </div>
                             <% if (drink2 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft2" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -586,7 +586,7 @@
                             </div>
                             <% } %>
                             <% if (drink3 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft3" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -614,7 +614,7 @@
                             </div>
                             <% } %>
                             <% if (drink4 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft4" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -642,7 +642,7 @@
                             </div>
                             <% } %>
                             <% if (drink5 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft5" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -670,7 +670,7 @@
                             </div>
                             <% } %>
                             <% if (drink6 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft6" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -698,7 +698,7 @@
                             </div>
                             <% } %>
                             <% if (drink7 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft7" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -726,7 +726,7 @@
                             </div>
                             <% } %>
                             <% if (drink8 != null) { %>
-                            <div class="card" style="background-color:#6610f2;width:300px;height:300px;">
+                            <div class="card" style="background-color: mediumpurple;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
                                     <div id="shooterLeft8" style="height:200px;float:left;">
                                         <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -755,17 +755,6 @@
                             <% } %>
                         </div>
                         <% } %>
-%{--                        <g:each var="card" in="${(1..2)}">--}%
-%{--                            <div style="display:inline-flex;">--}%
-%{--                                <g:each var="card2" in="${(1..8)}">--}%
-%{--                                    <div class="card" style="background-color:#6610f2;padding-left:5px;padding-top:5px;width:300px;height:300px;">--}%
-%{--                                        <div class="card" style="width:50%;">--}%
-%{--                                            <p>i'm some shooter drink</p>--}%
-%{--                                        </div>--}%
-%{--                                    </div>--}%
-%{--                                </g:each>--}%
-%{--                            </div>--}%
-%{--                        </g:each>--}%
                     </div>
                 </div>
             </div>
@@ -782,7 +771,7 @@
                                 frozenDrinks = frozenDrinks.stream().limit(1).collect()
                                 Drink drink1 = (Drink)frozenDrinks.get(0)
                             %>
-                                <div class="card" style="background-color:#20800B;width:300px;height:300px;">
+                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="frozenLeft1" style="height:200px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -818,7 +807,7 @@
                                 if (i+1 < frozenDrinks.size()) { drink2 = (Drink)frozenDrinks.get(i+1) }
                         %>
                             <div style="display:inline-flex;">
-                                <div class="card" style="background-color:#20800B;width:300px;height:300px;">
+                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="frozenLeft2" style="height:200px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
@@ -845,7 +834,7 @@
                                     </div>
                                 </div>
                                 <% if (drink2 != null) { %>
-                                <div class="card" style="background-color:#20800B;width:300px;height:300px;">
+                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="frozenLeft3" style="height:200px;float:left;">
                                             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
