@@ -1,6 +1,7 @@
 package mixology
 
 import enums.*
+import exceptions.UnsupportedGlassException
 import groovy.transform.ToString
 
 import java.beans.Transient
@@ -38,8 +39,32 @@ class Drink implements Serializable{
     String getGlassImage() {
         String glassImage = ""
         switch (this.getSuggestedGlass()) {
-            case (GlassType.MARTINI) : {
-                glassImage = "martiniGlass.png"
+            case (GlassType.ABSINTHE) : {
+                glassImage = "absintheGlass.png"
+                break
+            }
+            case (GlassType.BALLOON_WINE) : {
+                glassImage = "balloonWineGlass.png"
+                break
+            }
+            case (GlassType.BEER_MUG) : {
+                glassImage = "beerMug.png"
+                break
+            }
+            case (GlassType.BRANDY) : {
+                glassImage = "brandyGlass.png"
+                break
+            }
+            case (GlassType.CHAMPAGNE_FLUTE) : {
+                glassImage = "champagneFluteGlass.png"
+                break
+            }
+            case (GlassType.GOBLET) : {
+                glassImage = "gobletGlass.png"
+                break
+            }
+            case (GlassType.GRAPPA) : {
+                glassImage = "grappaGlass.png"
                 break
             }
             case (GlassType.HIGHBALL) : {
@@ -50,25 +75,76 @@ class Drink implements Serializable{
                 glassImage = "hurricaneGlass.png"
                 break
             }
+            case (GlassType.IRISH_COFFEE) : {
+                glassImage = "irishCoffeeGlass.png"
+                break
+            }
+            case (GlassType.MARGARITA) : {
+                glassImage = "margaritaGlass.png"
+                break
+            }
+            case (GlassType.MARTINI) : {
+                glassImage = "martiniGlass.png"
+                break
+            }
             case (GlassType.OLD_FASHIONED) : {
                 glassImage = "oldFashionedGlass.png"
+                break
+            }
+            case (GlassType.ON_THE_ROCKS) : {
+                glassImage = "onTheRocksGlass.png"
+                break
+            }
+            case (GlassType.PILSNER) : {
+                glassImage = "pilsnerGlass.png"
+                break
+            }
+            case (GlassType.PINT) : {
+                glassImage = "pintGlass.png"
                 break
             }
             case (GlassType.RED_WINE) : {
                 glassImage = "redWineGlass.png"
                 break
             }
+            case (GlassType.SHERRY) : {
+                glassImage = "sherryGlass.png"
+                break
+            }
+            case (GlassType.SHOOTER) : {
+                glassImage = "shooterGlass.png"
+                break
+            }
             case (GlassType.SHOT) : {
                 glassImage = "shotGlass.png"
+                break
+            }
+            case (GlassType.SLING) : {
+                glassImage = "slingGlass.png"
                 break
             }
             case (GlassType.TOM_COLLINS) : {
                 glassImage = "tomCollinsGlass.png"
                 break
             }
+            case (GlassType.VODKA) : {
+                glassImage = "vodkaGlass.png"
+                break
+            }
             case (GlassType.WHITE_WINE) : {
                 glassImage = "whiteWineGlass.png"
                 break
+            }
+            case (GlassType.WINE_TASTING) : {
+                glassImage = "wineTastingGlass.png"
+                break
+            }
+            case (GlassType.WOBBLE) : {
+                glassImage = "wobbleGlass.png"
+                break
+            }
+            default : {
+                throw new UnsupportedGlassException("The glass you have chosen is not available")
             }
         }
         return glassImage

@@ -119,7 +119,7 @@
         </nav>
 
         <% def drinkService = grailsApplication.mainContext.getBean('drinkService')  %>
-        <div id="periodicTable" style="justify-content:center;display:inline-flex;padding-left:15em;padding-top:15em;margin:0;">
+        <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
                     <div class="card" style="">
