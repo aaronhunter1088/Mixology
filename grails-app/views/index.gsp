@@ -95,10 +95,14 @@
                                 <ul class="dropdown-menu" id="artefacts" style="background-color:#000000;">
                                     <li class="dropdown-header">Controllers</li>
                                     <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-                                        <li class="dropdown-item"><g:link controller="${c.logicalPropertyName}">${c.name}</g:link></li>
+                                        <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->
+                                            <li class="dropdown-item"><g:link controller="${c.logicalPropertyName}">${c.name}</g:link></li>
+                                        </g:if>
                                     </g:each>
                                     <li role="separator" class="dropdown-divider"></li>
-%{--                                    <li class="dropdown-item"><a href="javascript:showControllers()">Controllers: ${grailsApplication.controllerClasses.size()}</a></li>--}%
+                                    <li class="dropdown-header">Search</li>
+                                    <li class="dropdown-item"><g:link controller="search" action="index">Search Page</g:link></li>
+                                    <li role="separator" class="dropdown-divider"></li>
                                     <li class="dropdown-item"><a href="#">Domains: ${grailsApplication.domainClasses.size()}</a></li>
                                     <li class="dropdown-item"><a href="#">Services: ${grailsApplication.serviceClasses.size()}</a></li>
                                     <li class="dropdown-item"><a href="#">Tag Libraries: ${grailsApplication.tagLibClasses.size()}</a></li>
