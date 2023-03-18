@@ -9,18 +9,13 @@
 <div style="display:inline-flex;">
     <div style="display:block;">
         <!-- Change from i=1; i<13 i++ when done. Remove if-->
-        <% for (int i=0; i<25; i++) { Drink drink = Drink.findById(i); if (drink == null) continue %>
+        <% for (int i=0; i<=31; i++) { Drink drink = Drink.findById(i); if (drink == null) continue %>
             <div style="display:inline-flex;padding:0;">
                 <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>
                 <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>
                 <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">${drink.drinkName} (${drink.drinkType.alcoholName.charAt(0)})</p>
             </div><br/>
         <% } %>
-        <div style="display:inline-flex;padding:0;">
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>12</b></p><br/>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>Bf</b></p>
-            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#000000;">Bull Frog (V)</p>
-        </div><br/> <!-- 12 Remove this when all drinks created! -->
     </div>
     <!-- Uncomment when done creating all drinks -->
     %{--    <div style="display:block;">--}%

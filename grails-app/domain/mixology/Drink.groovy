@@ -149,6 +149,18 @@ class Drink implements Serializable{
         }
         return glassImage
     }
+
+    static Drink createFillerDrink(drinkType) {
+        return new Drink([
+                drinkName: 'FillerDrink',
+                drinkNumber: 0,
+                mixingInstructions: 'Filler instructions',
+                suggestedGlass: GlassType.BRANDY,
+                drinkType: drinkType,
+                drinkSymbol: 'Fd',
+                ingredients: Ingredient.createFillerIngredients(3)
+        ])
+    }
 }
 
 /*

@@ -1,5 +1,7 @@
 package exceptions
 
+import javassist.NotFoundException
+
 class UnsupportedGlassException extends Exception {
 
     String message
@@ -7,9 +9,11 @@ class UnsupportedGlassException extends Exception {
 
     public UnsupportedGlassException(String message, Exception exception) {
         super(message, exception)
+        this.message = message
+        this.exception = exception
     }
 
     public UnsupportedGlassException(String message) {
-        this(message, this)
+        this(message, new NotFoundException(""))
     }
 }

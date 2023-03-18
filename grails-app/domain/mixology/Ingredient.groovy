@@ -33,4 +33,16 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     boolean idIsNull() {
         !this.id
     }
+
+    static List<Ingredient> createFillerIngredients(count) {
+        List<Ingredient> fillerIngredients = new ArrayList<>();
+        for (i in 1..count) {
+            fillerIngredients.add(new Ingredient([
+                    name: "Ingredient${i}",
+                    unit: Unit.LIME,
+                    amount: 1
+            ]))
+        }
+        return fillerIngredients
+    }
 }

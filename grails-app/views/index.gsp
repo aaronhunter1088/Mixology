@@ -131,7 +131,10 @@
                             for (int i=0; i<tequilaDrinks.size(); i+=2) {
                                 Drink drink1 = (Drink)tequilaDrinks.get(i)
                                 Drink drink2 = null
-                                if (i+1 < tequilaDrinks.size()) { drink2 = (Drink)tequilaDrinks.get(i+1) }
+                                if (i+1 < tequilaDrinks.size()) {
+                                    try { drink2 = (Drink)tequilaDrinks.get(i+1) }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA) }
+                                }
                                 %>
                             <div style="display:inline-flex;">
                                 <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
@@ -232,10 +235,10 @@
                                     </div>
                                 </div>
                                 <div style="padding-left:10px;padding-top:10px;"> <!-- text-align:left; looked funny. keep centered -->
-                                    <p style="margin:0;height:50px;">Mix ingredients and enjoy!</p>
+                                    <p style="margin:0;height:45px;">Mix ingredients and enjoy!</p>
                                 </div>
                                 <div>
-                                    <p style="font-size:2em;margin:0;color:#a60000;"><b>MARGARITA</b></p>
+                                    <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>MARGARITA</b></p>
                                 </div>
                             </div>
                         </div>
@@ -516,19 +519,40 @@
                             for (int i=0; i<shooterDrinks.size(); i+=8) {
                                 Drink drink1 = (Drink)shooterDrinks.get(i)
                                 Drink drink2 = null
-                                if (i+1 < shooterDrinks.size()) { drink2 = (Drink)shooterDrinks.get(i+1) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink2 = (Drink)tequilaDrinks.get(i+1) }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink3 = null
-                                if (i+1 < shooterDrinks.size()) { drink3 = (Drink)shooterDrinks.get(i+2) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink3 = (Drink)tequilaDrinks.get(i+2) }
+                                    catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink4 = null
-                                if (i+1 < shooterDrinks.size()) { drink4 = (Drink)shooterDrinks.get(i+3) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink4 = (Drink)tequilaDrinks.get(i+3) }
+                                    catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink5 = null
-                                if (i+1 < shooterDrinks.size()) { drink5 = (Drink)shooterDrinks.get(i+4) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink5 = (Drink)tequilaDrinks.get(i+4) }
+                                    catch (Exception e) { drink5 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink6 = null
-                                if (i+1 < shooterDrinks.size()) { drink6 = (Drink)shooterDrinks.get(i+5) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink6 = (Drink)tequilaDrinks.get(i+5) }
+                                    catch (Exception e) { drink6 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink7 = null
-                                if (i+1 < shooterDrinks.size()) { drink7 = (Drink)shooterDrinks.get(i+6) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink7 = (Drink)tequilaDrinks.get(i+6) }
+                                    catch (Exception e) { drink7 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                                 Drink drink8 = null
-                                if (i+1 < shooterDrinks.size()) { drink8 = (Drink)shooterDrinks.get(i+7) }
+                                if (i+1 < shooterDrinks.size()) {
+                                    try { drink8 = (Drink)tequilaDrinks.get(i+7) }
+                                    catch (Exception e) { drink8 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                }
                         %>
                         <div style="display:inline-flex;">
                             <div class="card" style="background-color:mediumpurple;width:300px;height:300px;">
@@ -877,6 +901,9 @@
             newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
             newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
             newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
+        }
+        function createFillerDrink() {
+
         }
     </script>
     </body>
