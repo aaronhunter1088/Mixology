@@ -27,6 +27,12 @@ class DrinkController {
         respond drinkService.get(id)
     }
 
+    def showCustomDrinks() {
+        render(view: 'customDrinks', model: [drinks: Drink.withCriteria {
+            eq('custom', true)
+        }])
+    }
+
     def create() {
         Drink drink = new Drink(params)
         respond drink
@@ -38,6 +44,8 @@ class DrinkController {
             return
         }
         Drink drink = createDrinkFromParams(params)
+        // take away once all default drinks have been created. all user's custom drinks are valid to delete. default drinks are not
+        if (!drink.canBeDeleted) drink.canBeDeleted = true
         try {
             drinkService.save(drink)
         }
@@ -99,7 +107,7 @@ class DrinkController {
             drink.removeFromIngredients(ingredient)
         }
 
-        drinkService.delete(id)
+        if (drink.canBeDeleted) drinkService.delete(id)
 
         request.withFormat {
             form multipartForm {
@@ -165,7 +173,7 @@ class DrinkController {
         Drink drink = new Drink([
                 drinkName: params.drinkName,
                 drinkNumber: params.drinkNumber as Integer,
-                drinkType: Alcohol.valueOf(params.drinkType),
+                alcoholType: Alcohol.valueOf(params.alcoholType),
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass),
                 mixingInstructions: params.instructions,

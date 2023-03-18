@@ -9,7 +9,7 @@
 <div style="display:inline-flex;">
     <div style="display:block;">
         <!-- Change from i=1; i<13 i++ when done. Remove if-->
-        <% int count = 0; for (int i=0; i<=30; i++) { Drink drink = Drink.findById(i); if (drink == null) continue %>
+        <% int count = 0; for (int i=0; i<=30; i++) { Drink drink = Drink.findByIdAndCustom(i, true); if (drink == null) drink = Drink.createFillerDrink(Alcohol.TEQUILA) %>
             <div style="display:inline-flex;padding:0;">
                 <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink?.id ?: count+1}</b></p><br/>
                 <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>
@@ -19,7 +19,7 @@
     </div>
     <!-- Uncomment when done creating all drinks -->
     %{--    <div style="display:block;">--}%
-    %{--        <% for (int i=13; i<25; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <% for (int i=13; i<25; i++) { Drink drink = Drink.findByIdAndCustom(i, true); %>--}%
     %{--        <div style="display:inline-flex;padding:0;">--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
@@ -29,7 +29,7 @@
     %{--    </div>--}%
     <!-- Uncomment when done creating all drinks -->
     %{--    <div style="display:block;">--}%
-    %{--        <% for (int i=25; i<37; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <% for (int i=25; i<37; i++) { Drink drink = Drink.findByIdAndCustom(i, true); %>--}%
     %{--        <div style="display:inline-flex;padding:0;">--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
@@ -39,7 +39,7 @@
     %{--    </div>--}%
     <!-- Uncomment when done creating all drinks -->
     %{--    <div style="display:block;">--}%
-    %{--        <% for (int i=37; i<49; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <% for (int i=37; i<49; i++) { Drink drink = Drink.findByIdAndCustom(i, true); %>--}%
     %{--        <div style="display:inline-flex;padding:0;">--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%
@@ -49,7 +49,7 @@
     %{--    </div>--}%
     <!-- Uncomment when done creating all drinks -->
     %{--    <div style="display:block;">--}%
-    %{--        <% for (int i=49; i<59; i++) { Drink drink = Drink.findById(i); %>--}%
+    %{--        <% for (int i=49; i<59; i++) { Drink drink = Drink.findByIdAndCustom(i, true); %>--}%
     %{--        <div style="display:inline-flex;padding:0;">--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:navy;"><b>${drink.id}</b></p><br/>--}%
     %{--            <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:#155724;"><b>${drink.drinkSymbol}</b></p>--}%

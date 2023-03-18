@@ -129,7 +129,7 @@
                             <div class="formfield">
                                 <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
                                 <div class="input-wrapper">
-                                    <select name="drinkType" class="form-control" style="width:37%;">
+                                    <select name="alcoholType" class="form-control" style="width:37%;">
                                         <option label="Select One" selected disabled>Select One</option>
                                         <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
                                             <option value="${alcohol}">${alcohol}</option>

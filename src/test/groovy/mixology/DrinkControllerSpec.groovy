@@ -25,7 +25,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 drinkNumber: 1,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.HURRICANE,
-                drinkType: Alcohol.TEQUILA,
+                alcoholType: Alcohol.TEQUILA,
                 drinkSymbol: 'D1',
                 ingredients: createIngredientsWithVodkaAndBAndC()
         ])
@@ -34,7 +34,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 drinkNumber: 2,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.SHOT,
-                drinkType: Alcohol.TEQUILA,
+                alcoholType: Alcohol.TEQUILA,
                 drinkSymbol: 'D2',
                 ingredients: createIngredientsWithVodkaAndDAndE()
         ])

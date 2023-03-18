@@ -13,17 +13,21 @@ class Drink implements Serializable{
     int drinkNumber
     String mixingInstructions
     GlassType suggestedGlass
-    Alcohol drinkType
+    Alcohol alcoholType
     String drinkSymbol
+    boolean canBeDeleted
+    boolean custom
 
     static constraints = {
         drinkName()
         drinkSymbol(size:2..2)
         drinkNumber()
-        drinkType()
+        alcoholType()
         ingredients()
         mixingInstructions()
         suggestedGlass()
+        canBeDeleted(nullable:true, default:false)
+        custom(nullable:true, default:false)
     }
 
     static belongsTo = Ingredient
@@ -150,15 +154,17 @@ class Drink implements Serializable{
         return glassImage
     }
 
-    static Drink createFillerDrink(drinkType) {
+    static Drink createFillerDrink(alcoholType) {
         return new Drink([
                 drinkName: 'FillerDrink',
                 drinkNumber: 0,
                 mixingInstructions: 'Filler instructions',
                 suggestedGlass: GlassType.BRANDY,
-                drinkType: drinkType,
+                alcoholType: alcoholType,
                 drinkSymbol: 'Fd',
-                ingredients: Ingredient.createFillerIngredients(3)
+                ingredients: Ingredient.createFillerIngredients(3),
+                canBeDeleted: false,
+                custom: false
         ])
     }
 }

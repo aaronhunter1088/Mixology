@@ -1,10 +1,9 @@
 <%--
   Created by IntelliJ IDEA.
   User: michaelball
-  Date: 3/9/23
-  Time: 9:43 PM
+  Date: 3/18/23
+  Time: 4:42 PM
 --%>
-
 <%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
@@ -12,7 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Mixology</title>
+        <title>Custom Drinks</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -60,7 +59,8 @@
             display: inline-block;
             vertical-align: middle;
         }
-    </style>
+        </style>
+
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
@@ -130,19 +130,23 @@
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
                     <div class="card" style="">
-                        <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
+                        <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <div style="display:block;">
-                        <%
-                            List tequilaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
-                            tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
-                            for (int i=0; i<tequilaDrinks.size(); i+=2) {
-                                Drink drink1 = (Drink)tequilaDrinks.get(i)
-                                Drink drink2 = null
-                                if (i+1 < tequilaDrinks.size()) {
-                                    try { drink2 = (Drink)tequilaDrinks.get(i+1) }
-                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA) }
-                                }
-                                %>
+                            <%
+                                List tequilaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA }
+                                tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
+                                for (int i=0; i<tequilaDrinks.size(); i+=2) {
+                                    Drink drink1 = (Drink)tequilaDrinks.get(i)
+                                    if (i < tequilaDrinks.size()) {
+                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1  }
+                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1 }
+                                    }
+                                    Drink drink2 = null
+                                    if (i+1 < tequilaDrinks.size()) {
+                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1  }
+                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2 }
+                                    }
+                            %>
                             <div style="display:inline-flex;">
                                 <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
@@ -170,7 +174,6 @@
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
                                     </div>
                                 </div>
-                                <% if (drink2 != null) { %>
                                 <div class="card" style="background-color:#ed969e;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="tequilaLeft2" style="height:200px;float:left;">
@@ -197,9 +200,8 @@
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
                                     </div>
                                 </div>
-                                <% } %>
                             </div>
-                        <% } %>
+                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -272,10 +274,10 @@
                     <h1 id="chartTitle" style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                     <div id="reference" style="display:inline-flex;">
                         <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
-                            <g:render template="referenceChart"/>
+                            <g:render template="customReferenceChart"/>
                         </div>
                         <div id="measurements" style="margin-left:50px;margin-right:50px;">
-                            <g:render template="measurementsCard"/>
+                            <g:render template="../measurementsCard"/>
                         </div>
                         <div id="glasses" style="text-align:center;">
                             <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger();" width="450px" height="300px" style="mix-blend-mode:initial;" src="${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}" alt="All Cocktails"/>
@@ -286,148 +288,165 @@
                 <div id="vodkaAndGin" style="display:inline-flex;">
                     <div id="vodkaDrinks" style="margin:0;padding:0;width:1200px;">
                         <div class="card" style="">
-                            <p style="text-align:center;margin-bottom:0;">Vodka Drinks</p>
+                            <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                             <div style="display:block;">
                                 <%
-                                    List vodkaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
+                                    List vodkaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.VODKA}
                                     vodkaDrinks = vodkaDrinks.stream().limit(12).collect()
                                     for (int i=0; i<vodkaDrinks.size(); i+=4) {
                                         Drink drink1 = (Drink)vodkaDrinks.get(i)
+                                        if (i < vodkaDrinks.size()) {
+                                            try { drink1 = (Drink)vodkaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.VODKA); drink1.id = i+1  }
+                                            catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.VOKDA); drink1.id = i+1 }
+                                        }
                                         Drink drink2 = null
-                                        if (i+1 < vodkaDrinks.size()) { drink2 = (Drink)vodkaDrinks.get(i+1) }
+                                        if (i+1 < vodkaDrinks.size()) {
+                                            try { drink2 = (Drink)vodkaDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.VODKA); drink2.id = i+2  }
+                                            catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.VOKDA); drink2.id = i+1 }
+                                        }
                                         Drink drink3 = null
-                                        if (i+2 < vodkaDrinks.size()) { drink3 = (Drink)vodkaDrinks.get(i+2) }
+                                        if (i+2 < vodkaDrinks.size()) {
+                                            try { drink3 = (Drink)vodkaDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.VODKA); drink3.id = i+3  }
+                                            catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.VOKDA); drink3.id = i+3 }
+                                        }
                                         Drink drink4 = null
-                                        if (i+3 < vodkaDrinks.size()) { drink4 = (Drink)vodkaDrinks.get(i+3) }
+                                        if (i+3 < vodkaDrinks.size()) {
+                                            try { drink4 = (Drink)vodkaDrinks.get(i); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.VODKA); drink4.id = i+4  }
+                                            catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.VOKDA); drink4.id = i+4 }
+                                        }
                                 %>
-                                    <div style="display:inline-flex;">
-                                        <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
-                                            <div style="display:inline-flex;">
-                                                <div id="vokdaLeft1" style="height:200px;float:left;">
-                                                    <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                        <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
-                                                        <div style="overflow-y:auto;height:80px;">
-                                                            <g:each in="${drink1.ingredients}" var="ingredientOption">
-                                                                <p style="margin:0;">${ingredientOption}</p>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="vodkaRight1" style="text-align:center;height:200px;float:right;">
-                                                    <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                        <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
-                                                        <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                                <div style="display:inline-flex;">
+                                    <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
+                                        <div style="display:inline-flex;">
+                                            <div id="vokdaLeft1" style="height:200px;float:left;">
+                                                <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                    <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
+                                                    <div style="overflow-y:auto;height:80px;">
+                                                        <g:each in="${drink1.ingredients}" var="ingredientOption">
+                                                            <p style="margin:0;">${ingredientOption}</p>
+                                                        </g:each>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div style="padding-left:10px;padding-top:10px;">
-                                                <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
-                                            </div>
-                                            <div>
-                                                <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                            <div id="vodkaRight1" style="text-align:center;height:200px;float:right;">
+                                                <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                    <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
+                                                    <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <% if (drink2 != null) { %>
-                                        <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
-                                            <div style="display:inline-flex;">
-                                                <div id="vodkaLeft2" style="height:200px;float:left;">
-                                                    <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                        <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
-                                                        <div style="overflow-y:auto;height:80px;">
-                                                            <g:each in="${drink2.ingredients}" var="ingredientOption">
-                                                                <p style="margin:0;">${ingredientOption}</p>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="vodkaRight2" style="text-align:center;height:200px;float:right;">
-                                                    <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                        <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
-                                                        <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div style="padding-left:10px;padding-top:10px;">
-                                                <p style="margin:0;overflow-y:auto;height:45px;">${drink2.mixingInstructions}</p>
-                                            </div>
-                                            <div>
-                                                <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
-                                            </div>
+                                        <div style="padding-left:10px;padding-top:10px;">
+                                            <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
                                         </div>
-                                        <% } %>
-                                        <% if (drink3 != null) { %>
-                                        <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
-                                            <div style="display:inline-flex;">
-                                                <div id="vodkaLeft3" style="height:200px;float:left;">
-                                                    <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                        <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink3.drinkNumber}</b></p>
-                                                        <div style="overflow-y:auto;height:80px;">
-                                                            <g:each in="${drink3.ingredients}" var="ingredientOption">
-                                                                <p style="margin:0;">${ingredientOption}</p>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="vodkaRight3" style="text-align:center;height:200px;float:right;">
-                                                    <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                        <img width="75px" height="75px" title="${drink3.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink3.glassImage)}" alt="${drink3.glassImage}"/>
-                                                        <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink3.drinkSymbol}</b></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div style="padding-left:10px;padding-top:10px;">
-                                                <p style="margin:0;overflow-y:auto;height:45px;">${drink3.mixingInstructions}</p>
-                                            </div>
-                                            <div>
-                                                <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink3.drinkName}</b></p>
-                                            </div>
+                                        <div>
+                                            <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
                                         </div>
-                                        <% } %>
-                                        <% if (drink4 != null) { %>
-                                        <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
-                                            <div style="display:inline-flex;">
-                                                <div id="vodkaLeft4" style="height:200px;float:left;">
-                                                    <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                        <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink4.drinkNumber}</b></p>
-                                                        <div style="overflow-y:auto;height:80px;">
-                                                            <g:each in="${drink4.ingredients}" var="ingredientOption">
-                                                                <p style="margin:0;">${ingredientOption}</p>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="vodkaRight4" style="text-align:center;height:200px;float:right;">
-                                                    <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                        <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink4.glassImage)}" alt="${drink4.glassImage}"/>
-                                                        <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink4.drinkSymbol}</b></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div style="padding-left:10px;padding-top:10px;">
-                                                <p style="margin:0;overflow-y:auto;height:45px;">${drink4.mixingInstructions}</p>
-                                            </div>
-                                            <div>
-                                                <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink4.drinkName}</b></p>
-                                            </div>
-                                        </div>
-                                        <% } %>
                                     </div>
+                                    <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
+                                        <div style="display:inline-flex;">
+                                            <div id="vodkaLeft2" style="height:200px;float:left;">
+                                                <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                    <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
+                                                    <div style="overflow-y:auto;height:80px;">
+                                                        <g:each in="${drink2.ingredients}" var="ingredientOption">
+                                                            <p style="margin:0;">${ingredientOption}</p>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="vodkaRight2" style="text-align:center;height:200px;float:right;">
+                                                <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                    <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
+                                                    <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="padding-left:10px;padding-top:10px;">
+                                            <p style="margin:0;overflow-y:auto;height:45px;">${drink2.mixingInstructions}</p>
+                                        </div>
+                                        <div>
+                                            <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
+                                        </div>
+                                    </div>
+                                    <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
+                                        <div style="display:inline-flex;">
+                                            <div id="vodkaLeft3" style="height:200px;float:left;">
+                                                <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                    <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink3.drinkNumber}</b></p>
+                                                    <div style="overflow-y:auto;height:80px;">
+                                                        <g:each in="${drink3.ingredients}" var="ingredientOption">
+                                                            <p style="margin:0;">${ingredientOption}</p>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="vodkaRight3" style="text-align:center;height:200px;float:right;">
+                                                <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                    <img width="75px" height="75px" title="${drink3.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink3.glassImage)}" alt="${drink3.glassImage}"/>
+                                                    <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink3.drinkSymbol}</b></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="padding-left:10px;padding-top:10px;">
+                                            <p style="margin:0;overflow-y:auto;height:45px;">${drink3.mixingInstructions}</p>
+                                        </div>
+                                        <div>
+                                            <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink3.drinkName}</b></p>
+                                        </div>
+                                    </div>
+                                    <div class="card" style="background-color:#ffdf7e;width:300px;height:300px;">
+                                        <div style="display:inline-flex;">
+                                            <div id="vodkaLeft4" style="height:200px;float:left;">
+                                                <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                                    <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink4.drinkNumber}</b></p>
+                                                    <div style="overflow-y:auto;height:80px;">
+                                                        <g:each in="${drink4.ingredients}" var="ingredientOption">
+                                                            <p style="margin:0;">${ingredientOption}</p>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="vodkaRight4" style="text-align:center;height:200px;float:right;">
+                                                <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                                    <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink4.glassImage)}" alt="${drink4.glassImage}"/>
+                                                    <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink4.drinkSymbol}</b></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="padding-left:10px;padding-top:10px;">
+                                            <p style="margin:0;overflow-y:auto;height:45px;">${drink4.mixingInstructions}</p>
+                                        </div>
+                                        <div>
+                                            <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink4.drinkName}</b></p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <% } %>
                             </div>
                         </div>
                     </div>
                     <div id="gin" style="margin:0;padding:0;width:905px;">
                         <div class="card">
-                            <p style="text-align:center;margin-bottom:0;">Gin Drinks</p>
+                            <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                             <%
-                                List ginDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
+                                List ginDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.GIN}
                                 ginDrinks = ginDrinks.stream().limit(9).collect()
                                 for (int i=0; i<ginDrinks.size(); i+=3) {
                                     Drink drink1 = (Drink)ginDrinks.get(i)
+                                    if (i < tequilaDrinks.size()) {
+                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.GIN); drink1.id = i+1  }
+                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.GIN); drink1.id = i+1 }
+                                    }
                                     Drink drink2 = null
-                                    if (i+1 < ginDrinks.size()) { drink2 = (Drink)ginDrinks.get(i+1) }
+                                    if (i+1 < ginDrinks.size()) {
+                                        try { drink2 = (Drink)tequilaDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.GIN); drink2.id = i+2  }
+                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.GIN); drink2.id = i+1 }
+                                    }
                                     Drink drink3 = null
-                                    if (i+2 < ginDrinks.size()) { drink3 = (Drink)ginDrinks.get(i+2) }
+                                    if (i+2 < ginDrinks.size()) {
+                                        try { drink3 = (Drink)tequilaDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.GIN); drink3.id = i+3  }
+                                        catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.GIN); drink3.id = i+1 }
+                                    }
                             %>
                             <div style="display:inline-flex;">
                                 <div class="card" style="background-color:#46a5c8;width:300px;height:300px;">
@@ -456,7 +475,6 @@
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
                                     </div>
                                 </div>
-                                <% if (drink2 != null) { %>
                                 <div class="card" style="background-color:#46a5c8;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="ginLeft2" style="height:200px;float:left;">
@@ -483,8 +501,6 @@
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
                                     </div>
                                 </div>
-                                <% } %>
-                                <% if (drink3 != null) { %>
                                 <div class="card" style="background-color:#46a5c8;width:300px;height:300px;">
                                     <div style="display:inline-flex;">
                                         <div id="ginLeft3" style="height:200px;float:left;">
@@ -511,7 +527,6 @@
                                         <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink3.drinkName}</b></p>
                                     </div>
                                 </div>
-                                <% } %>
                             </div>
                             <% } %>
                         </div>
@@ -519,46 +534,50 @@
                 </div>
                 <div id="shooterDrinks" style="width:2550px;padding:5em;">
                     <div class="card">
-                        <p style="text-align:center;margin-bottom:0;">Shooter Drinks</p>
+                        <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                         <%
-                            List shooterDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
+                            List shooterDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.SHOOTER }
                             //shooterDrinks = shooterDrinks.stream().limit(16).collect()
                             for (int i=0; i<shooterDrinks.size(); i+=8) {
                                 Drink drink1 = (Drink)shooterDrinks.get(i)
+                                if (i < shooterDrinks.size()) {
+                                    try { drink1 = (Drink)shooterDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+1 }
+                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+1 }
+                                }
                                 Drink drink2 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink2 = (Drink)tequilaDrinks.get(i+1) }
-                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink2 = (Drink)shooterDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); drink2.id = i+2 }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); drink2.id = i+2 }
                                 }
                                 Drink drink3 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink3 = (Drink)tequilaDrinks.get(i+2) }
-                                    catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink3 = (Drink)shooterDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); drink3.id = i+3 }
+                                    catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+3 }
                                 }
                                 Drink drink4 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink4 = (Drink)tequilaDrinks.get(i+3) }
-                                    catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink4 = (Drink)shooterDrinks.get(i); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); drink4.id = i+4 }
+                                    catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); drink4.id = i+1 }
                                 }
                                 Drink drink5 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink5 = (Drink)tequilaDrinks.get(i+4) }
-                                    catch (Exception e) { drink5 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink5 = (Drink)shooterDrinks.get(i); if (!drink5.custom) drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); drink5.id = i+5 }
+                                    catch (Exception e) { drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); drink5.id = i+5 }
                                 }
                                 Drink drink6 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink6 = (Drink)tequilaDrinks.get(i+5) }
-                                    catch (Exception e) { drink6 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink6 = (Drink)shooterDrinks.get(i); if (!drink6.custom) drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); drink6.id = i+6 }
+                                    catch (Exception e) { drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); drink6.id = i+6 }
                                 }
                                 Drink drink7 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink7 = (Drink)tequilaDrinks.get(i+6) }
-                                    catch (Exception e) { drink7 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink7 = (Drink)shooterDrinks.get(i); if (!drink7.custom) drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); drink7.id = i+7 }
+                                    catch (Exception e) { drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); drink7.id = i+7 }
                                 }
                                 Drink drink8 = null
                                 if (i+1 < shooterDrinks.size()) {
-                                    try { drink8 = (Drink)tequilaDrinks.get(i+7) }
-                                    catch (Exception e) { drink8 = Drink.createFillerDrink(Alcohol.SHOOTER) }
+                                    try { drink8 = (Drink)shooterDrinks.get(i); if (!drink8.custom) drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); drink8.id = i+8 }
+                                    catch (Exception e) { drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); drink8.id = i+8 }
                                 }
                         %>
                         <div style="display:inline-flex;">
@@ -792,126 +811,120 @@
             <div id="column3" style="margin:0;padding:0;width:600px;">
                 <div id="frozenDrinks" style="">
                     <div class="card">
-                        <p style="text-align:center;margin-bottom:0;">Frozen Drinks</p>
+                        <p style="text-align:center;margin-bottom:0;">Custom  Frozen Drinks</p>
                         <div style="display:inline-flex;">
                             <div style="width:300px;height:300px;">
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <%
-                                List frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
+                                List frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.FROZEN }
                                 frozenDrinks = frozenDrinks.stream().limit(1).collect()
-                                Drink drink1 = (Drink)frozenDrinks.get(0)
+                                Drink drink1 = null
+                                try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = 1 }
+                                catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = 1 }
                             %>
-                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
-                                    <div style="display:inline-flex;">
-                                        <div id="frozenLeft1" style="height:200px;float:left;">
-                                            <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
-                                                <div style="overflow-y:auto;height:80px;">
-                                                    <g:each in="${drink1.ingredients}" var="ingredientOption">
-                                                        <p style="margin:0;">${ingredientOption}</p>
-                                                    </g:each>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="frozenRight1" style="text-align:center;height:200px;float:right;">
-                                            <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
-                                                <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                            <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
+                                <div style="display:inline-flex;">
+                                    <div id="frozenLeft1" style="height:200px;float:left;">
+                                        <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                            <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
+                                            <div style="overflow-y:auto;height:80px;">
+                                                <g:each in="${drink1.ingredients}" var="ingredientOption">
+                                                    <p style="margin:0;">${ingredientOption}</p>
+                                                </g:each>
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="padding-left:10px;padding-top:10px;">
-                                        <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
-                                    </div>
-                                    <div>
-                                        <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                    <div id="frozenRight1" style="text-align:center;height:200px;float:right;">
+                                        <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                            <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
+                                            <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                                        </div>
                                     </div>
                                 </div>
+                                <div style="padding-left:10px;padding-top:10px;">
+                                    <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
+                                </div>
+                                <div>
+                                    <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                </div>
+                            </div>
                         </div>
                         <%
-                            frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA}
+                            frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.FROZEN }
                             frozenDrinks = frozenDrinks.stream().limit(9).collect()
                             for (int i=1; i<frozenDrinks.size(); i+=2) {
                                 drink1 = (Drink)frozenDrinks.get(i)
+                                if (i < frozenDrinks.size()) {
+                                    try { drink1 = (Drink)frozenDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = i+1 }
+                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = i+1 }
+                                }
                                 Drink drink2 = null
-                                if (i+1 < frozenDrinks.size()) { drink2 = (Drink)frozenDrinks.get(i+1) }
+                                if (i+1 < frozenDrinks.size()) {
+                                    try { drink2 = (Drink)frozenDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.FROZEN); drink2.id = i+1 }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.FROZEN); drink2.id = i+1 }
+                                }
                         %>
-                            <div style="display:inline-flex;">
-                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
-                                    <div style="display:inline-flex;">
-                                        <div id="frozenLeft2" style="height:200px;float:left;">
-                                            <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
-                                                <div style="overflow-y:auto;height:80px;">
-                                                    <g:each in="${drink1.ingredients}" var="ingredientOption">
-                                                        <p style="margin:0;">${ingredientOption}</p>
-                                                    </g:each>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="frozenRight2" style="text-align:center;height:200px;float:right;">
-                                            <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
-                                                <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                        <div style="display:inline-flex;">
+                            <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
+                                <div style="display:inline-flex;">
+                                    <div id="frozenLeft2" style="height:200px;float:left;">
+                                        <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                            <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink1.drinkNumber}</b></p>
+                                            <div style="overflow-y:auto;height:80px;">
+                                                <g:each in="${drink1.ingredients}" var="ingredientOption">
+                                                    <p style="margin:0;">${ingredientOption}</p>
+                                                </g:each>
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="padding-left:10px;padding-top:10px;">
-                                        <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
-                                    </div>
-                                    <div>
-                                        <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                    <div id="frozenRight2" style="text-align:center;height:200px;float:right;">
+                                        <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                            <img width="75px" height="75px" title="${drink1.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink1.glassImage)}" alt="${drink1.glassImage}"/>
+                                            <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink1.drinkSymbol}</b></p>
+                                        </div>
                                     </div>
                                 </div>
-                                <% if (drink2 != null) { %>
-                                <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
-                                    <div style="display:inline-flex;">
-                                        <div id="frozenLeft3" style="height:200px;float:left;">
-                                            <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
-                                                <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
-                                                <div style="overflow-y:auto;height:80px;">
-                                                    <g:each in="${drink2.ingredients}" var="ingredientOption">
-                                                        <p style="margin:0;">${ingredientOption}</p>
-                                                    </g:each>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="frozenRight3" style="text-align:center;height:200px;float:right;">
-                                            <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
-                                                <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
-                                                <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style="padding-left:10px;padding-top:10px;">
-                                        <p style="margin:0;overflow-y:auto;height:45px;">${drink2.mixingInstructions}</p>
-                                    </div>
-                                    <div>
-                                        <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
-                                    </div>
+                                <div style="padding-left:10px;padding-top:10px;">
+                                    <p style="margin:0;overflow-y:auto;height:45px;">${drink1.mixingInstructions}</p>
                                 </div>
-                                <% } %>
+                                <div>
+                                    <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink1.drinkName}</b></p>
+                                </div>
                             </div>
+                            <% if (drink2 != null) { %>
+                            <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
+                                <div style="display:inline-flex;">
+                                    <div id="frozenLeft3" style="height:200px;float:left;">
+                                        <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                            <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink2.drinkNumber}</b></p>
+                                            <div style="overflow-y:auto;height:80px;">
+                                                <g:each in="${drink2.ingredients}" var="ingredientOption">
+                                                    <p style="margin:0;">${ingredientOption}</p>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="frozenRight3" style="text-align:center;height:200px;float:right;">
+                                        <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                            <img width="75px" height="75px" title="${drink2.suggestedGlass.glassName}" src="${resource(dir:'../assets/images',file:drink2.glassImage)}" alt="${drink2.glassImage}"/>
+                                            <p style="font-size:5em;margin-top:10px;color:#155724;"><b>${drink2.drinkSymbol}</b></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding-left:10px;padding-top:10px;">
+                                    <p style="margin:0;overflow-y:auto;height:45px;">${drink2.mixingInstructions}</p>
+                                </div>
+                                <div>
+                                    <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>${drink2.drinkName}</b></p>
+                                </div>
+                            </div>
+                            <% } %>
+                        </div>
                         <% } %>
                     </div>
                 </div>
             </div>
         </div>
-
-        <script type="text/javascript">
-        $(document).ready(function() {
-            console.log("index loaded");
-        });
-        function makeSuggestedGlassesBigger() {
-            let newWindow = window.open("", "glasses", "width=1000,height=800");
-            newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
-            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
-            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
-        }
-        function createFillerDrink() {
-
-        }
-    </script>
     </body>
 </html>
