@@ -21,9 +21,14 @@ class UrlMappings {
             controller = "ingredient"
             action = "validate"
         }
+
         "/mixology/search" {
             controller = "search"
             action = "index"
+        }
+        "/mixology/search/search" {
+            controller = "search"
+            action = "search"
         }
 
         "/"(view:"/index")
