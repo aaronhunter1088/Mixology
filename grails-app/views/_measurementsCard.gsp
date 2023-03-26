@@ -2,17 +2,17 @@
     <p style="font-size:20px;margin:0;color:#a60000;text-align:center;"><b>STANDARD BAR MEASUREMENTS</b></p>
     <div id="measurementsTable" style="display:inline-flex;">
         <div id="unit" style="display:block;width:150px;height:300px;text-align-all:left;">
-            <p style="font-size:1em;margin-left:30px;margin-bottom:0;color:navy;"><b>Unit</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Dash (or Splash)</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Teaspoon</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Tablespoon</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Pony</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Jigger</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Wineglass</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Split</b></p>
-            <p style="margin-left:30px;margin-bottom:0;"><b>1 Cup</b></p>
+            <p style="font-size:1em;margin-left:20px;margin-bottom:0;color:navy;"><b>Unit</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Dash (or Splash)</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Teaspoon</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Tablespoon</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Pony</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Jigger</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Wineglass</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Split</b></p>
+            <p style="margin-left:20px;margin-bottom:0;"><b>1 Cup</b></p>
         </div>
-        <div id="standard" style="display:inline-block;width:120px;height:300px;text-align:left;padding-left:40px;">
+        <div id="standard" style="display:inline-block;width:120px;height:300px;text-align:left;padding-left:30px;">
             <p style="font-size:1em;margin:0;color:navy;"><b>Standard</b></p>
             <p style="margin-bottom:0;"><b>0.03125 oz.</b></p>
             <p style="margin-bottom:0;"><b>0.125 oz.</b></p>
