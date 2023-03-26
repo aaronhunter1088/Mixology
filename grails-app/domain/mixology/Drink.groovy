@@ -26,8 +26,8 @@ class Drink implements Serializable{
         ingredients()
         mixingInstructions()
         suggestedGlass()
-        canBeDeleted(nullable:true, default:false)
-        custom(nullable:true, default:false)
+        canBeDeleted(nullable:true, default:true)
+        custom(nullable:true, default:true)
     }
 
     static belongsTo = Ingredient

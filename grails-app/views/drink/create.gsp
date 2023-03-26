@@ -112,7 +112,7 @@
                         &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                         <hr style="height:1px;background-color:#000080">
                     </legend>
-                    <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid()">
+                    <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid();">
                         <div id="create-drink" style="width:55%;float:left;">
                             <div class="formfield">
                                 <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
@@ -215,7 +215,7 @@
                                                         ingredientName = values[0].trim();
                                                         ingredientAmt = values[1].trim();
                                                         ingredientUnit = values[2].trim().toUpperCase().replaceAll(' ', '_');
-                                                        console.log("chosen unit: " + ingredientUnit);
+                                                        //console.log("chosen unit: " + ingredientUnit);
                                                     }
                                                     rowId++;
                                                     // create Name
@@ -252,9 +252,6 @@
                                                     option = document.createElement('option');
                                                     </g:each>
                                                     if (ingredient !== '') {
-                                                        // TODO: resolve edge case
-                                                        //if (ingredientUnit === 'SODA CAN, 16 FL.OZ') ingredientUnit = 'SODA_CAN'; console.log("unit reset to SODA_CAN");
-                                                        // end edge case
                                                         for (let i=0; i<select.options.length; i++) {
                                                             if (select.options.item(i).value === ingredientUnit) {
                                                                 select.options.item(i).selected = true;
@@ -367,21 +364,26 @@
                             },
                             400: function(data) {
                                 failCount += 1;
+                                console.log(data);
+                                console.log(JSON.parse(JSON.stringify(data)));
+                                let response = JSON.parse(data['responseText']);
                                 //let response = JSON.parse(JSON.stringify(data['responseJSON']))
-                                let response = JSON.parse(JSON.stringify(data))
+                                //let response = JSON.parse(JSON.stringify(data))
                                 let message;
                                 if (failCount === 1) {
                                     message = response.message;
                                 } else {
-                                    let messageArr = response.message.split(" ");
-                                    let firstPart = "Some ingredients have ";
-                                    message = firstPart + messageArr.slice(2).toString().replaceAll(",", " ");
+                                    message = "Some ingredients have already been created!";
                                 }
                                 console.log("FAILED: " + message);
                                 row.addClass("errors");
                                 let errorMessage = $("#ingredientErrorMessage")
                                 errorMessage.addClass("errors");
                                 errorMessage.html(message);
+                                let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
+                                tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
+                                let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + 50;
+                                document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));
@@ -392,11 +394,8 @@
                         }
                     });
                 });
-                if (successCount === numberOfRows) {
-                    return true;
-                } else {
-                    return false;
-                }
+                console.log("SuccessCount:"+successCount + "===" + numberOfRows+":NumberOfRows");
+                return successCount === numberOfRows;
             }
         </script>
     </body>

@@ -217,9 +217,7 @@ class DrinkController {
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass),
                 mixingInstructions: params.instructions,
-                ingredients: validIngredients,
-                canBeDeleted: false,
-                custom: false
+                ingredients: validIngredients
         ])
         // Associate all ingredients with this drink
         validIngredients.each { Ingredient it ->
@@ -278,7 +276,8 @@ class DrinkController {
         Ingredient ingredient = createNewIngredientsFromParams(params).get(0)
         boolean result = false
         if (alreadyExists(ingredient)) { result = true }
-        response.setContentType("text/plain")
+        //response.setContentType("text/plain")
+        response.setContentType("text/json")
         if (result) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient: "+ingredient+" has already been created")
         }
