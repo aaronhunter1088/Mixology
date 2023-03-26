@@ -35,6 +35,8 @@ configurations {
 }
 
 dependencies {
+    // string utils
+    implementation "org.apache.commons:commons-lang3:3.12.0"
     // mysql
     runtimeOnly 'mysql:mysql-connector-java:8.0.28'
     // https://projectlombok.org

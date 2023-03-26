@@ -163,7 +163,7 @@
                             <div class="formfield">
                                 <label><span class='required-indicator'>*</span> Ingredients</label><br>
                                 <div style="margin-top:-25px;height:200px;overflow-y:auto;">
-                                    <g:each in="${Ingredient.list(sort: 'id', order: 'asc')}" var="ingredient" status="i">
+                                    <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
                                         <div style="display:block;">
                                             <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
                                                 <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
@@ -175,9 +175,6 @@
                                     </g:each>
                                 </div>
                             </div>
-%{--                            <div class="formfield" style="margin-top:25px;">--}%
-%{--                                <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button> --}%%{-- formaction="/mixology/drink/save"--}%
-%{--                            </div>--}%
                             <div class="formfield" style="margin-top:25px;padding-left:50%;">
                                 <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button> %{-- formaction="/mixology/drink/save"--}%
                             </div>
@@ -217,7 +214,8 @@
                                                         let values = ingredient.split(':');
                                                         ingredientName = values[0].trim();
                                                         ingredientAmt = values[1].trim();
-                                                        ingredientUnit = values[2].trim().toUpperCase();
+                                                        ingredientUnit = values[2].trim().toUpperCase().replaceAll(' ', '_');
+                                                        console.log("chosen unit: " + ingredientUnit);
                                                     }
                                                     rowId++;
                                                     // create Name
@@ -254,6 +252,9 @@
                                                     option = document.createElement('option');
                                                     </g:each>
                                                     if (ingredient !== '') {
+                                                        // TODO: resolve edge case
+                                                        //if (ingredientUnit === 'SODA CAN, 16 FL.OZ') ingredientUnit = 'SODA_CAN'; console.log("unit reset to SODA_CAN");
+                                                        // end edge case
                                                         for (let i=0; i<select.options.length; i++) {
                                                             if (select.options.item(i).value === ingredientUnit) {
                                                                 select.options.item(i).selected = true;
@@ -361,7 +362,7 @@
                         },
                         statusCode: {
                             200: function(data) {
-                                console.log(JSON.stringify(data))
+                                console.log(JSON.stringify(data));
                                 successCount += 1;
                             },
                             400: function(data) {

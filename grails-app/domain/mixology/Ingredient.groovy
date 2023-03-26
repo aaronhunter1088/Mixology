@@ -39,7 +39,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         for (i in 1..count) {
             fillerIngredients.add(new Ingredient([
                     name: "Ingredient${i}",
-                    unit: Unit.LIME,
+                    unit: Unit.WEDGE,
                     amount: 1
             ]))
         }

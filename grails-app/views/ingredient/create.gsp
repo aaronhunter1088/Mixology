@@ -40,7 +40,7 @@
             fieldset::before {
                 content: "Use this form to create a new ingredient";
                 position: absolute;
-                margin-top: -35px;
+                margin-top: -45px;
                 right: 10px;
                 background: #fff;
                 padding: 0 5px;
@@ -78,12 +78,11 @@
                     </g:hasErrors>
                 </div>
                 <fieldset style="border:thick solid #008011;" class="no-before">
-                    <legend style="width:auto;">
+                    <legend style="margin-left:25px;width:auto;">
                         &emsp14;Create An Ingredient&emsp14;
                         <hr style="height:1px;background-color:#008011">
                     </legend>
-                    <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient"> %{--onsubmit="return isValid()">--}%
-    %{--                <form action="/mixology/ingredient/save" method="POST" id="newIngredient">--}%
+                    <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient">
                         <form id="ingredientForm" name="ingredientForm">
                             <table id="ingredientTable" class="table" style="width:100%;">
                             <thead>
@@ -184,8 +183,10 @@
                             </script>
                         </table>
                         </form>
+                        <div class="formfield" style="margin-top:25px;padding-left:10px;">
+                            <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>
+                        </div>
                     </g:form>
-                    <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>
                 </fieldset>
             </div>
         </div>

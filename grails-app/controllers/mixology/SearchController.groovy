@@ -2,6 +2,8 @@ package mixology
 
 import enums.*
 
+import javax.servlet.http.HttpServletResponse
+
 class SearchController {
 
     DrinkService drinkService
@@ -23,24 +25,30 @@ class SearchController {
         println "Searching for '${params.searchingFor}'"
         def value = params.searchingFor
         def input = null
-        def amount = null
-        List<Object> results = new ArrayList<>();
-        // check
-        if (value instanceof String) {
-            input = value;
-            println 'Found a String input';
+        //def amount = null
+        List<Drink> drinks = new ArrayList<>();
+        List<Ingredient> ingredients  = new ArrayList<>();
+
+        try {
+            input = Double.valueOf(value as String)
+            println 'Found an number value'
+            respond view:'index', model:[:]
+        }
+        catch (NumberFormatException nfe) {
+            input = value
+            println 'Found a String input'
             // first search drinks
             List<Drink> matchingDrinkNames = Drink.withCriteria {
                 eq('drinkName', input)
-            }
-            results.addAll(matchingDrinkNames)
+            } as List<Drink>
+            drinks.addAll(matchingDrinkNames)
             GlassType glassType = null
             try {
                 glassType = GlassType.valueOf(input.toUpperCase() as String)
                 List<Drink> matchingGlassTypes = Drink.withCriteria {
                     eq('suggestedGlass', glassType)
-                }
-                results.addAll(matchingGlassTypes)
+                } as List<Drink>
+                drinks.addAll(matchingGlassTypes)
             } catch (IllegalArgumentException iae) {
                 println "${input} was not found as an available GlassType"
             }
@@ -49,41 +57,47 @@ class SearchController {
                 alcoholType = Alcohol.valueOf(input.toUpperCase() as String)
                 List<Drink> matchingAlcoholTypes = Drink.withCriteria {
                     eq('alcoholType', Alcohol.valueOf(input.toUpperCase() as String))
-                }
-                results.addAll(matchingAlcoholTypes)
+                } as List<Drink>
+                drinks.addAll(matchingAlcoholTypes)
             } catch (IllegalArgumentException iae) {
                 println "${input} was not found as an available AlcoholType"
             }
             List<Drink> matchingDrinkSymbols = Drink.withCriteria {
                 eq('drinkSymbol', input)
-            }
-            results.addAll(matchingDrinkSymbols)
+            }  as List<Drink>
+            drinks.addAll(matchingDrinkSymbols)
             // second search Ingredients
             List<Ingredient> matchingIngredientNames = Ingredient.withCriteria {
                 eq('name', input)
-            }
-            results.addAll(matchingIngredientNames)
+            } as List<Ingredient>
+            ingredients.addAll(matchingIngredientNames)
             Unit unit = null
             try {
                 unit = Unit.valueOf(input)
                 List<Ingredient> matchingIngredientUnit = Ingredient.withCriteria {
                     eq('unit', unit)
-                }
-                results.addAll(matchingIngredientUnit)
+                } as List<Ingredient>
+                ingredients.addAll(matchingIngredientUnit)
             } catch (IllegalArgumentException iae) {
                 println "${input} was not found as an available UnitType"
             }
-
         }
-        else {
+        int totalFound = drinks.size() + ingredients.size()
 
-            amount = value;
-            println 'Found an integer value'
-
-        }
-        println "Found ${results.size()} total matches"
-        respond view: 'index', model: [results: results]
-
-
+        println "Found ${totalFound} total matches"
+        //response.setContentType("text/plain")
+        //response.getWriter().append(totalFound ? "Matches found" : "No matches found")
+        //response.getWriter().flush()
+        response.setStatus(HttpServletResponse.SC_OK) // 200
+//        render(contentType: "application/json") {
+//            [total: totalFound, drinks: drinks, ingredients: ingredients]
+//        }
+//        render(view: "index", model: [total: totalFound, drinks: drinks, ingredients: ingredients])
+        respond view: 'index',
+                model: [
+                    drinks: drinks,
+                    ingredients: ingredients,
+                    total: totalFound
+                ]
     }
 }

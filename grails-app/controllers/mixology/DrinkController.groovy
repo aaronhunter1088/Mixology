@@ -2,7 +2,7 @@ package mixology
 
 import enums.*
 import grails.validation.ValidationException
-
+import static org.apache.commons.lang3.StringUtils.isNotEmpty
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.http.HttpStatus.CREATED
@@ -45,7 +45,7 @@ class DrinkController {
         }
         Drink drink = createDrinkFromParams(params)
         // take away once all default drinks have been created. all user's custom drinks are valid to delete. default drinks are not
-        if (!drink.canBeDeleted) drink.canBeDeleted = true
+        //if (!drink.canBeDeleted) drink.canBeDeleted = true
         try {
             drinkService.save(drink)
         }
@@ -56,7 +56,7 @@ class DrinkController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'drink'), drink.drinkName])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                 redirect drink
             }
             '*' { respond drink, [status: CREATED] }
@@ -88,7 +88,7 @@ class DrinkController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'drink'), drink.id])
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                 redirect drink
             }
             '*'{ respond drink, [status: OK] }
@@ -111,7 +111,7 @@ class DrinkController {
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'drink'), drink.drinkName])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
@@ -121,7 +121,7 @@ class DrinkController {
     protected void notFound() {
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'drink'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
                 redirect action: "index", method: "GET"
             }
             '*'{ render status: NOT_FOUND }
@@ -133,15 +133,32 @@ class DrinkController {
 
         Ingredient newIngredientFromParams
         String ingredients = params.ingredients
-        ingredients = ingredients.replace('[','').replace(']','')
-        if (ingredients.indexOf(',') >= 0) {
-            println "has a comma"
-            String[] list = ingredients.split(',')
-            println list
-            for (it in list) {
-                String[] parts = it.split ':'
+        if (isNotEmpty(ingredients)) {
+            ingredients = ingredients.replace('[','').replace(']','')
+            if (ingredients.indexOf(',') >= 0) {
+                println "has a comma"
+                String[] list = ingredients.split(',')
+                println list
+                for (it in list) {
+                    String[] parts = it.split ':'
+                    newIngredientFromParams = new Ingredient([
+                            name: parts[0].trim(),
+                            amount: parts[1].trim(),
+                            unit  : Unit.valueOf(parts[2].trim().toUpperCase())
+                    ])
+                    for (ingredient in allIngredients) {
+                        if (ingredient == newIngredientFromParams) {
+                            newIngredientFromParams = ingredient // set the id for referencing
+                            break
+                        }
+                    }
+                    validIngredients.add(newIngredientFromParams)
+                }
+            }
+            else {
+                String[] parts = ingredients.split ':'
                 newIngredientFromParams = new Ingredient([
-                        name: parts[0].trim(),
+                        name  : parts[0].trim(),
                         amount: parts[1].trim(),
                         unit  : Unit.valueOf(parts[2].trim().toUpperCase())
                 ])
@@ -154,21 +171,6 @@ class DrinkController {
                 validIngredients.add(newIngredientFromParams)
             }
         }
-        else {
-            String[] parts = ingredients.split ':'
-            newIngredientFromParams = new Ingredient([
-                    name  : parts[0].trim(),
-                    amount: parts[1].trim(),
-                    unit  : Unit.valueOf(parts[2].trim().toUpperCase())
-            ])
-            for (ingredient in allIngredients) {
-                if (ingredient == newIngredientFromParams) {
-                    newIngredientFromParams = ingredient // set the id for referencing
-                    break
-                }
-            }
-            validIngredients.add(newIngredientFromParams)
-        }
 
         Drink drink = new Drink([
                 drinkName: params.drinkName,
@@ -177,7 +179,9 @@ class DrinkController {
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass),
                 mixingInstructions: params.instructions,
-                ingredients: validIngredients
+                ingredients: validIngredients,
+                canBeDeleted: false,
+                custom: false
         ])
         // Associate all ingredients with this drink
         validIngredients.each {

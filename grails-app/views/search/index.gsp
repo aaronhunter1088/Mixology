@@ -90,7 +90,7 @@
             </div>
         </nav>
 
-        <div id="searchContent" style="padding:6em;text-align:center;">
+        <div id="searchPanel" style="padding:6em;text-align:center;">
             <div style="display:inline-flex;">
                 <div id="title">
                     <h1 style="font-size:10em;">Search</h1>
@@ -101,15 +101,41 @@
                 <div id="submit" style="display:flex;margin-top:40px;">
                     <input type="button" class="btn btn-primary" style="font-size:2em;font-weight:bold;width:110px;height:50px;margin:20px;" onclick="search();" value="Search"/>
                 </div>
-                <div id="total" hidden>
-                    <p>Total: </p>
+                <div id="total" hidden style="display:flex;margin-top:35px;">
+                    <p style="font-size:40px;width:200px;height:50px;margin:20px;"></p>
                 </div>
             </div>
-
+        </div>
+        <div id="searchContent" style="padding:6em;text-align:center;">
             <div style="display:inline-flex;">
                 <div id="results" hidden>
                     <div id="drinkResults">
-
+                        <div class="card" style="background-color:lightseagreen;width:300px;height:300px;">
+                            <div style="display:inline-flex;">
+                                <div id="cardLeft1" style="height:200px;float:left;">
+                                    <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
+                                        <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b></b></p>
+                                        <div style="overflow-y:auto;height:80px;">
+                                            %{--                                            <g:each in="${drink1.ingredients}" var="ingredientOption">--}%
+                                            <p style="margin:0;">Ingredient</p>
+                                            %{--                                            </g:each>--}%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="cardRight1" style="text-align:center;height:200px;float:right;">
+                                    <div style="padding-left:10px;padding-top:25px;width:140px;height:75px;">
+                                        <img width="75px" height="75px" title="glassName" src="" alt="Drink.GlassImage"/>
+                                        <p style="font-size:5em;margin-top:10px;color:#155724;"><b></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="padding-left:10px;padding-top:10px;">
+                                <p style="margin:0;overflow-y:auto;height:45px;"></p>
+                            </div>
+                            <div>
+                                <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b></b></p>
+                            </div>
+                        </div>
                     </div>
                     <div id="ingredientResults">
 
@@ -120,6 +146,7 @@
         <script type="text/javascript">
             function search() {
                 let searchingFor = $("#search > input").val();
+                if (searchingFor === '') return;
                 $.ajax({
                     headers: {
                         accept: "application/json",
@@ -133,26 +160,44 @@
                     },
                     statusCode: {
                         200: function(data) {
-                            console.log(JSON.stringify(data))
-
+                            //console.log("SUCCESS: " + JSON.stringify(data) );
+                            let response = JSON.parse(JSON.stringify(data));
+                            let model = JSON.parse(JSON.stringify(response.model));
+                            let total = model.total;
+                            console.log("total: " + total);
+                            $("#total").attr('hidden', false)
+                            $("#total > p").text("Total: " + total);
+                            $("#results").attr('hidden', false);
+                            let drinks = JSON.parse(JSON.stringify(model.drinks));
+                            console.log("drinks: " + JSON.stringify(drinks))
+                            populateDrinkResults(drinks);
                         },
                         400: function(data) {
-                            failCount += 1;
-                            let response = JSON.parse(JSON.stringify(data['responseJSON']))
-                            let message = response.message;;
-                            console.log("FAILED: " + message);
+                            //let response = JSON.parse(JSON.stringify(data['responseJSON']))
+                            //let message = response.message;
+                            console.log("FAILED: " + data);
                             //row.addClass("errors");
                             //let errorMessage = $("#ingredientErrorMessage")
                             //errorMessage.addClass("errors");
                             //errorMessage.html(message);
                         },
                         404: function(data) {
-                            console.log(JSON.stringify(data));
+                            console.log("404: " + JSON.stringify(data));
                         },
                         500: function(data) {
-                            console.log(JSON.stringify(data));
+                            console.log("500: " + JSON.stringify(data));
                         }
                     }
+                });
+            }
+            function populateDrinkResults(drinks) {
+                drinks.forEach(function(d) {
+                    let drink = JSON.parse(JSON.stringify(d));
+                    console.log("drink: " + drink);
+                    let card = $("#drinkResults > div").copy;
+                    card.find('div > div > div > p').innerText = drink.drinkNumber;
+                    card.find('div:nth-child(2) > p').text(drink.mixingInstructions);
+                    card.find('div:nth-child(3) > p').text(drink.drinkName);
                 });
             }
         </script>
