@@ -965,18 +965,18 @@
         </g:else>
 
         <script type="text/javascript">
-        $(document).ready(function() {
-            console.log("index loaded");
-        });
-        function makeSuggestedGlassesBigger() {
-            let newWindow = window.open("", "glasses", "width=1000,height=800");
-            newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
-            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
-            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
-        }
-        function createFillerDrink() {
+            $(document).ready(function() {
+                console.log("index loaded");
+            });
+            function makeSuggestedGlassesBigger() {
+                let newWindow = window.open("", "glasses", "width=1000,height=800");
+                newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
+                newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
+                newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
+            }
+            function createFillerDrink() {
 
-        }
-    </script>
+            }
+        </script>
     </body>
 </html>

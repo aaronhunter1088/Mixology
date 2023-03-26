@@ -86,7 +86,7 @@
         </script>
         <div id="content" role="main">
             <div class="container">
-                <section class="row" name="navigation">
+                <section class="row" id="navigation">
                     <a href="#create-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                     <div class="nav" role="navigation">
                         <ul>

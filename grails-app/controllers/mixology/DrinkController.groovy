@@ -66,18 +66,22 @@ class DrinkController {
     }
 
     def edit(Long id) {
-        respond drinkService.get(id)
+        Drink drink = drinkService.get(id)
+        println "${drink}"
+        respond drink
     }
 
-    def update(Drink drink) {
-        if (!drink) {
+    def update(params) { // Drink drink
+        if (!params) { // !drink
             notFound()
             return
         }
-        drink.ingredients.each {
-            if (!it.drinks) it.drinks = new HashSet<Drink>()
-            if (!it.drinks.contains(drink)) it.addToDrinks(drink)
-            it.save()
+        Drink drink = createDrinkFromParams(params)
+        drink.id = Long.valueOf(params.drinkNumber)
+        drink.ingredients.each { Ingredient i ->
+            if (!i.drinks) i.drinks = new HashSet<Drink>()
+            if (!i.drinks.contains(drink)) i.addToDrinks(drink)
+            i.save()
         }
         try {
             drinkService.save(drink)
@@ -89,7 +93,7 @@ class DrinkController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                redirect drink
+                respond drink, view:'edit'
             }
             '*'{ respond drink, [status: OK] }
         }

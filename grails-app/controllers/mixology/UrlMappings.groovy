@@ -13,6 +13,10 @@ class UrlMappings {
             controller = "drink"
             action = "save"
         }
+        "/mixology/drink/update" {
+            controller = "drink"
+            action = "update"
+        }
         "/mixology/ingredient/save" {
             controller = "ingredient"
             action = "save"
