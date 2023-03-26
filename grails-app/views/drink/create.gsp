@@ -367,7 +367,8 @@
                             },
                             400: function(data) {
                                 failCount += 1;
-                                let response = JSON.parse(JSON.stringify(data['responseJSON']))
+                                //let response = JSON.parse(JSON.stringify(data['responseJSON']))
+                                let response = JSON.parse(JSON.stringify(data))
                                 let message;
                                 if (failCount === 1) {
                                     message = response.message;

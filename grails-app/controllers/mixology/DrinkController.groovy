@@ -2,6 +2,11 @@ package mixology
 
 import enums.*
 import grails.validation.ValidationException
+import groovy.sql.Sql
+import org.grails.datastore.mapping.collection.PersistentSet
+
+import java.sql.Connection
+
 import static org.apache.commons.lang3.StringUtils.isNotEmpty
 import javax.servlet.http.HttpServletResponse
 
@@ -13,8 +18,9 @@ import static org.springframework.http.HttpStatus.OK
 class DrinkController {
 
     DrinkService drinkService
+    IngredientService ingredientService
 
-    Set<Ingredient> validIngredients = []
+    Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -62,30 +68,54 @@ class DrinkController {
             '*' { respond drink, [status: CREATED] }
         }
         // clear the list
-        validIngredients = []
+        validIngredients.clear()
     }
 
     def edit(Long id) {
         Drink drink = drinkService.get(id)
-        println "${drink}"
         respond drink
     }
 
-    def update(params) { // Drink drink
-        if (!params) { // !drink
+    def update(Drink drink) { // Drink drink
+        if (!drink) { // !drink
             notFound()
             return
         }
-        Drink drink = createDrinkFromParams(params)
-        drink.id = Long.valueOf(params.drinkNumber)
+        drink.drinkName = params.drinkName
+        drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
+        drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
+        drink.drinkSymbol = params.drinkSymbol
+        drink.suggestedGlass = GlassType.valueOf(params.glass as String)
+        drink.mixingInstructions = params.instructions
+        extractIngredientsFromParams(params)
+        validIngredients.each{
+            drink.ingredients.add(it as Ingredient)
+        }
+        drink.version = (params.version as Long)
         drink.ingredients.each { Ingredient i ->
             if (!i.drinks) i.drinks = new HashSet<Drink>()
             if (!i.drinks.contains(drink)) i.addToDrinks(drink)
             i.save()
         }
+
+        // Find all ingredients currently associated with drink
+        //def sql = new Sql(grailsApplication.mainContext.getBean('dataSource') as Connection)
+        List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
+            eq('drinks.id', drink.id)
+        } as List<Ingredient> // 1,2,3,4,38
+        println "${associatedIngredientIds}"
+        for(Ingredient i : associatedIngredientIds) {
+            if ( !(i.id in drink.ingredients*.id)) {
+                println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
+                i.removeFromDrinks(drink)
+            }
+        }
         try {
+            drink.org_grails_datastore_gorm_GormValidateable__errors = null
             drinkService.save(drink)
+            validIngredients.clear()
         } catch (ValidationException e) {
+            println "exception ${e.getMessage()}"
             respond drink.errors, view:'edit'
             return
         }
@@ -132,9 +162,9 @@ class DrinkController {
         }
     }
 
-    def createDrinkFromParams(params) {
+    def extractIngredientsFromParams(params) {
+        //validIngredients = new HashSet<Ingredient>()
         List<Ingredient> allIngredients = Ingredient.list()
-
         Ingredient newIngredientFromParams
         String ingredients = params.ingredients
         if (isNotEmpty(ingredients)) {
@@ -148,7 +178,7 @@ class DrinkController {
                     newIngredientFromParams = new Ingredient([
                             name: parts[0].trim(),
                             amount: parts[1].trim(),
-                            unit  : Unit.valueOf(parts[2].trim().toUpperCase())
+                            unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
                     ])
                     for (ingredient in allIngredients) {
                         if (ingredient == newIngredientFromParams) {
@@ -164,7 +194,7 @@ class DrinkController {
                 newIngredientFromParams = new Ingredient([
                         name  : parts[0].trim(),
                         amount: parts[1].trim(),
-                        unit  : Unit.valueOf(parts[2].trim().toUpperCase())
+                        unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
                 ])
                 for (ingredient in allIngredients) {
                     if (ingredient == newIngredientFromParams) {
@@ -175,6 +205,10 @@ class DrinkController {
                 validIngredients.add(newIngredientFromParams)
             }
         }
+    }
+
+    def createDrinkFromParams(params) {
+        extractIngredientsFromParams(params)
 
         Drink drink = new Drink([
                 drinkName: params.drinkName,
@@ -188,7 +222,7 @@ class DrinkController {
                 custom: false
         ])
         // Associate all ingredients with this drink
-        validIngredients.each {
+        validIngredients.each { Ingredient it ->
             if (!it.drinks) it.drinks = new HashSet<Drink>()
             if (!it.drinks.contains(drink)) it.addToDrinks(drink)
             it.save()
@@ -246,11 +280,11 @@ class DrinkController {
         if (alreadyExists(ingredient)) { result = true }
         response.setContentType("text/plain")
         if (result) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient has already been created")
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient: "+ingredient+" has already been created")
         }
         else {
             validIngredients.add(ingredient)
-            response.getWriter().append("Ingredient is valid")
+            response.getWriter().append("Ingredient: "+ingredient+" is valid")
             response.getWriter().flush()
             response.setStatus(HttpServletResponse.SC_OK) // 200
         }

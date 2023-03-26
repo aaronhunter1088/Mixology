@@ -94,8 +94,9 @@
                         &emsp14;<g:message code="default.edit.label" args="[entityName]" />&emsp14;
                         <hr style="height:1px;background-color:#000080">
                     </legend>
-                    <g:set var="drink" scope="request"/>
-                    <g:form url="[controller:'drink', action:'update']" method="put" id="updateDrink" name="updateDrink" onsubmit="return isValid()">
+                    <g:set var="drink" scope="session"/>
+                    <g:form resource="${this.drink}" method="put" name="updateDrink">
+                        <input type="text" hidden name="version" value="${drink.version}"/>
                         <div id="update-drink1" style="width:50%;float:left;">
                             <div class="formfield" id="name">
                                 <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
