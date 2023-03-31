@@ -62,70 +62,8 @@
         </style>
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
-            <div class="container-fluid">
-                <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <g:render template="../header"/>
 
-                <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
-                    <ul class="nav navbar-nav ml-auto">
-                        <div tag="nav">
-                            <li class="dropdown" >
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#appStatus" role="button" aria-haspopup="true" aria-expanded="false">Application Status <span class="caret"></span></a>
-                                <ul class="dropdown-menu" id="appStatus" style="background-color:#000000;">
-                                    <li class="dropdown-item"><a href="#">Environment: ${grails.util.Environment.current.name}</a></li>
-                                    <li class="dropdown-item"><a href="#">App profile: ${grailsApplication.config.getProperty('grails.profile')}</a></li>
-                                    <li class="dropdown-item"><a href="#">App version:
-                                        <g:meta name="info.app.version"/></a>
-                                    </li>
-                                    <li role="separator" class="dropdown-divider"></li>
-                                    <li class="dropdown-item"><a href="#">Grails version:
-                                        <g:meta name="info.app.grailsVersion"/></a>
-                                    </li>
-                                    <li class="dropdown-item"><a href="#">Groovy version: ${GroovySystem.getVersion()}</a></li>
-                                    <li class="dropdown-item"><a href="#">JVM version: ${System.getProperty('java.version')}</a></li>
-                                    <li role="separator" class="dropdown-divider"></li>
-                                    <li class="dropdown-item"><a href="#">Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#artefacts" role="button" aria-haspopup="true" aria-expanded="false">Artefacts <span class="caret"></span></a>
-                                <ul class="dropdown-menu" id="artefacts" style="background-color:#000000;">
-                                    <li class="dropdown-header">Controllers</li>
-                                    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-                                        <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->
-                                            <li class="dropdown-item"><g:link controller="${c.logicalPropertyName}">${c.name}</g:link></li>
-                                        </g:if>
-                                    </g:each>
-                                    <li role="separator" class="dropdown-divider"></li>
-                                    <li class="dropdown-header">Search</li>
-                                    <li class="dropdown-item"><g:link controller="search" action="index">Search Page</g:link></li>
-                                    <li role="separator" class="dropdown-divider"></li>
-                                    <li class="dropdown-header">Custom Drinks</li>
-                                    <li class="dropdown-item"><g:link controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
-                                    <li role="separator" class="dropdown-divider"></li>
-                                    <li class="dropdown-item"><a href="#">Domains: ${grailsApplication.domainClasses.size()}</a></li>
-                                    <li class="dropdown-item"><a href="#">Services: ${grailsApplication.serviceClasses.size()}</a></li>
-                                    <li class="dropdown-item"><a href="#">Tag Libraries: ${grailsApplication.tagLibClasses.size()}</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#plugins" role="button" aria-haspopup="true" aria-expanded="false">Installed Plugins <span class="caret"></span></a>
-                                <ul class="dropdown-menu dropdown-menu-right" id="plugins" style="background-color:#000000;">
-                                    <g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
-                                        <li class="dropdown-item"><a href="#">${plugin.name} - ${plugin.version}</a></li>
-                                    </g:each>
-                                </ul>
-                            </li>
-                        </div>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <% def drinkService = grailsApplication.mainContext.getBean('drinkService')  %>
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
@@ -133,18 +71,18 @@
                         <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <div style="display:block;">
                             <%
-                                List tequilaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.TEQUILA }
+                                List tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).stream().collect()
                                 tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
-                                for (int i=0; i<tequilaDrinks.size(); i+=2) {
+                                for (int i=0; i<12; i+=2) {
                                     Drink drink1 = (Drink)tequilaDrinks.get(i)
-                                    if (i < tequilaDrinks.size()) {
-                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1  }
-                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1 }
+                                    if (i < 12) {
+                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); }
+                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); }
                                     }
                                     Drink drink2 = null
-                                    if (i+1 < tequilaDrinks.size()) {
-                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1  }
-                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2 }
+                                    if (i+1 < 12) {
+                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); }
+                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); }
                                     }
                             %>
                             <div style="display:inline-flex;">
@@ -291,28 +229,28 @@
                             <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                             <div style="display:block;">
                                 <%
-                                    List vodkaDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.VODKA}
+                                    List vodkaDrinks = Drink.findAllByAlcoholTypeAndCustom(Alcohol.VODKA, true).stream().collect()
                                     vodkaDrinks = vodkaDrinks.stream().limit(12).collect()
-                                    for (int i=0; i<vodkaDrinks.size(); i+=4) {
-                                        Drink drink1 = (Drink)vodkaDrinks.get(i)
-                                        if (i < vodkaDrinks.size()) {
-                                            try { drink1 = (Drink)vodkaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.VODKA); drink1.id = i+1  }
-                                            catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.VOKDA); drink1.id = i+1 }
+                                    for (int i=0; i<12; i+=4) {
+                                        Drink drink1 = null
+                                        if (i < 12) {
+                                            try { drink1 = (Drink)vodkaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.VODKA); }
+                                            catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.VODKA); }
                                         }
                                         Drink drink2 = null
-                                        if (i+1 < vodkaDrinks.size()) {
-                                            try { drink2 = (Drink)vodkaDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.VODKA); drink2.id = i+2  }
-                                            catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.VOKDA); drink2.id = i+1 }
+                                        if (i+1 < 12) {
+                                            try { drink2 = (Drink)vodkaDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.VODKA); }
+                                            catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.VODKA); }
                                         }
                                         Drink drink3 = null
-                                        if (i+2 < vodkaDrinks.size()) {
-                                            try { drink3 = (Drink)vodkaDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.VODKA); drink3.id = i+3  }
-                                            catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.VOKDA); drink3.id = i+3 }
+                                        if (i+2 < 12) {
+                                            try { drink3 = (Drink)vodkaDrinks.get(i+2); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.VODKA); }
+                                            catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.VODKA); }
                                         }
                                         Drink drink4 = null
-                                        if (i+3 < vodkaDrinks.size()) {
-                                            try { drink4 = (Drink)vodkaDrinks.get(i); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.VODKA); drink4.id = i+4  }
-                                            catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.VOKDA); drink4.id = i+4 }
+                                        if (i+3 < 12) {
+                                            try { drink4 = (Drink)vodkaDrinks.get(i+3); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.VODKA); }
+                                            catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.VODKA); }
                                         }
                                 %>
                                 <div style="display:inline-flex;">
@@ -429,22 +367,22 @@
                         <div class="card">
                             <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                             <%
-                                List ginDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.GIN}
+                                List ginDrinks = Drink.findAllByAlcoholType(Alcohol.GIN).stream().collect()
                                 ginDrinks = ginDrinks.stream().limit(9).collect()
-                                for (int i=0; i<ginDrinks.size(); i+=3) {
-                                    Drink drink1 = (Drink)ginDrinks.get(i)
-                                    if (i < tequilaDrinks.size()) {
-                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.GIN); drink1.id = i+1  }
+                                for (int i=0; i<9; i+=3) {
+                                    Drink drink1 = null
+                                    if (i < 9) {
+                                        try { drink1 = (Drink)ginDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.GIN); drink1.id = i+1  }
                                         catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.GIN); drink1.id = i+1 }
                                     }
                                     Drink drink2 = null
-                                    if (i+1 < ginDrinks.size()) {
-                                        try { drink2 = (Drink)tequilaDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.GIN); drink2.id = i+2  }
+                                    if (i+1 < 9) {
+                                        try { drink2 = (Drink)ginDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.GIN); drink2.id = i+2  }
                                         catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.GIN); drink2.id = i+1 }
                                     }
                                     Drink drink3 = null
-                                    if (i+2 < ginDrinks.size()) {
-                                        try { drink3 = (Drink)tequilaDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.GIN); drink3.id = i+3  }
+                                    if (i+2 < 9) {
+                                        try { drink3 = (Drink)ginDrinks.get(i+2); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.GIN); drink3.id = i+3  }
                                         catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.GIN); drink3.id = i+1 }
                                     }
                             %>
@@ -536,48 +474,48 @@
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                         <%
-                            List shooterDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.SHOOTER }
+                            List shooterDrinks = Drink.findAllByAlcoholType(Alcohol.SHOOTER).stream().collect()
                             //shooterDrinks = shooterDrinks.stream().limit(16).collect()
-                            for (int i=0; i<shooterDrinks.size(); i+=8) {
-                                Drink drink1 = (Drink)shooterDrinks.get(i)
-                                if (i < shooterDrinks.size()) {
-                                    try { drink1 = (Drink)shooterDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+1 }
-                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+1 }
+                            for (int i=0; i<16; i+=8) {
+                                Drink drink1 = null
+                                if (i < 16) {
+                                    try { drink1 = (Drink)shooterDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink2 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink2 = (Drink)shooterDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); drink2.id = i+2 }
-                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); drink2.id = i+2 }
+                                if (i+1 < 16) {
+                                    try { drink2 = (Drink)shooterDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink3 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink3 = (Drink)shooterDrinks.get(i); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); drink3.id = i+3 }
-                                    catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); drink1.id = i+3 }
+                                if (i+2 < 16) {
+                                    try { drink3 = (Drink)shooterDrinks.get(i+2); if (!drink3.custom) drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink4 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink4 = (Drink)shooterDrinks.get(i); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); drink4.id = i+4 }
-                                    catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); drink4.id = i+1 }
+                                if (i+3 < 16) {
+                                    try { drink4 = (Drink)shooterDrinks.get(i+3); if (!drink4.custom) drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink5 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink5 = (Drink)shooterDrinks.get(i); if (!drink5.custom) drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); drink5.id = i+5 }
-                                    catch (Exception e) { drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); drink5.id = i+5 }
+                                if (i+4 < 16) {
+                                    try { drink5 = (Drink)shooterDrinks.get(i+4); if (!drink5.custom) drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink5 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink6 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink6 = (Drink)shooterDrinks.get(i); if (!drink6.custom) drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); drink6.id = i+6 }
-                                    catch (Exception e) { drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); drink6.id = i+6 }
+                                if (i+5 < 16) {
+                                    try { drink6 = (Drink)shooterDrinks.get(i+5); if (!drink6.custom) drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink6 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink7 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink7 = (Drink)shooterDrinks.get(i); if (!drink7.custom) drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); drink7.id = i+7 }
-                                    catch (Exception e) { drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); drink7.id = i+7 }
+                                if (i+6 < 16) {
+                                    try { drink7 = (Drink)shooterDrinks.get(i+6); if (!drink7.custom) drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink7 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                                 Drink drink8 = null
-                                if (i+1 < shooterDrinks.size()) {
-                                    try { drink8 = (Drink)shooterDrinks.get(i); if (!drink8.custom) drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); drink8.id = i+8 }
-                                    catch (Exception e) { drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); drink8.id = i+8 }
+                                if (i+7 < 16) {
+                                    try { drink8 = (Drink)shooterDrinks.get(i+7); if (!drink8.custom) drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); }
+                                    catch (Exception e) { drink8 = Drink.createFillerDrink(Alcohol.SHOOTER); }
                                 }
                         %>
                         <div style="display:inline-flex;">
@@ -817,11 +755,11 @@
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <%
-                                List frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.FROZEN }
+                                List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).stream().collect()
                                 frozenDrinks = frozenDrinks.stream().limit(1).collect()
                                 Drink drink1 = null
-                                try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = 1 }
-                                catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = 1 }
+                                try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                             %>
                             <div class="card" style="background-color:mediumseagreen;width:300px;height:300px;">
                                 <div style="display:inline-flex;">
@@ -851,18 +789,18 @@
                             </div>
                         </div>
                         <%
-                            frozenDrinks = drinkService.list().each { Drink d -> d.alcoholType==Alcohol.FROZEN }
+                            frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).stream().collect()
                             frozenDrinks = frozenDrinks.stream().limit(9).collect()
-                            for (int i=1; i<frozenDrinks.size(); i+=2) {
-                                drink1 = (Drink)frozenDrinks.get(i)
-                                if (i < frozenDrinks.size()) {
-                                    try { drink1 = (Drink)frozenDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = i+1 }
-                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); drink1.id = i+1 }
+                            for (int i=1; i<9; i+=2) {
+                                drink1 = null
+                                if (i < 9) {
+                                    try { drink1 = (Drink)frozenDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                    catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 }
                                 Drink drink2 = null
-                                if (i+1 < frozenDrinks.size()) {
-                                    try { drink2 = (Drink)frozenDrinks.get(i); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.FROZEN); drink2.id = i+1 }
-                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.FROZEN); drink2.id = i+1 }
+                                if (i+1 < 9) {
+                                    try { drink2 = (Drink)frozenDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                    catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 }
                         %>
                         <div style="display:inline-flex;">

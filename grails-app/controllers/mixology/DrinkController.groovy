@@ -34,9 +34,8 @@ class DrinkController {
     }
 
     def showCustomDrinks() {
-        render(view: 'customDrinks', model: [drinks: Drink.withCriteria {
-            eq('custom', true)
-        }])
+        //render(view: 'customDrinks', model: [drinks: Drink.withCriteria {eq('custom', true)}])
+        render(view:'customDrinks')
     }
 
     def create() {
@@ -217,7 +216,9 @@ class DrinkController {
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass),
                 mixingInstructions: params.instructions,
-                ingredients: validIngredients
+                ingredients: validIngredients,
+                canBeDeleted: true,
+                custom: true
         ])
         // Associate all ingredients with this drink
         validIngredients.each { Ingredient it ->

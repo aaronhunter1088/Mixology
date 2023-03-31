@@ -11,7 +11,8 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <g:set var="entityName" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
+        <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
+        <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     </head>
     <body>
@@ -22,13 +23,14 @@
                 <div class="nav" role="navigation">
                     <ul>
                         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                        <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
+                        <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
                     </ul>
                 </div>
             </section>
             <section class="row">
                 <div id="list-ingredient" class="col-12 content scaffold-list" role="main">
-                    <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+                    <h1><g:message code="default.list.label" args="[ingredient]" /></h1>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>

@@ -163,8 +163,8 @@ class Drink implements Serializable{
                 alcoholType: alcoholType,
                 drinkSymbol: 'Fd',
                 ingredients: Ingredient.createFillerIngredients(3),
-                canBeDeleted: false,
-                custom: false
+                canBeDeleted: true,
+                custom: true
         ])
     }
 }
