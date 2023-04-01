@@ -36,6 +36,10 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#artefacts" role="button" aria-haspopup="true" aria-expanded="false">Artefacts <span class="caret"></span></a>
                         <ul class="dropdown-menu" id="artefacts" style="background-color:#000000;">
+                            <li class="dropdown-header">User Mgmt</li>
+                            <li class="dropdown-item"><g:link controller="user" action="index">Show Users</g:link></li>
+                            <li class="dropdown-item"><g:link controller="user" action="create">Create User</g:link></li>
+                            <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Controllers</li>
                             <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
                                 <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->

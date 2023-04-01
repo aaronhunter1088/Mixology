@@ -4,7 +4,6 @@
   Date: 3/25/23
   Time: 11:27 PM
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="enums.*; mixology.Drink; mixology.Ingredient;" %>
 <!DOCTYPE html>
