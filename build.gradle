@@ -35,6 +35,8 @@ configurations {
 }
 
 dependencies {
+    // codec
+    implementation 'commons-codec:commons-codec:1.5'
     // string utils
     implementation "org.apache.commons:commons-lang3:3.12.0"
     // mysql
