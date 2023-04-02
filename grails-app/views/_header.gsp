@@ -45,11 +45,17 @@
                             <li class="dropdown-item"><g:link controller="user" action="create">Create User</g:link></li>
                             <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Controllers</li>
-                            <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-                                <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->
-                                    <li class="dropdown-item"><g:link controller="${c.logicalPropertyName}">${c.name}</g:link></li>
-                                </g:if>
-                            </g:each>
+                            <li class="dropdown-item"><g:link controller="login" action="index">Login</g:link></li>
+                            <li class="dropdown-item"><g:link controller="logout" action="index">Logout</g:link></li>
+                            <li class="dropdown-item"><g:link controller="drink" action="index">Drink</g:link></li>
+                            <li class="dropdown-item"><g:link controller="ingredient" action="index">Ingredient</g:link></li>
+                            <li class="dropdown-item"><g:link controller="secure" action="index">Drink</g:link></li>
+                            <!-- Something is causing the Login and Logout Controllers to repeat twice. But just them. manually adding for now -->
+%{--                            <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">--}%
+%{--                                <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->--}%
+%{--                                    <li class="dropdown-item"><g:link controller="${c.logicalPropertyName}">${c.name}</g:link></li>--}%
+%{--                                </g:if>--}%
+%{--                            </g:each>--}%
                             <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Search</li>
                             <li class="dropdown-item"><g:link controller="search" action="index">Search Page</g:link></li>

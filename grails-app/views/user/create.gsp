@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -134,7 +135,7 @@
                         &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                         <hr style="height:1px;background-color:#007bff">
                     </legend>
-                    <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser">
+                    <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data">
                         <div id="create-user" style="text-align:left;float:left;">
                             <div class="formfield" style="">
                                 <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
@@ -163,17 +164,19 @@
                             <div class="formfield">
                                 <label for='password'><span class='required-indicator'>*</span> Password</label>
                                 <div class="input-wrapper">
-                                    <input type="text" name="password" value="" required="" id="password" />
+                                    <input type="password" name="password" value="" required="" id="password" />
+                                    <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                 </div>
                             </div>
                             <div class="formfield">
                                 <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
                                 <div class="input-wrapper">
-                                    <input type="text" name="passwordConfirm" value="" required="" id="passwordConfirm" />
+                                    <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
+                                    <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='photo'>Photo</label>
+                                <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
                                 <div id="uploadPhoto" onclick="document.getElementById('photo').click();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
                                     <span style="margin-top:5px;">Upload</span>
                                     <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
@@ -193,6 +196,19 @@
         $(document).ready(function() {
             console.log("create page loaded");
         });
+        function showPassword(inputField) {
+            let passwordField = document.getElementById(inputField);
+            let icon = document.getElementById('toggle'+inputField)
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.setAttribute('class', '');
+                icon.setAttribute('class', 'fa fa-fw fa-eye-slash');
+            } else {
+                passwordField.type = "password";
+                icon.setAttribute('class', '');
+                icon.setAttribute('class', 'fa fa-fw fa-eye');
+            }
+        }
     </script>
 </body>
 </html>

@@ -6,7 +6,7 @@ import grails.gorm.services.Service
 interface UserService {
 
     User get(Serializable id)
-    User findByUsername(String email) // findByUsername
+    User findByUsername(String username)
 
     List<User> list(Map args)
 
@@ -14,6 +14,6 @@ interface UserService {
 
     void delete(Serializable id)
 
-    User save(User ingredient)
+    User save(User user)
 
 }

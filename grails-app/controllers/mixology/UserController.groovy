@@ -3,18 +3,22 @@ package mixology
 import grails.validation.ValidationException
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartRequest
+
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
-//import grails.plugins.springsecurity.annotated.Secured
+import java.security.SecureRandom
 
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
 class UserController {
 
+    RoleService roleService
     UserService userService
+    UserRoleService userRoleService
 
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
@@ -31,60 +35,105 @@ class UserController {
         respond user
     }
 
-    def save(params) {
-        if (!params) {
+    def save(User user) {
+        if (!user) {
             notFound()
             return
         }
-        User user = createUserFromParams(params)
+        MultipartRequest multipartRequest =  request as MultipartRequest
+        MultipartFile file = multipartRequest.getFile('photo')
+        def role = roleService.findByAuthority(enums.Role.USER.name)
+        user = createUserFromParams(user, params, file)
         try {
-            userService.save(user)
+            user.validate()
+            if (!user.errors.hasErrors()) {
+                user = userService.save(user)
+                def userRole = UserRole.create user, role
+                userRoleService.save(userRole)
+            }
         } catch (ValidationException e) {
             println "exception ${e.getMessage()}"
             respond user.errors, view:'create'
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.saved.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                respond user, view:'show'
+        if (user.errors.hasErrors()) {
+            request.withFormat {
+                form multipartForm {
+                    respond user.errors, view:'create'
+                }
+                '*'{ respond user.errors, [status: 400] }
             }
-            '*'{ respond user, [status: OK] }
+        }
+        else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
+                    respond user, view:'show'
+                }
+                '*'{ respond user, [status: OK] }
+            }
         }
     }
 
-    def createUserFromParams(params) {
+    def createUserFromParams(user, params, file) {
+        if (params.password != params.passwordConfirm) {
+            user.errors.reject('default.invalid.user.password.instance',
+                    [params.password, params.passwordConfirm] as Object[],
+                    '[Password and PasswordConfirm do not match]')
+            println "Password and PasswordConfirm do not match"
+            //respond user.errors, view: 'create'
+            return user
+        }
 //        byte[] fileContent = FileUtils.readFileToByteArray(new File(params.photo as String))
 //        String encodedString = Base64.getEncoder().encodeToString(fileContent)
         try {
-            String reduced = reduceImageSize(params.photo as String)
-            return new User([
+            String reduced = reduceImageSize(file)
+            user = new User([
                     firstName: params.firstName,
                     lastName: params.lastName,
+                    username: params.email,
                     email: params.email,
+                    password: params.password,
                     mobileNumber: params.cellphone,
                     photo: reduced ?: ''
             ])
+            return user
         } catch (Exception e) {
             println "Exception creating new user ${e.getMessage()}"
             notFound()
         }
     }
 
-    def reduceImageSize(photo) {
-        if (!photo) return ''
+//    def createUsername(params) {
+//        int count = User.withCriteria {
+//            eq('username', params.firstName.toString()[0].toLowerCase() + params.lastName.toString().toLowerCase())
+//        }.collect().size()
+//        if (count == 0) params.firstName.toString()[0].toLowerCase() + params.lastName.toString().toLowerCase()
+//        else {
+//            params.firstName.toString()[0].toLowerCase() +
+//                    params.lastName.toString().toLowerCase() + '_' + params.mobileNumber
+//        }
+//    }
+
+    def reduceImageSize(file) {
         int size = 200// size of the new image.
         //take the file as inputstream.
+        //MultipartFile file = request.getFile('photo')
+        String encodedString = ''
+        if (!file) return encodedString
+        encodedString = Base64.getEncoder().encodeToString(file.getBytes() as byte[])
         //byte[] fileContent = FileUtils.readFileToByteArray(photo)
         //String encodedString = Base64.getEncoder().encodeToString(fileContent)
-        InputStream imageStream = new FileInputStream(photo)
+        InputStream imageStream = new ByteArrayInputStream(file.getBytes() as byte[])
         //read the image as a BufferedImage.
         BufferedImage image = ImageIO.read(imageStream)
         //cal the scaleImage method.
         BufferedImage newImage = scaleImage(image, size)
-        byte[] fileContent = FileUtils.readFileToByteArray(new File(newImage.toString()))
-        String encodedString = Base64.getEncoder().encodeToString(fileContent)
+        File outputfile = new File("image.jpg")
+        ImageIO.write(newImage, "png", outputfile)
+        byte[] fileContent = FileUtils.readFileToByteArray(outputfile)
+        encodedString = Base64.getEncoder().encodeToString(fileContent)
 
         return encodedString
         //String path = getServletContext().getRealPath("/image");
@@ -113,7 +162,7 @@ class UserController {
         // scaledHeight = scaledImage.getHeight(null);
         BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB)
         Graphics2D g = scaledBI.createGraphics()
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        //g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
         g.drawImage(scaledImage, 0, 0, null)
         g.dispose()
         return (scaledBI)
@@ -128,7 +177,8 @@ class UserController {
         if (!user) {
             notFound()
         }
-        MultipartFile file = request.getFile('photo')
+        MultipartRequest multipartRequest =  request as MultipartRequest
+        MultipartFile file = multipartRequest.getFile('photo')
         //byte[] fileContent = FileUtils.readFileToByteArray(new File(file.toString()))
         String encodedString = ''
         if (file) encodedString = Base64.getEncoder().encodeToString(file.getBytes())

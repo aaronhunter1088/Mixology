@@ -1,5 +1,6 @@
 package mixology
 
+import validators.*
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
@@ -20,7 +21,7 @@ class User implements Serializable {
     String username
     String email
     String password
-    String passwordConfirm
+    transient passwordConfirm
     String mobileNumber
     String photo
 
@@ -34,10 +35,9 @@ class User implements Serializable {
     static constraints = {
         firstName(nullable: false)
         lastName(nullable: false)
-        username(blank: false, unique: true)
-        email(nullable: false, blank: false, unique: true) // used as username
-        password(nullable: false, blank: false, password: true)
-        passwordConfirm(nullable: false)
+        username(blank: false, unique: true,)
+        email(nullable: false, blank: false, unique: true, email: true, validator: EmailValidator.emailValidator) // used as username
+        password(nullable: false, blank: false, password: true, size:6..15, validator: PasswordValidator.passwordValidator)
         mobileNumber(size:10..10, nullable: true)
         photo(sqlType: 'LONGBLOB', nullable: true, blank: true)
     }

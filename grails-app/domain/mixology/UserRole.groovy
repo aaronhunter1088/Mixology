@@ -14,6 +14,7 @@ class UserRole implements Serializable {
 
 	User user
 	Role role
+	//def userRoleService
 
 	@Override
 	boolean equals(other) {
@@ -22,17 +23,17 @@ class UserRole implements Serializable {
 		}
 	}
 
-    @Override
-	int hashCode() {
-	    int hashCode = HashCodeHelper.initHash()
-        if (user) {
-            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
-		}
-		if (role) {
-		    hashCode = HashCodeHelper.updateHash(hashCode, role.id)
-		}
-		hashCode
-	}
+//    @Override
+//	int hashCode() {
+//	    int hashCode = HashCodeHelper.initHash()
+//        if (user) {
+//            hashCode = HashCodeHelper.updateHash(hashCode, user.id)
+//		}
+//		if (role) {
+//		    hashCode = HashCodeHelper.updateHash(hashCode, role.id)
+//		}
+//		hashCode
+//	}
 
 	static UserRole get(long userId, long roleId) {
 		criteriaFor(userId, roleId).get()
