@@ -15,14 +15,7 @@ class AuthenticationProvider extends DaoAuthenticationProvider {
             UserDetails userDetails, UsernamePasswordAuthenticationToken authentication)
             throws AuthenticationException {
 
-        //super.additionalAuthenticationChecks(userDetails, authentication)
-        String presentedPassword = authentication.getCredentials().toString()
-        String encodedPresented = this.passwordEncoder.encode(presentedPassword)
-        if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-            this.logger.debug("Failed to authenticate since password does not match stored value")
-            throw new BadCredentialsException(this.messages
-                    .getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"))
-        }
+        super.additionalAuthenticationChecks(userDetails, authentication)
 
         Object details = authentication.details
 

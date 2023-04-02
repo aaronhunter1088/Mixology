@@ -3,13 +3,10 @@ package mixology
 import grails.gorm.services.Service
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
-import grails.plugin.springsecurity.userdetails.NoStackUsernameNotFoundException
 import grails.gorm.transactions.Transactional
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Service
 class CustomUserDetailsService implements GrailsUserDetailsService {

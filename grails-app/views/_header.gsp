@@ -4,10 +4,14 @@
   Date: 3/26/23
   Time: 9:33 PM
 --%>
-
+<%@ page import="mixology.User;" %>
 <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
     <div class="container-fluid">
         <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
+        <sec:ifLoggedIn>
+            <% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>
+            <h1>Hello, ${User.findByUsername(springSecurityService.authentication.getPrincipal().username)}</h1>
+        </sec:ifLoggedIn>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

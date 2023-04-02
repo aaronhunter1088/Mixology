@@ -10,7 +10,7 @@ class UrlMappings {
         }
 
         "/login/$action?"(controller: "login")
-        //"/logout/$action?"(controller: "logout")
+        "/logout/$action?"(controller: "logout")
 
         "/mixology/drink/save" {
             controller = "drink"
