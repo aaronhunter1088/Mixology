@@ -129,73 +129,87 @@
                     </ul>
                 </g:hasErrors>
             </div>
-            <div style="display:flex;justify-content:center;">
-                <fieldset style="border:thick solid #007bff;">
-                    <legend style="margin-left:25px;width:auto;">
-                        &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
-                        <hr style="height:1px;background-color:#007bff">
-                    </legend>
-                    <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data">
-                        <div id="create-user" style="text-align:left;float:left;">
-                            <div class="formfield" style="">
-                                <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
-                                <div class="input-wrapper">
-                                    <input type="text" name="firstName" value="" required="" id="firstName" />
+            <section class="row">
+                <div id="edit-user" class="col-12 scaffold-show" role="main">
+                    <h1>Create User</h1>
+                    <g:if test="${flash.message}">
+                        <div class="message" role="status">${flash.message}</div>
+                    </g:if>
+                    <div style="display:flex;justify-content:center;">
+                        <fieldset style="border:thick solid #007bff;">
+                            <legend style="margin-left:25px;width:auto;">
+                                &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
+                                <hr style="height:1px;background-color:#007bff">
+                            </legend>
+                            <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data">
+                                <div id="create-user" style="text-align:left;float:left;">
+                                    <div class="formfield" style="">
+                                        <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" name="firstName" value="" required="" id="firstName" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" name="lastName" value="" required="" id="lastName" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='email'><span class='required-indicator'>*</span> Email</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" name="email" value="" required="" id="email" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" name="cellphone" value="" required="" id="cellphone" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='password'><span class='required-indicator'>*</span> Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" name="password" value="" required="" id="password" />
+                                            <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
+                                            <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                        </div>
+                                    </div>
+                                    <div class="formfield">
+                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
+                                        <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
+                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
+                                            <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
+                                        </div>
+                                    </div>
+                                    <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                                        <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
-                                <div class="input-wrapper">
-                                    <input type="text" name="lastName" value="" required="" id="lastName" />
-                                </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='email'><span class='required-indicator'>*</span> Email</label>
-                                <div class="input-wrapper">
-                                    <input type="text" name="email" value="" required="" id="email" />
-                                </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
-                                <div class="input-wrapper">
-                                    <input type="text" name="cellphone" value="" required="" id="cellphone" />
-                                </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='password'><span class='required-indicator'>*</span> Password</label>
-                                <div class="input-wrapper">
-                                    <input type="password" name="password" value="" required="" id="password" />
-                                    <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
-                                </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
-                                <div class="input-wrapper">
-                                    <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
-                                    <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
-                                </div>
-                            </div>
-                            <div class="formfield">
-                                <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
-                                <div id="uploadPhoto" onclick="document.getElementById('photo').click();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
-                                    <span style="margin-top:5px;">Upload</span>
-                                    <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
-                                </div>
-                            </div>
-                            <div class="formfield" style="margin-top:25px;padding-left:50%;">
-                                <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
-                            </div>
-                        </div>
-                    </g:form>
-                </fieldset>
-            </div>
+                            </g:form>
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            console.log("create page loaded");
+            console.log("create-user page loaded");
         });
+        function upload() {
+            document.getElementById('photo').click();
+            document.getElementById('photo').oninput = function() {
+                document.getElementById('uploadSpan').innerText = 'Uploaded';
+            };
+        }
         function showPassword(inputField) {
             let passwordField = document.getElementById(inputField);
             let icon = document.getElementById('toggle'+inputField)

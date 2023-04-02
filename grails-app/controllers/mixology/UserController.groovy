@@ -121,7 +121,7 @@ class UserController {
         //take the file as inputstream.
         //MultipartFile file = request.getFile('photo')
         String encodedString = ''
-        if (!file) return encodedString
+        if (!file.filename) return encodedString
         encodedString = Base64.getEncoder().encodeToString(file.getBytes() as byte[])
         //byte[] fileContent = FileUtils.readFileToByteArray(photo)
         //String encodedString = Base64.getEncoder().encodeToString(fileContent)
@@ -134,7 +134,8 @@ class UserController {
         ImageIO.write(newImage, "png", outputfile)
         byte[] fileContent = FileUtils.readFileToByteArray(outputfile)
         encodedString = Base64.getEncoder().encodeToString(fileContent)
-
+        // remove file before returning
+        outputfile.delete();
         return encodedString
         //String path = getServletContext().getRealPath("/image");
         //write file.
