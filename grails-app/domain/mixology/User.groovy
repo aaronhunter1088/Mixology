@@ -1,15 +1,23 @@
 package mixology
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import grails.compiler.GrailsCompileStatic
 
-import org.apache.commons.*
-import org.apache.commons.io.*
-
-@ToString
+//@GrailsCompileStatic
+@EqualsAndHashCode(includes='username')
+@ToString(includes='username', includeNames=true, includePackage=false)
 class User implements Serializable {
 
+    private static final long serialVersionUID = 1
+
+    boolean enabled = true
+    boolean accountExpired
+    boolean accountLocked
+    boolean passwordExpired
     String firstName
     String lastName
+    String username
     String email
     String password
     String passwordConfirm
@@ -26,11 +34,12 @@ class User implements Serializable {
     static constraints = {
         firstName(nullable: false)
         lastName(nullable: false)
+        username(blank: false, unique: true)
         email(nullable: false, blank: false, unique: true) // used as username
         password(nullable: false, blank: false, password: true)
         passwordConfirm(nullable: false)
-        mobileNumber(size:10..10, nullable: false)
-        photo(sqlType: 'LONGBLOB', nullable: true)
+        mobileNumber(size:10..10, nullable: true)
+        photo(sqlType: 'LONGBLOB', nullable: true, blank: true)
     }
 
     static mapping = {
@@ -47,17 +56,17 @@ class User implements Serializable {
         UserRole.findAllByUser(this)*.role
     }
 
-    def beforeInsert() { encodePassword() }
+    //def beforeInsert() { encodePassword() }
 
-    def beforeUpdate() {
-        if (isDirty('password')) {
-            encodePassword()
-        }
-    }
+    //def beforeUpdate() {
+    //    if (isDirty('password')) {
+    //        encodePassword()
+    //    }
+    //}
 
-    protected void encodePassword() {
-        password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
-    }
+    //protected void encodePassword() {
+    //    password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    //}
 
 }
 

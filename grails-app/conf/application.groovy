@@ -1,13 +1,21 @@
 
 
 // Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'mixology.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'mixology.UserRole'
 grails.plugin.springsecurity.authority.className = 'mixology.Role'
+
+grails.plugin.springsecurity.providerNames = [
+		'daoAuthenticationProvider',
+		'anonymousAuthenticationProvider',
+		'rememberMeAuthenticationProvider']
+
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],
 	[pattern: '/error',          access: ['permitAll']],
 	[pattern: '/index',          access: ['permitAll']],
+	[pattern: '/user/**',	     access: ['permitAll']],
 	[pattern: '/index.gsp',      access: ['permitAll']],
 	[pattern: '/shutdown',       access: ['permitAll']],
 	[pattern: '/assets/**',      access: ['permitAll']],

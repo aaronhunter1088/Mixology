@@ -13,7 +13,7 @@ buildscript {
 }
 
 version "0.1"
-group "mygrailsapp"
+group "mixology"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
@@ -26,7 +26,7 @@ apply plugin:"com.bertramlabs.asset-pipeline"
 repositories {
     mavenCentral()
     maven { url "https://repo.grails.org/grails/core" }
-    maven { url "https://repo.spring.io/milestone/" }
+    //maven { url "https://repo.spring.io/milestone/" }
 }
 
 configurations {
@@ -37,7 +37,11 @@ configurations {
 }
 
 dependencies {
+    compileOnly "org.grails:grails-core"
+    compileOnly "org.grails:grails-dependencies"
+    profile "org.grails.profiles:web"
     // spring security core
+    implementation "org.springframework.security:spring-security-core:6.0.2"
     implementation "org.grails.plugins:spring-security-core:4.0.3"
     // codec
     implementation "commons-codec:commons-codec:1.5"

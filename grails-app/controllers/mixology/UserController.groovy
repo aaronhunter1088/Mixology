@@ -1,17 +1,13 @@
 package mixology
 
-import grails.converters.JSON
 import grails.validation.ValidationException
-import org.apache.commons.fileupload.FileItem
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.MultipartHttpServletRequest
-
 import javax.imageio.ImageIO
-import javax.swing.ImageIcon
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
+//import grails.plugins.springsecurity.annotated.Secured
 
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
@@ -19,8 +15,6 @@ import static org.springframework.http.HttpStatus.OK
 class UserController {
 
     UserService userService
-
-//    def imageFile
 
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
@@ -136,7 +130,8 @@ class UserController {
         }
         MultipartFile file = request.getFile('photo')
         //byte[] fileContent = FileUtils.readFileToByteArray(new File(file.toString()))
-        String encodedString = Base64.getEncoder().encodeToString(file.getBytes())
+        String encodedString = ''
+        if (file) encodedString = Base64.getEncoder().encodeToString(file.getBytes())
         try {
             user.firstName = params.firstName
             user.lastName = params.lastName
@@ -144,7 +139,7 @@ class UserController {
             user.password = params.password
             user.passwordConfirm = params.passwordConfirm
             //String reduced = reduceImageSize(file.toString())
-            user.photo = encodedString as String
+            if (file) user.photo = encodedString as String
             user.org_grails_datastore_gorm_GormValidateable__errors = null
             userService.save(user)
         } catch (ValidationException e) {
