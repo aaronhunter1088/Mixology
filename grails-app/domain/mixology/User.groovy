@@ -6,7 +6,7 @@ import org.apache.commons.*
 import org.apache.commons.io.*
 
 @ToString
-class User {
+class User implements Serializable {
 
     String firstName
     String lastName
@@ -16,34 +16,48 @@ class User {
     String mobileNumber
     String photo
 
-    static hasMany = [drinks:Drink]
+    transient springSecurityService
+
+    static hasMany = [
+        drinks:Drink,
+        roles:UserRole
+    ]
 
     static constraints = {
         firstName(nullable: false)
         lastName(nullable: false)
-        email(nullable: false)
-        password(nullable: false)
+        email(nullable: false, blank: false, unique: true) // used as username
+        password(nullable: false, blank: false, password: true)
         passwordConfirm(nullable: false)
         mobileNumber(size:10..10, nullable: false)
         photo(sqlType: 'LONGBLOB', nullable: true)
     }
 
+    static mapping = {
+        password column: '`password`'
+        autowire true
+    }
+
     @Override
     String toString() { firstName + ' ' + lastName }
 
-    static transients = ['']
+    static transients = ['springSecurityService']
 
-//    String getImage() {
-//        String logoPath = this.getPhoto()
-//        logoPath = logoPath.replace('/','').replace('..','')
-//        File logo = new File(logoPath)
-////        String base64 = Base64.getEncoder().encode(IOUtils.toByteArray(logoPath))
-////        byte[] bytes = IOUtils.toByteArray(base64)
-////        return bytes
-//        byte[] fileContent = FileUtils.readFileToByteArray(logo)
-//        String encodedString = Base64.getEncoder().encodeToString(fileContent)
-//        return encodedString
-//    }
+    Set<Role> getAuthorities() {
+        UserRole.findAllByUser(this)*.role
+    }
+
+    def beforeInsert() { encodePassword() }
+
+    def beforeUpdate() {
+        if (isDirty('password')) {
+            encodePassword()
+        }
+    }
+
+    protected void encodePassword() {
+        password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+    }
 
 }
 

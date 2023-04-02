@@ -3,7 +3,7 @@ package mixology
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class SearchServiceSpec extends Specification implements ServiceUnitTest<SearchService>{
+class RoleServiceSpec extends Specification implements ServiceUnitTest<RoleService>{
 
     def setup() {
     }
