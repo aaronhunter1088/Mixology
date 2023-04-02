@@ -22,7 +22,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </head>
 
-<body>
+<body style="overflow-x:scroll;">
     <div id="content">
         <div class="container">
             <section class="row">
@@ -40,7 +40,7 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <f:table collection="${userList}" />
+                    <f:table collection="${userList}"/>
 
                     <g:if test="${userCount > params.int('max')}">
                         <div class="pagination">

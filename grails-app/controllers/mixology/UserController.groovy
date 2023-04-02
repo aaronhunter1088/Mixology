@@ -1,5 +1,6 @@
 package mixology
 
+import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
@@ -20,11 +21,13 @@ class UserController {
     UserService userService
     UserRoleService userRoleService
 
+    @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
         respond userService.list(params), model:[userCount: userService.count()]
     }
 
+    @Secured(['ROLE_ADMIN, ROLE_USER'])
     def show(Long id) {
         respond userService.get(id)
     }

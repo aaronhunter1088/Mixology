@@ -43,7 +43,10 @@ environments:
         management:
             endpoints:
                 enabled-by-default: false
-
+---
+server:
+    session:
+        timeout: 3600  #seconds
 ---
 grails:
     mime:

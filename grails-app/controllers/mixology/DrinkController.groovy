@@ -1,6 +1,7 @@
 package mixology
 
 import enums.*
+import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.sql.Sql
 import org.grails.datastore.mapping.collection.PersistentSet
@@ -33,11 +34,13 @@ class DrinkController {
         respond drinkService.get(id)
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def showCustomDrinks() {
         //render(view: 'customDrinks', model: [drinks: Drink.withCriteria {eq('custom', true)}])
         render(view:'customDrinks')
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def create() {
         Drink drink = new Drink(params)
         respond drink

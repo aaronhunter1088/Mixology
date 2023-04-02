@@ -136,7 +136,8 @@
                     </p>
 
                     <p>
-                        <input type="submit" id="submit" value="${message(code: 'springSecurity.login.button')}"/>
+                        <a class="btn btn-secondary btn-xs" class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+                        <input class="btn btn-primary btn-xs" type="submit" id="submit" value="${message(code: 'springSecurity.login.button')}"/>
                     </p>
                 </form>
             </div>
