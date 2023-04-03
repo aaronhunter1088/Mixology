@@ -19,7 +19,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
+        <g:set var="drinkObj" value="${message(code: 'drink.label', default: 'Drink')}" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <style>
             .formfield {
@@ -71,8 +71,8 @@
                     <div class="nav" role="navigation">
                         <ul>
                             <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-                            <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                            <li><g:link class="list" action="index"><g:message code="default.list.label" args="[drinkObj]" /></g:link></li>
+                            <li><g:link class="create" action="create"><g:message code="default.new.label" args="[drinkObj]" /></g:link></li>
                         </ul>
                     </div>
                 </section>
@@ -90,7 +90,7 @@
                 </div>
                 <fieldset style="border:thick solid #000080;">
                     <legend style="margin-left:25px;width:auto;">
-                        &emsp14;<g:message code="default.edit.label" args="[entityName]" />&emsp14;
+                        &emsp14;<g:message code="default.edit.label" args="[drinkObj]" />&emsp14;
                         <hr style="height:1px;background-color:#000080">
                     </legend>
                     <g:set var="drink" scope="session"/>
@@ -180,7 +180,8 @@
                             </div>
                         </div>
                         <div class="formfield" style="margin-top:25px;padding-left:50%;">
-                            <button id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateDrink">Update</button>
+                            <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/drink/show/${drink.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
+                            <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateDrink">Update</button>
                         </div>
                     </g:form>
                 </fieldset>

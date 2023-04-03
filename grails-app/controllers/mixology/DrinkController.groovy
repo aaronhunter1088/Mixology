@@ -34,7 +34,7 @@ class DrinkController {
         respond drinkService.get(id)
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
         //render(view: 'customDrinks', model: [drinks: Drink.withCriteria {eq('custom', true)}])
         render(view:'customDrinks')
@@ -52,10 +52,8 @@ class DrinkController {
             return
         }
         Drink drink = createDrinkFromParams(params)
-        // take away once all default drinks have been created. all user's custom drinks are valid to delete. default drinks are not
-        //if (!drink.canBeDeleted) drink.canBeDeleted = true
         try {
-            drinkService.save(drink)
+            if (drink.isCustom()) drinkService.save(drink)
         }
         catch (ValidationException e) {
             respond drink.errors, view:'create'
