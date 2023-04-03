@@ -1,11 +1,10 @@
 package mixology
 
-import grails.validation.ValidationErrors
+
 import grails.validation.ValidationException
 import enums.Unit
 
 import javax.servlet.http.HttpServletResponse
-import java.util.function.Predicate
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -128,7 +127,7 @@ class IngredientController {
         try {
             ingredientService.save(ingredient)
         } catch (ValidationException e) {
-            respond ingredient.errors, view:'edit'
+            respond ingredient.errors, view:'originalEdit'
             return
         }
 

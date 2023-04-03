@@ -64,7 +64,7 @@
     </head>
 
     <body>
-        <div id="content" role="main">
+        <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
                     <a href="#edit-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -156,7 +156,7 @@
                         </div>
                         <div id="update-drink2" style="width:50%;display:block;float:right;">
                             <div class="formfield">
-                                <label><span class='required-indicator'>*</span> Ingredients</label><br>
+                                <label style="text-align:right;padding-right:30px;"><span class='required-indicator'>*</span> Ingredients</label><br>
                                 <div style="margin-top:-25px;height:419px;overflow-y:auto;">
                                     <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
                                         <g:if test="${drink.ingredients.contains(ingredient)}">
@@ -179,7 +179,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                        <div class="formfield" style="margin-top:25px;text-align:center;">
                             <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/drink/show/${drink.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
                             <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateDrink">Update</button>
                         </div>
