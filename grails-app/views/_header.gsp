@@ -62,7 +62,9 @@
                             <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Drinks</li>
                             <li class="dropdown-item"><g:link url="${createLink(uri: '/')}">Default Drinks</g:link></li>
-                            <li class="dropdown-item"><g:link controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
+                            <sec:ifLoggedIn>
+                                <li class="dropdown-item"><g:link controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
+                            </sec:ifLoggedIn>
                             <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-item"><a href="#">Domains: ${grailsApplication.domainClasses.size()}</a></li>
                             <li class="dropdown-item"><a href="#">Services: ${grailsApplication.serviceClasses.size()}</a></li>
