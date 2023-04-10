@@ -5,6 +5,7 @@ import grails.validation.ValidationException
 import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartRequest
+import validators.PasswordValidator
 
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
@@ -27,7 +28,7 @@ class UserController {
         respond userService.list(params), model:[userCount: userService.count()]
     }
 
-    @Secured(['ROLE_ADMIN, ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def show(Long id) {
         respond userService.get(id)
     }
@@ -43,21 +44,36 @@ class UserController {
             notFound()
             return
         }
-        MultipartRequest multipartRequest =  request as MultipartRequest
-        MultipartFile file = multipartRequest.getFile('photo')
-        def role = roleService.findByAuthority(enums.Role.USER.name)
-        user = createUserFromParams(user, params, file)
-        try {
-            user.validate()
-            if (!user.errors.hasErrors()) {
-                user = userService.save(user)
-                def userRole = UserRole.create user, role
-                userRoleService.save(userRole)
+        if (!Boolean.valueOf(params.passwordsMatch)) {
+            user.clearErrors()
+            user.errors.reject('default.invalid.user.password.instance',
+                    [params.password, params.passwordConfirm] as Object[],
+                    '[Password and PasswordConfirm do not match]')
+            println "Password and PasswordConfirm do not match"
+            request.withFormat {
+                form multipartForm {
+                      respond user.errors, view:'create'
+                }
+                '*'{ respond user.errors, view:'create' }
             }
-        } catch (ValidationException e) {
-            println "exception ${e.getMessage()}"
-            respond user.errors, view:'create'
             return
+        } else {
+            MultipartRequest multipartRequest = request as MultipartRequest
+            MultipartFile file = multipartRequest.getFile('photo')
+            def role = roleService.findByAuthority(enums.Role.USER.name)
+            user = createUserFromParams(user, params, file)
+            try {
+                user.validate()
+                if (!user.errors.hasErrors()) {
+                    user = userService.save(user)
+                    def userRole = UserRole.create user, role
+                    userRoleService.save(userRole)
+                }
+            } catch (ValidationException e) {
+                println "exception ${e.getMessage()}"
+                respond user.errors, view:'create'
+                return
+            }
         }
 
         if (user.errors.hasErrors()) {

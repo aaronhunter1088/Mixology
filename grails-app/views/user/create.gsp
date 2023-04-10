@@ -141,7 +141,8 @@
                                 &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                                 <hr style="height:1px;background-color:#007bff">
                             </legend>
-                            <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data">
+                            <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data" onsubmit="return isValid();">
+                                <g:hiddenField id="passwordsMatch" name="passwordsMatch" value="false" />
                                 <div id="create-user" style="text-align:left;float:left;">
                                     <div class="formfield" style="">
                                         <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
@@ -222,6 +223,12 @@
                 icon.setAttribute('class', '');
                 icon.setAttribute('class', 'fa fa-fw fa-eye');
             }
+        }
+        function isValid() {
+            let matching = $('#password').val() === $('#passwordConfirm').val();
+            $('#passwordsMatch').val(matching)
+            console.log("Passwords match?: " + matching);
+            return matching = true; // hidden field set
         }
     </script>
 </body>

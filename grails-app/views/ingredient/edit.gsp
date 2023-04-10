@@ -154,7 +154,7 @@
                             </div>
                             <div class="formfield" style="margin-top:25px;text-align:center;">
                                 <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/ingredient/show/${ingredient.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
-                                <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateDrink">Update</button>
+                                <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateIngredient">Update</button>
                             </div>
                         </g:form>
                     </fieldset>

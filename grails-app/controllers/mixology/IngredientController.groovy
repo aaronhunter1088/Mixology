@@ -14,6 +14,7 @@ import static org.springframework.http.HttpStatus.OK
 class IngredientController {
 
     IngredientService ingredientService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -36,12 +37,16 @@ class IngredientController {
             notFound()
             return
         }
-        Ingredient errorI = new Ingredient()
+        Ingredient errorI
         List<Ingredient> ingredientErrors = []
         List<Ingredient> ingredients = createIngredientsFromParams(params)
         int savedCount = 0
+        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
             ingredients.each { ingredient ->
+                errorI = new Ingredient()
+                // if ingredient already exists, should not save
                 if (alreadyExists(ingredient)) {
                     errorI.name = ingredient.name
                     errorI.unit = ingredient.unit
@@ -50,9 +55,22 @@ class IngredientController {
                             [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
                             '[Ingredient has already been created]')
                     println "ingredient.name ${ingredient.name} already exists"
-                    ingredientErrors.add(errorI)
-                    //respond ingredient.errors, view:'create'
-                    //return
+                    ingredientErrors << errorI
+                }
+                // if ingredient is not custom and user is not admin user
+                else if (!ingredient.isCustom() && !adminRole)  {
+                    errorI.name = ingredient.name
+                    errorI.unit = ingredient.unit
+                    errorI.amount = ingredient.amount
+                    errorI.errors.reject('default.invalid.ingredient.instance',
+                        [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                        '[You cannot save a default ingredient]')
+                    println "You cannot save a default ingredient"
+                    ingredientErrors << errorI
+                }
+                // if ingredient is custom and user has either role
+                else if (ingredient.isCustom() && (!adminRole || !userRole)) {
+                    // TODO: Implement
                 }
                 else {
                     ingredientService.save(ingredient)
@@ -70,7 +88,7 @@ class IngredientController {
         List<Long> ingredientIds = ingredients*.id
         ingredientIds.removeAll([null])
         //ingredients.removeAll([isNull])
-        if (ingredientIds.size() == 1) {
+        if (!ingredientIds.isEmpty()) {
             request.withFormat {
                 form multipartForm {
                     if (ingredientIds.size() == 1) {
@@ -84,30 +102,29 @@ class IngredientController {
             }
         }
         else {
-            request.withFormat {
-                form multipartForm {
-                    if (ingredientIds.size() == 1) {
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
-                    } else if (ingredientIds.size() > 1) {
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds.each { id ->
-                            id + " "
-                        }])
-                    } else {
-                        flash.message = ''
-                    }
-                    redirect(controller: "ingredient", action: "create")
+            if (ingredientErrors.size() == 1) {
+                respond ingredientErrors.get(0).errors, view:'create'
+            } else {
+                ingredientErrors.each { err ->
+                    respond err.errors, view: 'create'
                 }
-                '*' { respond ingredientIds, [status: CREATED] }
             }
+//            request.withFormat {
+//                form multipartForm {
+//                    if (ingredientIds.size() == 1) {
+//                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+//                    } else if (ingredientIds.size() > 1) {
+//                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds.each { id ->
+//                            id + " "
+//                        }])
+//                    } else {
+//                        flash.message = ''
+//                    }
+//                    redirect(controller: "ingredient", action: "create")
+//                }
+//                '*' { respond ingredientIds, [status: CREATED] }
+//            }
         }
-        if (ingredientErrors.size() == 1) {
-            respond ingredientErrors.get(0).errors, view:'create'
-        } else {
-            ingredientErrors.each { err ->
-                respond err.errors, view: 'create'
-            }
-        }
-        //respond errorI.errors, view:'create'
     }
 
     def edit(Long id) {
@@ -119,24 +136,51 @@ class IngredientController {
             notFound()
             return
         }
-        Set<Drink> ingredientsDrinks = ingredient.drinks
-        ingredientsDrinks.each { drink ->
-            drink.addToIngredients(ingredient)
-            drink.save()
-        }
+        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
-            ingredientService.save(ingredient)
+            ingredient.org_grails_datastore_gorm_GormValidateable__errors = null
+            if (!ingredient.isCustom() && adminRole) {
+                Set<Drink> ingredientsDrinks = ingredient.drinks
+                ingredientsDrinks.each { drink ->
+                    drink.addToIngredients(ingredient)
+                    drink.save()
+                }
+                ingredientService.save(ingredient)
+            }
+            else if (ingredient.isCustom() && (adminRole || userRole)) {
+                Set<Drink> ingredientsDrinks = ingredient.drinks
+                ingredientsDrinks.each { drink ->
+                    drink.addToIngredients(ingredient)
+                    drink.save()
+                }
+                ingredientService.save(ingredient)
+            }
+            else {
+                ingredient.errors.reject('default.updated.error.message', [ingredient.name] as Object[], '')
+            }
         } catch (ValidationException e) {
             respond ingredient.errors, view:'originalEdit'
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.toString()])
-                redirect ingredient
+        if (ingredient.errors.hasErrors()) {
+            Set<Drink> drinks = Drink.withCriteria {eq('ingredients.id', ingredient.id)} as List<Drink>
+            ingredient.drinks = drinks
+            request.withFormat {
+                form multipartForm {
+                    respond ingredient.errors, view:'edit'
+                }
+                '*'{ respond ingredient.errors, view:'edit' }
             }
-            '*'{ respond ingredient, [status: OK] }
+        } else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.toString()])
+                    redirect ingredient
+                }
+                '*'{ respond ingredient, [status: OK] }
+            }
         }
     }
 
@@ -145,15 +189,33 @@ class IngredientController {
             notFound()
             return
         }
-
-        ingredientService.delete(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient'), id])
-                redirect action:"index", method:"GET"
+        Ingredient ingredient = Ingredient.findById(id)
+        if (ingredient.canBeDeleted) {
+            List<Drink> drinks = ingredient.drinks.toArray() as List<Drink>
+            drinks.each { drink ->
+                drink.removeFromIngredients(ingredient)
+                ingredient.removeFromDrinks(drink)
             }
-            '*'{ render status: NO_CONTENT }
+            ingredientService.delete(id)
+        } else {
+            ingredient.errors.reject('default.deleted.error.message', [ingredient.name] as Object[], '')
+        }
+        if (ingredient.errors.hasErrors()) {
+            request.withFormat {
+                form multipartForm {
+                    respond ingredient.errors, view:'show'
+                }
+                '*'{ respond ingredient.errors, view:'show' }
+            }
+        }
+        else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient'), id])
+                    redirect action:"index", method:"GET"
+                }
+                '*'{ render status: NO_CONTENT }
+            }
         }
     }
 

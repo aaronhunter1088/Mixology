@@ -1,7 +1,5 @@
 package validators
 
-import mixology.User
-
 class PasswordValidator {
 
     public static final passwordRegex = "^(?=.*[!@#\$&])[a-zA-Z0-9!@#\$&]{6,15}\$"

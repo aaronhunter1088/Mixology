@@ -11,6 +11,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" scope="request" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -55,12 +56,23 @@
                 background: #fff;
                 padding: 0 5px;
             }
+            a.fa fa-clone::before {
+                background-color: #efefef;
+                overflow: hidden;
+                padding: 0.3em;
+                -moz-box-shadow: 0 0 3px 1px #aaaaaa;
+                -webkit-box-shadow: 0 0 3px 1px #aaaaaa;
+                box-shadow: 0 0 3px 1px #aaaaaa;
+                margin: 0.1em 0 0 0;
+                border: none;
+                content: "\f24d  Copy"
+            }
         </style>
     </head>
     <body>
         <div id="content">
             <div class="container">
-                <section class="row">
+                <section class="row" id="navigation">
                     <a href="#show-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                     <div class="nav" role="navigation">
                         <ul>
@@ -76,11 +88,17 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
+                    <g:hasErrors bean="${this.drink}">
+                        <ul class="errors" role="alert">
+                            <g:eachError bean="${this.drink}" var="error">
+                                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                            </g:eachError>
+                        </ul>
+                    </g:hasErrors>
                     <div style="display:flex;justify-content:center;">
                         <div style="display:block;">
                             <fieldset style="border:thick solid #000080;" class="no-before">
                                 <legend style="margin-left:25px;padding-left:10px;width:auto;">
-                                    %{--                            &emsp14;<g:message code="default.show.label" args="[drink]" />&emsp14;--}%
                                     ${drink.drinkName} &emsp14;
                                     <hr style="height:1px;background-color:#000080">
                                 </legend>
@@ -137,7 +155,8 @@
                             </fieldset>
                             <g:form resource="${this.drink}" method="DELETE">
                                 <fieldset class="buttons">
-                                    <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
                                     <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                                 </fieldset>
                             </g:form>

@@ -2,6 +2,7 @@ package mixology
 
 import enums.*
 import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import groovy.sql.Sql
 import org.grails.datastore.mapping.collection.PersistentSet
@@ -12,6 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
@@ -19,7 +21,8 @@ import static org.springframework.http.HttpStatus.OK
 class DrinkController {
 
     DrinkService drinkService
-    IngredientService ingredientService
+    //IngredientService ingredientService
+    def springSecurityService
 
     Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
@@ -52,20 +55,33 @@ class DrinkController {
             return
         }
         Drink drink = createDrinkFromParams(params)
+        UserRole ur = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
         try {
-            if (drink.isCustom()) drinkService.save(drink)
+            if (drink.isCustom() || ur) drinkService.save(drink)
+            else {
+                drink.errors.reject("You cannot save a default drink!")
+            }
         }
         catch (ValidationException e) {
             respond drink.errors, view:'create'
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                redirect drink
+        if (drink.errors.hasErrors()) {
+            request.withFormat {
+                form multipartForm {
+                    respond drink.errors, [status: FORBIDDEN]
+                }
+                '*' { respond drink, [status: FORBIDDEN] }
             }
-            '*' { respond drink, [status: CREATED] }
+        } else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    redirect drink
+                }
+                '*' { respond drink, [status: CREATED] }
+            }
         }
         // clear the list
         validIngredients.clear()
@@ -76,43 +92,56 @@ class DrinkController {
         respond drink
     }
 
-    def update(Drink drink) { // Drink drink
-        if (!drink) { // !drink
+    def update(Drink drink) {
+        if (!drink) {
             notFound()
             return
         }
-        drink.drinkName = params.drinkName
-        drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
-        drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
-        drink.drinkSymbol = params.drinkSymbol
-        drink.suggestedGlass = GlassType.valueOf(params.glass as String)
-        drink.mixingInstructions = params.instructions
-        extractIngredientsFromParams(params)
-        validIngredients.each{
-            drink.ingredients.add(it as Ingredient)
-        }
-        drink.version = (params.version as Long)
-        drink.ingredients.each { Ingredient i ->
-            if (!i.drinks) i.drinks = new HashSet<Drink>()
-            if (!i.drinks.contains(drink)) i.addToDrinks(drink)
-            i.save()
-        }
-
-        // Find all ingredients currently associated with drink
-        //def sql = new Sql(grailsApplication.mainContext.getBean('dataSource') as Connection)
-        List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
-            eq('drinks.id', drink.id)
-        } as List<Ingredient> // 1,2,3,4,38
-        println "${associatedIngredientIds}"
-        for(Ingredient i : associatedIngredientIds) {
-            if ( !(i.id in drink.ingredients*.id)) {
-                println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
-                i.removeFromDrinks(drink)
-            }
-        }
+        // Get UR based on current user
+        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
+            // TODO: update logic
             drink.org_grails_datastore_gorm_GormValidateable__errors = null
-            drinkService.save(drink)
+            // if not a custom drink and user has adminRole
+            if (!drink.isCustom() && adminRole) {
+                drink.drinkName = params.drinkName
+                drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
+                drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
+                drink.drinkSymbol = params.drinkSymbol
+                drink.suggestedGlass = GlassType.valueOf(params.glass as String)
+                drink.mixingInstructions = params.instructions
+                drink.version = (params.version as Long)
+                extractIngredientsFromParams(params)
+                validIngredients.each{
+                    drink.ingredients.add(it as Ingredient)
+                }
+                drink.ingredients.each { Ingredient i ->
+                    if (!i.drinks) i.drinks = new HashSet<Drink>()
+                    if (!i.drinks.contains(drink)) i.addToDrinks(drink)
+                    i.save()
+                }
+                // Find all ingredients currently associated with drink
+                //def sql = new Sql(grailsApplication.mainContext.getBean('dataSource') as Connection)
+                List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
+                    eq('drinks.id', drink.id)
+                } as List<Ingredient> // 1,2,3,4,38
+                println "${associatedIngredientIds}"
+                for(Ingredient i : associatedIngredientIds) {
+                    if ( !(i.id in drink.ingredients*.id)) {
+                        println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
+                        i.removeFromDrinks(drink)
+                    }
+                }
+                if (drink.validate()) drinkService.save(drink)
+            }
+            // if is a custom drink and user has either role
+            else if (drink.isCustom() && (!adminRole || !userRole)) {
+                // TODO: Implement
+            }
+            else {
+                drink.errors.reject('default.updated.error.message', [drink.drinkName] as Object[], '')
+            }
             validIngredients.clear()
         } catch (ValidationException e) {
             println "exception ${e.getMessage()}"
@@ -120,12 +149,25 @@ class DrinkController {
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                respond drink, view:'edit'
+        if (drink.errors.hasErrors()) {
+            Set<Ingredient> ingredients = Ingredient.withCriteria {
+                eq('drinks.id', drink.id)
+            } as List<Ingredient>
+            drink.ingredients = ingredients
+            request.withFormat {
+                form multipartForm {
+                    respond drink.errors, view:'edit'
+                }
+                '*' { respond drink.errors, view:'edit' }
             }
-            '*'{ respond drink, [status: OK] }
+        } else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    respond drink, view:'edit'
+                }
+                '*'{ respond drink, [status: OK] }
+            }
         }
     }
 
@@ -135,20 +177,32 @@ class DrinkController {
             return
         }
         Drink drink = Drink.findById(id)
-        List<Ingredient> ingredients = drink.ingredients.toArray()
-        ingredients.each { ingredient ->
-            ingredient.removeFromDrinks(drink)
-            drink.removeFromIngredients(ingredient)
+        if (drink.canBeDeleted) {
+            List<Ingredient> ingredients = drink.ingredients.toArray() as List<Ingredient>
+            ingredients.each { ingredient ->
+                ingredient.removeFromDrinks(drink)
+                drink.removeFromIngredients(ingredient)
+            }
+            drinkService.delete(id)
+        } else {
+            drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
         }
 
-        if (drink.canBeDeleted) drinkService.delete(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                redirect action:"index", method:"GET"
+        if (drink.errors.hasErrors()) {
+            request.withFormat {
+                form multipartForm {
+                    respond drink.errors, view:'show'
+                }
+                '*'{ respond drink.errors, view:'show' }
             }
-            '*'{ render status: NO_CONTENT }
+        } else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    redirect action:"index", method:"GET"
+                }
+                '*'{ render status: NO_CONTENT }
+            }
         }
     }
 

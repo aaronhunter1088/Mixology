@@ -9,11 +9,15 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     String name
     Unit unit
     Double amount
+    boolean canBeDeleted
+    boolean custom
 
     static constraints = {
         name(nullable: false)
         unit(nullable: false)
         amount(nullable: false)
+        canBeDeleted(nullable:true, default:true)
+        custom(nullable:true, default:true)
     }
 
     static belongsTo = Drink
