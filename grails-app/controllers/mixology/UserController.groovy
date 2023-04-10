@@ -60,14 +60,14 @@ class UserController {
         } else {
             MultipartRequest multipartRequest = request as MultipartRequest
             MultipartFile file = multipartRequest.getFile('photo')
-            def role = roleService.findByAuthority(enums.Role.USER.name)
+            def userRole = roleService.findByAuthority(enums.Role.USER.name)
             user = createUserFromParams(user, params, file)
             try {
                 user.validate()
                 if (!user.errors.hasErrors()) {
                     user = userService.save(user)
-                    def userRole = UserRole.create user, role
-                    userRoleService.save(userRole)
+                    def roleOfUser = UserRole.create user, userRole
+                    userRoleService.save(roleOfUser)
                 }
             } catch (ValidationException e) {
                 println "exception ${e.getMessage()}"
