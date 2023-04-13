@@ -58,79 +58,87 @@
         </style>
     </head>
     <body>
-    <div id="content">
-        <div class="container">
-            <section class="row">
-                <a href="#show-ingredient" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                <div class="nav" role="navigation">
-                    <ul>
-                        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="list" action="index">Ingredient List</g:link></li>
-                        <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
-                        <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
-                    </ul>
-                </div>
-            </section>
-            <div id="show-ingredient" class="col-12 scaffold-show">
-                <h1>Show Ingredient</h1>
-                <g:if test="${flash.message}">
-                    <div class="message" role="status">${flash.message}</div>
-                </g:if>
-                <g:hasErrors bean="${this.ingredient}">
-                    <ul class="errors" role="alert">
-                        <g:eachError bean="${this.ingredient}" var="error">
-                            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                        </g:eachError>
-                    </ul>
-                </g:hasErrors>
-                <div style="display:flex;justify-content:center;">
-                    <div style="display:block;">
-                        <fieldset style="border:thick solid #008011; width:100%;" class="no-before">
-                            <legend style="margin-left:25px;width:auto;">
-                                ${ingredient.name} &emsp14;
-                                <hr style="height:1px;background-color:#008011">
-                            </legend>
-                            <div id="ingredient" style="width:100%;float:left;">
-                                <div class="formfield" id="name">
-                                    <label for='ingredientName'>Ingredient Name</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" disabled name="ingredientName" value="${ingredient.name}" required="" id="ingredientName" />
+        <div id="content">
+            <div class="container">
+                <section class="row">
+                    <a href="#show-ingredient" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+                    <div class="nav" role="navigation">
+                        <ul>
+                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                            <li><g:link class="list" action="index">Ingredient List</g:link></li>
+                            <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
+                            <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
+                        </ul>
+                    </div>
+                </section>
+                <div id="show-ingredient" class="col-12 scaffold-show">
+                    <h1>Show Ingredient</h1>
+                    <g:if test="${flash.message}">
+                        <div class="message" role="status">${flash.message}</div>
+                    </g:if>
+                    <g:hasErrors bean="${this.ingredient}">
+                        <ul class="errors" role="alert">
+                            <g:eachError bean="${this.ingredient}" var="error">
+                                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                            </g:eachError>
+                        </ul>
+                    </g:hasErrors>
+                    <div style="display:flex;justify-content:center;">
+                        <div style="display:block;">
+                            <fieldset style="border:thick solid #008011; width:100%;" class="no-before">
+                                <legend style="margin-left:25px;width:auto;">
+                                    ${ingredient.name} &emsp14;
+                                    <hr style="height:1px;background-color:#008011">
+                                </legend>
+                                <div id="ingredient" style="width:100%;float:left;">
+                                    <div class="formfield" id="name">
+                                        <label for='ingredientName'>Ingredient Name</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" disabled name="ingredientName" value="${ingredient.name}" required="" id="ingredientName" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield" id="unit">
+                                        <label for='ingredientUnit'>Ingredient Unit</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" disabled name="ingredientUnit" value="${ingredient.unit}" required="" id="ingredientUnit" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield" id="amount">
+                                        <label for='ingredientAmount'>Ingredient Amount</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" disabled name="ingredientAmount" value="${ingredient.amount}" required="" id="ingredientAmount" />
+                                        </div>
+                                    </div>
+                                    <div class="formfield" id="drinks">
+                                        <label>Ingredient Drinks</label><br>
+                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;">
+                                            <g:each in="${ingredient.drinks}" var="drink" status="i">
+                                                <div style="display:block;">
+                                                    <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/> ${drink}
+                                                </div>
+                                            </g:each>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="formfield" id="unit">
-                                    <label for='ingredientUnit'>Ingredient Unit</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" disabled name="ingredientUnit" value="${ingredient.unit}" required="" id="ingredientUnit" />
-                                    </div>
-                                </div>
-                                <div class="formfield" id="amount">
-                                    <label for='ingredientAmount'>Ingredient Amount</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" disabled name="ingredientAmount" value="${ingredient.amount}" required="" id="ingredientAmount" />
-                                    </div>
-                                </div>
-                                <div class="formfield" id="drinks">
-                                    <label>Ingredient Drinks</label><br>
-                                    <div style="margin-top:-25px;height:100px;overflow-y:auto;">
-                                        <g:each in="${ingredient.drinks}" var="drink" status="i">
-                                            <div style="display:block;">
-                                                <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/> ${drink}
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                        <g:form resource="${this.ingredient}" method="DELETE">
-                            <fieldset class="buttons" style="width:100%;">
-                                <g:link class="edit" action="edit" resource="${this.ingredient}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                             </fieldset>
-                        </g:form>
+                            <g:form resource="${this.ingredient}" method="DELETE">
+                                <fieldset class="buttons" style="width:100%;">
+                                    <sec:ifLoggedIn>
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    </sec:ifLoggedIn>
+                                    <g:link class="edit" action="edit" resource="${this.ingredient}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                    <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                </fieldset>
+                            </g:form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                console.log("show ingredient loaded");
+            });
+        </script>
     </body>
 </html>

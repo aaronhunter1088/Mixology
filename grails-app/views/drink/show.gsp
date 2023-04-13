@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="formfield" id="ingredients">
-                                        <label><span class='required-indicator'>*</span> Ingredients</label><br>
+                                        <label><span class='required-indicator'>*</span> Ingredients</label><br/>
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;">
                                             <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
                                                 <g:if test="${drink.ingredients.contains(ingredient)}">
@@ -155,7 +155,9 @@
                             </fieldset>
                             <g:form resource="${this.drink}" method="DELETE">
                                 <fieldset class="buttons">
-                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    <sec:ifLoggedIn>
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    </sec:ifLoggedIn>
                                     <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
                                     <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                                 </fieldset>
@@ -165,5 +167,10 @@
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                console.log("show drink loaded");
+            });
+        </script>
     </body>
 </html>

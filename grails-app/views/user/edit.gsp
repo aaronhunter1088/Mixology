@@ -168,7 +168,7 @@
                                             <div class="formfield" id="cellphone">
                                                 <label for='cellphone'>Cellphone</label>
                                                 <div class="input-wrapper">
-                                                    <input type="text" name="cellphone" value="${user.mobileNumber}" required="" />
+                                                    <input type="text" name="cellphone" value="${user.mobileNumber}" />
                                                 </div>
                                             </div>
                                             <div class="formfield">

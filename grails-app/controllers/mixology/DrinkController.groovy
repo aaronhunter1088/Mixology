@@ -206,6 +206,47 @@ class DrinkController {
         }
     }
 
+    /**
+     * By default, a drink will be copied with all ingredients
+     * By clicking on the action button which states that you
+     * don't want the ingredient's copied, then the drink will
+     * not contain the given ingredients, or instructions.
+     * @param drink
+     */
+    def copy(Drink drink) {
+        def user = User.findByUsername(springSecurityService?.authentication?.getPrincipal()?.username as String)
+        if (user) {
+            log.info("we have a user logged in ${user}")
+            Drink copied = new Drink([
+                drinkName : drink.drinkName,
+                drinkSymbol : drink.drinkSymbol,
+                drinkNumber : drink.drinkNumber,
+                alcoholType : drink.alcoholType,
+                ingredients : Ingredient.copyAll(drink.ingredients),
+                mixingInstructions : drink.mixingInstructions,
+                suggestedGlass : drink.suggestedGlass,
+                canBeDeleted : true,
+                custom : true
+            ])
+            Drink.withTransaction {
+                copied.ingredients.each { it.save(flush:true) }
+                log.info("adding $drink to user")
+                copied.save(flush:true)
+            }
+            User.withTransaction {
+                user.addToDrinks(copied)
+                user.save(flush:true)
+            }
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName], default: "Copied $copied to $user. You can edit your version as you see fit.")
+                    redirect(drink:drink, view:'show')
+                }
+                '*'{ redirect(drink:drink, view:'show') }
+            }
+        }
+    }
+
     protected void notFound() {
         request.withFormat {
             form multipartForm {

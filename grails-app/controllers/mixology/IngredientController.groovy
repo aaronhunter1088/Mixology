@@ -219,6 +219,10 @@ class IngredientController {
         }
     }
 
+    def copy(Ingredient ingredient) {
+
+    }
+
     protected void notFound() {
         request.withFormat {
             form multipartForm {

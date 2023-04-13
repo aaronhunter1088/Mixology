@@ -193,6 +193,7 @@ class UserController {
         respond user
     }
 
+    @Secured(['ROLE_ADMIN'])
     def update(User user) {
         if (!user) {
             notFound()

@@ -49,4 +49,17 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         }
         return fillerIngredients
     }
+
+    static Set<Ingredient> copyAll(Set<Ingredient> ingredients) {
+        Set<Ingredient> copiedList = []
+        for (ingredient in ingredients) {
+            Ingredient newIngredient = new Ingredient([
+                name:ingredient.name,
+                unit:ingredient.unit,
+                amount:ingredient.amount
+            ])
+            copiedList << newIngredient
+        }
+        return copiedList
+    }
 }

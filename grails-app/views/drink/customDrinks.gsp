@@ -4,7 +4,7 @@
   Date: 3/18/23
   Time: 4:42 PM
 --%>
-<%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
+<%@ page import="enums.*; mixology.*; mixology.DrinkService;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -63,7 +63,8 @@
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <g:render template="../header"/>
-
+        <% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>
+        <g:set var="user" value="${User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)}"/>
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">
@@ -71,18 +72,22 @@
                         <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <div style="display:block;">
                             <%
-                                List tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).stream().collect()
-                                tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
+                                //List tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).stream().collect()
+                                List tequilaDrinks = Drink.withCriteria {
+                                    eq('alcoholType', Alcohol.TEQUILA)
+                                    eq('custom', true)
+                                } as List
+                                //tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
                                 for (int i=0; i<12; i+=2) {
-                                    Drink drink1 = (Drink)tequilaDrinks.get(i)
+                                    Drink drink1 = null
                                     if (i < 12) {
-                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); }
-                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); }
+                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1) drink1 = Drink.createFillerDrink(Alcohol.TEQUILA) }
+                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA) }
                                     }
                                     Drink drink2 = null
                                     if (i+1 < 12) {
-                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); }
-                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); }
+                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2) drink2 = Drink.createFillerDrink(Alcohol.TEQUILA) }
+                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA) }
                                     }
                             %>
                             <div style="display:inline-flex;">
