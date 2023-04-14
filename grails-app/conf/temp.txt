@@ -1,3 +1,5 @@
+logback.xml - not used. using log4j2.properties
+and grep console to enable coloring: https://plugins.jetbrains.com/plugin/7125-grep-console
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
@@ -11,7 +13,7 @@
         </encoder>
     </appender>
 
-    <root level="error">
+    <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
