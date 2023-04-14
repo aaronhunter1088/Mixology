@@ -45,6 +45,7 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
 
         String postUrl = request.contextPath + conf.apf.filterProcessesUrl
         println "postUrl: ${postUrl}"
+        // view:'auth'
         render view: 'auth', model: [postUrl: postUrl,
                                      rememberMeParameter: conf.rememberMe.parameter,
                                      usernameParameter: conf.apf.usernameParameter,

@@ -239,7 +239,7 @@ class DrinkController {
             }
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName], default: "Copied $copied to $user. You can edit your version as you see fit.")
+                    flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName, user], default: "Copied $copied to $user. You can edit your version as you see fit.")
                     redirect(drink:drink, view:'show')
                 }
                 '*'{ redirect(drink:drink, view:'show') }

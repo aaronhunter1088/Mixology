@@ -4,18 +4,28 @@
   Date: 3/26/23
   Time: 9:33 PM
 --%>
-<%@ page import="mixology.User;" %>
+<%@ page import="mixology.User; java.time.LocalTime;" %>
 <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
     <div class="container-fluid">
         <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-        <sec:ifLoggedIn>
-            <% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>
-            <h1>Hello, ${User.findByUsername(springSecurityService.authentication.getPrincipal().username)}</h1>
-        </sec:ifLoggedIn>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
+        <sec:ifNotLoggedIn>
+            <g:render template="/login/login"/>
+        </sec:ifNotLoggedIn>
+        <sec:ifLoggedIn>
+            <%
+                def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
+                int hour = LocalTime.now().getHour()
+                String greeting = 'Good ';
+                if (0 <= hour && hour < 12 ) greeting += 'morning, ';
+                else if (12 <= hour && hour < 17) greeting += 'afternoon, ';
+                else greeting += 'evening, ';
+            %>
+            <g:set var="greet" value="${greeting}"/>
+            <h1>${greet} ${User.findByUsername(springSecurityService.authentication.getPrincipal().username)}</h1>
+        </sec:ifLoggedIn>
         <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
             <ul class="nav navbar-nav ml-auto">
                 <div tag="nav">
