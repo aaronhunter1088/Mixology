@@ -72,12 +72,7 @@
                         <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <div style="display:block;">
                             <%
-                                //List tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).stream().collect()
-                                List tequilaDrinks = Drink.withCriteria {
-                                    eq('alcoholType', Alcohol.TEQUILA)
-                                    eq('custom', true)
-                                } as List
-                                //tequilaDrinks = tequilaDrinks.stream().limit(12).collect()
+                                List tequilaDrinks = user.drinks.each { it.alcoholType == Alcohol.TEQUILA}.collect()
                                 for (int i=0; i<12; i+=2) {
                                     Drink drink1 = null
                                     if (i < 12) {

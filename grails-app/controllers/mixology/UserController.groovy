@@ -28,9 +28,10 @@ class UserController {
         respond userService.list(params), model:[userCount: userService.count()]
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def show(Long id) {
-        respond userService.get(id)
+        def user = userService.get(id)
+        respond user
     }
 
     def create() {

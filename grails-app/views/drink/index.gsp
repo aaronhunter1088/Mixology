@@ -17,33 +17,33 @@
     </head>
     <body>
         <div id="content">
-        <div class="container">
-            <section class="row">
-                <a href="#list-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                <div class="nav" role="navigation">
-                    <ul>
-                        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
-                        <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
-                    </ul>
-                </div>
-            </section>
-            <section class="row">
-                <div id="list-drink" class="col-12 content scaffold-list">
-                    <h1><g:message code="default.list.label" args="[drink]" /></h1>
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
-                    <f:table collection="${drinkList}" />
-
-                    <g:if test="${drinkCount > params.int('max')}">
-                    <div class="pagination">
-                        <g:paginate total="${drinkCount ?: 0}" />
+            <div class="container">
+                <section class="row">
+                    <a href="#list-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+                    <div class="nav" role="navigation">
+                        <ul>
+                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                            <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
+                            <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
+                        </ul>
                     </div>
-                    </g:if>
-                </div>
-            </section>
+                </section>
+                <section class="row">
+                    <div id="list-drink" class="col-12 content scaffold-list">
+                        <h1><g:message code="default.list.label" args="[drink]" /></h1>
+                        <g:if test="${flash.message}">
+                            <div class="message" role="status">${flash.message}</div>
+                        </g:if>
+                        <f:table collection="${drinkList}" />
+
+                        <g:if test="${drinkCount > params.int('max')}">
+                        <div class="pagination">
+                            <g:paginate total="${drinkCount ?: 0}" />
+                        </div>
+                        </g:if>
+                    </div>
+                </section>
+            </div>
         </div>
-    </div>
     </body>
 </html>

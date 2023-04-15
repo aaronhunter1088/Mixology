@@ -5,6 +5,8 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import groovy.sql.Sql
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.grails.datastore.mapping.collection.PersistentSet
 
 import java.sql.Connection
@@ -20,17 +22,31 @@ import static org.springframework.http.HttpStatus.OK
 
 class DrinkController {
 
+    private static Logger logger = LogManager.getLogger(DrinkController.class)
+
     DrinkService drinkService
     //IngredientService ingredientService
+    UserService userService
     def springSecurityService
 
     Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
         respond drinkService.list(params), model:[drinkCount: drinkService.count()]
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def customIndex(Integer max) {
+        params.max = 5//Math.min(max ?: 5, 100)
+        def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
+        List<Drink> customDrinks = Drink.findAllByCustom(true, params).collect()
+        customDrinks = customDrinks.each { it in user.drinks }
+        //respond customDrinks, model:[drinkCount: Drink.findAllByCustom(true).collect().size()]
+        respond customDrinks, model:[drinkCount: customDrinks.size()]
     }
 
     def show(Long id) {
@@ -39,7 +55,9 @@ class DrinkController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
-        //render(view: 'customDrinks', model: [drinks: Drink.withCriteria {eq('custom', true)}])
+        //def user = User.findByUsername(springSecurityService?.authentication?.getPrincipal()?.username as String)
+        //List<Drink> tequilaDrinks = user.drinks.each { it.alcoholType == Alcohol.TEQUILA}
+        //render(view:'customDrinks', model:[user:user])
         render(view:'customDrinks')
     }
 
@@ -87,6 +105,7 @@ class DrinkController {
         validIngredients.clear()
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def edit(Long id) {
         Drink drink = drinkService.get(id)
         respond drink
@@ -216,7 +235,7 @@ class DrinkController {
     def copy(Drink drink) {
         def user = User.findByUsername(springSecurityService?.authentication?.getPrincipal()?.username as String)
         if (user) {
-            log.info("we have a user logged in ${user}")
+            logger.info("we have a user logged in ${user}")
             Drink copied = new Drink([
                 drinkName : drink.drinkName,
                 drinkSymbol : drink.drinkSymbol,
@@ -228,21 +247,39 @@ class DrinkController {
                 canBeDeleted : true,
                 custom : true
             ])
-            Drink.withTransaction {
-                copied.ingredients.each { it.save(flush:true) }
-                log.info("adding $drink to user")
-                copied.save(flush:true)
-            }
-            User.withTransaction {
-                user.addToDrinks(copied)
-                user.save(flush:true)
-            }
-            request.withFormat {
-                form multipartForm {
-                    flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName, user], default: "Copied $copied to $user. You can edit your version as you see fit.")
-                    redirect(drink:drink, view:'show')
+            Drink.withSession {
+                Drink.withTransaction {
+                    logger.info("drink has been copied")
+                    copied.ingredients.each { it.save(flush:true) }
+                    copied.save(flush:true)
+                    logger.info("drink has been saved")
+                    User.withSession {
+                        User.withTransaction {
+                            logger.info("adding $drink to user")
+                            user.addToDrinks(copied)
+                            user.save(flush:true, validate:false)
+                        }
+                    }
                 }
-                '*'{ redirect(drink:drink, view:'show') }
+            }
+            if (!user.hasErrors()) {
+                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName, user], default: "Copied $copied to $user. You can edit your version as you see fit.") as Object
+                request.withFormat {
+                    form multipartForm {
+                        respond drink, view:'show'
+                    }
+                    '*'{ respond drink, view:'show' }//redirect(drink:drink, view:'show') }
+                }
+            } else {
+                logger.error("There was validation errors [{}] on the user", user.errors.allErrors.size())
+                request.withFormat {
+                    form multipartForm {
+                        respond drink.errors, view:'show'
+                        //redirect(action:'show', params:[id:drink.id])
+                    }
+                    '*' { respond drink.errors, view:'show' }
+                    //'*'{ redirect(action:'show', params:[id:drink.id]) }
+                }
             }
         }
     }

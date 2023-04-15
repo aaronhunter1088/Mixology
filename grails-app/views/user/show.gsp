@@ -93,6 +93,7 @@
                     <div class="nav" role="navigation">
                         <ul>
                             <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                            <li><g:link class="list" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
                             <li><g:link class="list" action="index">User List</g:link></li>
                             <li><g:link class="create" action="create">New User</g:link></li>
                         </ul>
@@ -143,6 +144,25 @@
                                                     <input type="password" disabled name="password" value="${user.password}" id="password"/>
                                                 </div>
                                             </div>
+                                            <g:if test="${user.drinks.size() > 0}">
+                                                <div class="formfield" id="drinks">
+                                                    <label>Users Drinks</label><br>
+                                                    <div style="margin-top:-25px;height:100px;overflow-y:auto;">
+                                                        <g:each in="${user.drinks}" var="drink" status="i">
+                                                            <div style="display:block;">
+                                                                <input type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                            </div>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:if>
+                                            <g:else>
+                                                <div class="formfield" id="nodrinks">
+                                                    <div class="input-wrapper">
+                                                        <p>After you create or copy a drink, they will appear here.</p>
+                                                    </div>
+                                                </div>
+                                            </g:else>
                                         </div>
                                         <div id="photo" style="width:50%;float:right;">
                                             <g:if test="${!user.photo || user.photo == ''}">

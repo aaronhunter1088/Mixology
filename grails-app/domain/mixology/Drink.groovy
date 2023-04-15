@@ -30,7 +30,7 @@ class Drink implements Serializable{
         custom(nullable:true, default:true)
     }
 
-    static belongsTo = Ingredient
+    static belongsTo = [Ingredient,User]
     static hasMany = [ingredients:Ingredient]
     static transients = ['glassImage']
 

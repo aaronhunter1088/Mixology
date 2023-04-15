@@ -1,6 +1,6 @@
 package mixology
 
-
+import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import enums.Unit
 
@@ -18,9 +18,19 @@ class IngredientController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
         respond ingredientService.list(params), model:[ingredientCount: ingredientService.count()]
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def customIndex(Integer max) {
+        params.max = 5//Math.min(max ?: 5, 100)
+        def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
+        List<Ingredient> customIngredients = Ingredient.findAllByCustom(true, params).collect()
+        customIngredients = customIngredients.each { it in user.drinks }
+        respond customIngredients, model:[ingredientCount: customIngredients.size()]
     }
 
     def show(Long id) {
@@ -127,6 +137,7 @@ class IngredientController {
         }
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def edit(Long id) {
         respond ingredientService.get(id)
     }

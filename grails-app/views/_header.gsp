@@ -57,8 +57,20 @@
                             <li class="dropdown-header">Controllers</li>
                             <li class="dropdown-item"><g:link controller="login" action="index">Login</g:link></li>
                             <li class="dropdown-item"><g:link controller="logout" action="index">Logout</g:link></li>
-                            <li class="dropdown-item"><g:link controller="drink" action="index">Drink</g:link></li>
-                            <li class="dropdown-item"><g:link controller="ingredient" action="index">Ingredient</g:link></li>
+                            <sec:ifLoggedIn>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <li class="dropdown-item"><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
+                                </sec:ifAnyGranted>
+                                <sec:ifAnyGranted roles="ROLE_USER">
+                                    <li class="dropdown-item"><g:link controller="drink" action="customIndex">Show Drinks</g:link></li>
+                                </sec:ifAnyGranted>
+                            </sec:ifLoggedIn>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <li class="dropdown-item"><g:link controller="ingredient" action="index">Show Default Ingredients</g:link></li>
+                            </sec:ifAnyGranted>
+                            <sec:ifAnyGranted roles="ROLE_USER">
+                                <li class="dropdown-item"><g:link controller="ingredient" action="customIndex">Show Ingredients</g:link></li>
+                            </sec:ifAnyGranted>
                             <li class="dropdown-item"><g:link controller="secure" action="index">Secure</g:link></li>
                             <!-- Something is causing the Login and Logout Controllers to repeat twice. But just them. manually adding for now -->
 %{--                            <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">--}%
