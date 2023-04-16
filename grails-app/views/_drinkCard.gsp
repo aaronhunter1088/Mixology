@@ -1,4 +1,4 @@
-<div class="card" style="background-color:${backgroundColor};width:300px;height:300px;">
+<div class="card" style="background-color:${backgroundColor};width:300px;height:300px;opacity:${opacity}">
     <div style="display:inline-flex;">
         <div id="tequilaLeft1" style="height:200px;float:left;">
             <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
