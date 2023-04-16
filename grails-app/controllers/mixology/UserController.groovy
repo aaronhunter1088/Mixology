@@ -3,6 +3,8 @@ package mixology
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import org.apache.commons.io.FileUtils
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartRequest
 import validators.PasswordValidator
@@ -17,6 +19,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
 class UserController {
+
+    private static Logger logger = LogManager.getLogger(UserController.class)
 
     RoleService roleService
     UserService userService
@@ -194,38 +198,50 @@ class UserController {
         respond user
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def update(User user) {
         if (!user) {
             notFound()
         }
         MultipartRequest multipartRequest =  request as MultipartRequest
         MultipartFile file = multipartRequest.getFile('photo')
-        //byte[] fileContent = FileUtils.readFileToByteArray(new File(file.toString()))
-        String encodedString = ''
-        if (file) encodedString = Base64.getEncoder().encodeToString(file.getBytes())
+        String encodedString = null
+        // if file is present and they cleared the current image
+        // only encode if file is present. will set to empty string
+        // if photo was cleared.
+        if (file && Boolean.valueOf(params.clearedImage as String)) encodedString = Base64.getEncoder().encodeToString(file.getBytes())
         try {
             user.firstName = params.firstName
             user.lastName = params.lastName
             user.email = params.email
-            user.password = params.password
-            user.passwordConfirm = params.passwordConfirm
-            //String reduced = reduceImageSize(file.toString())
-            if (file) user.photo = encodedString as String
+            params.drinks.each {
+                Drink drink = Drink.read(it as Long)
+                user.drinks.add(drink)
+            }
+            // only update password if both values are set
+            if (params.passwordConfirm && params.password == params.passwordConfirm) {
+                user.password = params.password
+                user.passwordConfirm = params.passwordConfirm
+            }
+            // update photo if photo was cleared. photo may not exist anymore
+            // and so user photo may be set to empty string
+            if (Boolean.valueOf(params.clearedImage as String)) user.photo = encodedString
             user.org_grails_datastore_gorm_GormValidateable__errors = null
-            userService.save(user)
+            User.withTransaction {
+                user.save(validate:false,flush:true)
+                logger.info("user saved!")
+            }
         } catch (ValidationException e) {
             println "exception ${e.getMessage()}"
             respond user.errors, view:'edit'
             return
         }
-
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                respond user, view:'show'
+                redirect (id:user.id, action:'show')
             }
-            '*'{ respond user, [status: OK] }
+            '*'{ redirect (id:user.id, action:'show') }
         }
     }
 

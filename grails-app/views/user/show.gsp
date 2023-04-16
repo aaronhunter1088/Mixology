@@ -145,12 +145,12 @@
                                                 </div>
                                             </div>
                                             <g:if test="${user.drinks.size() > 0}">
-                                                <div class="formfield" id="drinks">
+                                                <div class="formfield" id="drinks" style="display:block;">
                                                     <label>Users Drinks</label><br>
                                                     <div style="margin-top:-25px;height:100px;overflow-y:auto;">
                                                         <g:each in="${user.drinks}" var="drink" status="i">
                                                             <div style="display:block;">
-                                                                <input type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                                <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
                                                             </div>
                                                         </g:each>
                                                     </div>
@@ -164,7 +164,7 @@
                                                 </div>
                                             </g:else>
                                         </div>
-                                        <div id="photo" style="width:50%;float:right;">
+                                        <div id="photo" style="width:50%;float:right;text-align:center;">
                                             <g:if test="${!user.photo || user.photo == ''}">
                                                 <p>No image uploaded!</p>
                                             </g:if>

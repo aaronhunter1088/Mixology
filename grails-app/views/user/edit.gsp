@@ -172,15 +172,15 @@
                                                 </div>
                                             </div>
                                             <div class="formfield">
-                                                <label for='password'><span class='required-indicator'>*</span> Password</label>
+                                                <label for='password'>Password</label>
                                                 <div class="input-wrapper">
-                                                    <input type="text" name="password" value="${user.password}" required="" id="password" />
+                                                    <input type="text" name="password" value="${user.password}" id="password" />
                                                 </div>
                                             </div>
                                             <div class="formfield">
-                                                <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
+                                                <label for='passwordConfirm'>Confirm Password</label>
                                                 <div class="input-wrapper">
-                                                    <input type="text" name="passwordConfirm" value="${user.passwordConfirm}" required="" id="passwordConfirm" />
+                                                    <input type="text" name="passwordConfirm" value="${user.passwordConfirm}" id="passwordConfirm" />
                                                 </div>
                                             </div>
                                             <g:if test="${!user.photo}">
@@ -191,6 +191,22 @@
                                                         <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
                                                     </div>
                                                 </div>
+                                                <g:if test="${user.drinks.size() > 0}">
+                                                    <div class="formfield" id="drinks" style="display:block;">
+                                                        <label>Users Drinks</label><br>
+                                                        <div style="margin-top:-15px;height:100px;overflow-y:auto;">
+                                                            <g:each in="${user.drinks}" var="drink" status="i">
+                                                                <div style="display:block;">
+                                                                    <div style="display:inline-flex;width:100%;">
+                                                                        <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
+                                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/>
+                                                                        <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                                    </div>
+                                                                </div>
+                                                            </g:each>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
                                             </g:if>
                                         </div>
                                         <g:if test="${user.photo}">
@@ -200,9 +216,11 @@
                                             </div>
                                         </g:if>
                                     </div>
-                                    <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                                    <div class="formfield" style="margin-top:25px;text-align:center;">
+                                        <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/user/show/${user.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
                                         <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser">Update</button>
                                     </div>
+                                    <input type="hidden" name="clearedImage" id="clearedImage" value="false"/>
                                 </g:form>
                             </fieldset>
                         </div>
@@ -215,6 +233,21 @@
         $(document).ready(function() {
             console.log("edit-user loaded");
         });
+        function removeDrink(drinkId) {
+            if ( document.getElementById('drink'+drinkId).checked ) {
+                document.getElementById('drink'+drinkId).checked = false;
+                console.log('checkbox for drink'+drinkId+ ' unchecked');
+                document.getElementById('removeDrinkBtn'+drinkId).classList.remove('btn-outline-danger');
+                document.getElementById('removeDrinkBtn'+drinkId).classList.add('btn-outline-info');
+                document.getElementById('removeDrinkBtn'+drinkId).innerHTML = "Will be removed"
+            } else {
+                document.getElementById('drink'+drinkId).checked = true;
+                console.log('checkbox for drink'+drinkId+ ' checked');
+                document.getElementById('removeDrinkBtn'+drinkId).classList.remove('btn-outline-info');
+                document.getElementById('removeDrinkBtn'+drinkId).classList.add('btn-outline-danger');
+                document.getElementById('removeDrinkBtn'+drinkId).innerHTML = "Remove"
+            }
+        }
         function upload() {
             document.getElementById('photo').click();
             document.getElementById('photo').oninput = function() {
@@ -222,6 +255,9 @@
             };
         }
         function clearImage() {
+            console.log("before clearedImage value: " + $('#clearedImage').val());
+            $('#clearedImage').val(true);
+            console.log("after clearedImage value: " + $('#clearedImage').val());
             let image = $('#uploadPhoto2');
             $('#img').remove();
             $('#xBtn').remove();
