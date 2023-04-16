@@ -25,7 +25,11 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
 
     @Override
     String toString() {
-        name + " : " + amount + " : " + unit.getValue().toUpperCase()
+        if (amount % 1 == 0) {
+            (int)amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
+        } else {
+            amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
+        }
     }
 
     @Override
@@ -41,9 +45,13 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static List<Ingredient> createFillerIngredients(count) {
         List<Ingredient> fillerIngredients = new ArrayList<>();
         for (i in 1..count) {
+            List<Unit> allUnits = Collections.unmodifiableList(Arrays.asList(Unit.values()))
+            int size = allUnits.size()
+            Random random = new Random()
+            def randomUnit = allUnits.get(random.nextInt(size))
             fillerIngredients.add(new Ingredient([
                     name: "Ingredient${i}",
-                    unit: Unit.WEDGE,
+                    unit: randomUnit,
                     amount: 1
             ]))
         }

@@ -5,9 +5,13 @@
                 <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>${drink.drinkNumber}</b></p>
                 <div style="overflow-y:auto;height:80px;">
                     <g:each in="${drink.ingredients}" var="ingredient">
-                        <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
+                        <g:if test="${opacity == 0.5}">
                             <p style="margin:0;color:black;">${ingredient}</p>
-                        </g:link>
+                        </g:if><g:else>
+                            <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
+                                <p style="margin:0;color:black;">${ingredient}</p>
+                            </g:link>
+                        </g:else>
                     </g:each>
                 </div>
             </div>

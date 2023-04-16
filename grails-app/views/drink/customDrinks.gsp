@@ -85,12 +85,20 @@
                                 }
                         %>
                         <div style="display:inline-flex;">
-                            <g:link controller="drink" action="show" params="[id:drink1.id]">
+                            <g:if test="${drink1.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink2.id]">
+                            </g:else>
+                            <g:if test="${drink2.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
+                            </g:else>
                         </div>
                         <% } %>
                     </div>
@@ -145,18 +153,34 @@
                                     }
                             %>
                             <div style="display:inline-flex;">
-                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                <g:if test="${drink1.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ffdf7e',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ffdf7e',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
-                                <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                </g:else>
+                                <g:if test="${drink2.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ffdf7e',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ffdf7e',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
-                                <g:link controller="drink" action="show" params="[id:drink3.id]">
+                                </g:else>
+                                <g:if test="${drink3.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink3.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#ffdf7e',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#ffdf7e',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
-                                <g:link controller="drink" action="show" params="[id:drink4.id]">
+                                </g:else>
+                                <g:if test="${drink4.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink4.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'#ffdf7e',opacity:drink4.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'#ffdf7e',opacity:drink4.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
+                                </g:else>
                             </div>
                             <% } %>
                         </div>
@@ -184,21 +208,33 @@
                                     }
                             %>
                             <div style="display:inline-flex;">
-                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                <g:if test="${drink1.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#46a5c8',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#46a5c8',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
-                                <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                </g:else>
+                                <g:if test="${drink2.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#46a5c8',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#46a5c8',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
-                                <g:link controller="drink" action="show" params="[id:drink3.id]">
+                                </g:else>
+                                <g:if test="${drink3.drinkNumber != 0}">
+                                    <g:link controller="drink" action="show" params="[id:drink3.id]">
+                                        <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#46a5c8',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
+                                    </g:link>
+                                </g:if><g:else>
                                     <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#46a5c8',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
-                                </g:link>
+                                </g:else>
                             </div>
                             <% } %>
                         </div>
                     </div>
                 </div>
-                <div id="shooterDrinks" style="width:2550px;padding:5em;">
+                <div id="shooterDrinks" style="width:2500px;padding:5em;">
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                         <%
@@ -246,30 +282,62 @@
                                 }
                         %>
                         <div style="display:inline-flex;">
-                            <g:link controller="drink" action="show" params="[id:drink1.id]">
+                            <g:if test="${drink1.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumpurple',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumpurple',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink2.id]">
+                            </g:else>
+                            <g:if test="${drink2.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumpurple',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumpurple',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink3.id]">
+                            </g:else>
+                            <g:if test="${drink3.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink3.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'mediumpurple',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'mediumpurple',opacity:drink3.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink4.id]">
+                            </g:else>
+                            <g:if test="${drink4.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink4.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'mediumpurple',opacity:drink4.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'mediumpurple',opacity:drink4.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink5.id]">
+                            </g:else>
+                            <g:if test="${drink5.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink5.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink5,backgroundColor:'mediumpurple',opacity:drink5.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink5,backgroundColor:'mediumpurple',opacity:drink5.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink6.id]">
+                            </g:else>
+                            <g:if test="${drink6.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink6.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink6,backgroundColor:'mediumpurple',opacity:drink6.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink6,backgroundColor:'mediumpurple',opacity:drink6.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink7.id]">
+                            </g:else>
+                            <g:if test="${drink7.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink7.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink7,backgroundColor:'mediumpurple',opacity:drink7.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink7,backgroundColor:'mediumpurple',opacity:drink7.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink8.id]">
+                            </g:else>
+                            <g:if test="${drink8.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink8.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink8,backgroundColor:'mediumpurple',opacity:drink8.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink8,backgroundColor:'mediumpurple',opacity:drink8.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
+                            </g:else>
                         </div>
                         <% } %>
                     </div>
@@ -289,9 +357,13 @@
                                 try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                             %>
-                            <g:link controller="drink" action="show" params="[id:drink1.id]">
+                            <g:if test="${drink1.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
+                            </g:else>
                         </div>
                         <%
                             for (int i=1; i<9; i+=2) {
@@ -307,12 +379,20 @@
                                 }
                         %>
                         <div style="display:inline-flex;">
-                            <g:link controller="drink" action="show" params="[id:drink1.id]">
+                            <g:if test="${drink1.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink1.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen',opacity:drink1.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink2.id]">
+                            </g:else>
+                            <g:if test="${drink1.drinkNumber != 0}">
+                                <g:link controller="drink" action="show" params="[id:drink2.id]">
+                                    <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumseagreen',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
+                                </g:link>
+                            </g:if><g:else>
                                 <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumseagreen',opacity:drink2.drinkNumber == 0 ? 0.5 : 1]"/>
-                            </g:link>
+                            </g:else>
                         </div>
                         <% } %>
                     </div>
