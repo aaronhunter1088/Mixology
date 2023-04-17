@@ -71,7 +71,8 @@
                     <div class="card" style="">
                         <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <%
-                            List tequilaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.TEQUILA}.collect()
+                            List tequilaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.TEQUILA}
+                                    .sort((d1, d2) -> d1.drinkNumber.compareTo(d2.drinkNumber)).collect()
                             for (int i=0; i<12; i+=2) {
                                 Drink drink1 = null
                                 if (i < 12) {
@@ -129,7 +130,8 @@
                         <div class="card" style="">
                             <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                             <%
-                                List vodkaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.VODKA}.collect()
+                                List vodkaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.VODKA}
+                                        .sort((d1, d2) -> d1.drinkNumber.compareTo(d2.drinkNumber)).collect()
                                 for (int i=0; i<12; i+=4) {
                                     Drink drink1 = null
                                     if (i < 12) {
@@ -189,7 +191,8 @@
                         <div class="card">
                             <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                             <%
-                                List ginDrinks = user.drinks.findAll { it.alcoholType == Alcohol.GIN}.collect()
+                                List ginDrinks = user.drinks.findAll { it.alcoholType == Alcohol.GIN}
+                                        .sort((d1, d2) -> d1.drinkNumber.compareTo(d2.drinkNumber)).collect()
                                 for (int i=0; i<9; i+=3) {
                                     Drink drink1 = null
                                     if (i < 9) {
@@ -238,7 +241,8 @@
                     <div class="card">
                         <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                         <%
-                            List shooterDrinks = user.drinks.findAll { it.alcoholType == Alcohol.SHOOTER }.collect()
+                            List shooterDrinks = user.drinks.findAll { it.alcoholType == Alcohol.SHOOTER }
+                                    .sort((d1, d2) -> d1.drinkNumber.compareTo(d2.drinkNumber)).collect()
                             for (int i=0; i<16; i+=8) {
                                 Drink drink1 = null
                                 if (i < 16) {
@@ -352,7 +356,8 @@
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <%
-                                List frozenDrinks = user.drinks.findAll { it.alcoholType == Alcohol.FROZEN }.collect()
+                                List frozenDrinks = user.drinks.findAll { it.alcoholType == Alcohol.FROZEN }
+                                        .sort((d1, d2) -> d1.drinkNumber.compareTo(d2.drinkNumber)).collect()
                                 Drink drink1 = null
                                 try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }

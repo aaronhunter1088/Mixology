@@ -43,10 +43,10 @@ class DrinkController {
     def customIndex(Integer max) {
         params.max = 5//Math.min(max ?: 5, 100)
         def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
-        List<Drink> customDrinks = Drink.findAllByCustom(true, params).collect()
-        customDrinks = customDrinks.each { it in user.drinks }
+        //List<Drink> customDrinks = Drink.findAllByCustom(true, params).collect()
+        List<Drink> customDrinks = user.drinks.collect()
         //respond customDrinks, model:[drinkCount: Drink.findAllByCustom(true).collect().size()]
-        respond customDrinks, model:[drinkCount: customDrinks.size()]
+        render view:'index', model:[drinkList:customDrinks,drinkCount:customDrinks.size()]
     }
 
     def show(Long id) {
@@ -111,6 +111,7 @@ class DrinkController {
         respond drink
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def update(Drink drink) {
         if (!drink) {
             notFound()
@@ -156,7 +157,36 @@ class DrinkController {
             }
             // if is a custom drink and user has either role
             else if (drink.isCustom() && (!adminRole || !userRole)) {
-                // TODO: Implement
+                drink.drinkName = params.drinkName
+                drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
+                drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
+                drink.drinkSymbol = params.drinkSymbol
+                drink.suggestedGlass = GlassType.valueOf(params.glass as String)
+                drink.mixingInstructions = params.instructions
+                drink.version = (params.version as Long)
+                extractIngredientsFromParams(params)
+                validIngredients.each{
+                    drink.ingredients.add(it as Ingredient)
+                }
+                drink.ingredients.each { Ingredient i ->
+                    if (!i.drinks) i.drinks = new HashSet<Drink>()
+                    if (!i.drinks.contains(drink)) i.addToDrinks(drink)
+                    i.save()
+                }
+                List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
+                    eq('drinks.id', drink.id)
+                } as List<Ingredient> // 1,2,3,4,38
+                println "${associatedIngredientIds}"
+                for(Ingredient i : associatedIngredientIds) {
+                    if ( !(i.id in drink.ingredients*.id)) {
+                        println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
+                        i.removeFromDrinks(drink)
+                    }
+                }
+                if (drink.validate()) {
+                    drinkService.save(drink)
+                    logger.info("custom drink saved!")
+                }
             }
             else {
                 drink.errors.reject('default.updated.error.message', [drink.drinkName] as Object[], '')

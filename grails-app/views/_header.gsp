@@ -17,14 +17,16 @@
         <sec:ifLoggedIn>
             <%
                 def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
+                def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
                 int hour = LocalTime.now().getHour()
                 String greeting = 'Good ';
                 if (0 <= hour && hour < 12 ) greeting += 'morning, ';
                 else if (12 <= hour && hour < 17) greeting += 'afternoon, ';
                 else greeting += 'evening, ';
             %>
+            <g:set var="user" value="${user}"/>
             <g:set var="greet" value="${greeting}"/>
-            <h1>${greet} ${User.findByUsername(springSecurityService.authentication.getPrincipal().username)}</h1>
+            <h1>${greet} ${user}</h1>
         </sec:ifLoggedIn>
         <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
             <ul class="nav navbar-nav ml-auto">
@@ -51,12 +53,21 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#artefacts" role="button" aria-haspopup="true" aria-expanded="false">Artefacts <span class="caret"></span></a>
                         <ul class="dropdown-menu" id="artefacts" style="background-color:#000000;">
                             <li class="dropdown-header">User Mgmt</li>
-                            <li class="dropdown-item"><g:link controller="user" action="index">Show Users</g:link></li>
-                            <li class="dropdown-item"><g:link controller="user" action="create">Create User</g:link></li>
+                            <sec:ifLoggedIn>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <li class="dropdown-item"><g:link controller="user" action="index">Show Users</g:link></li>
+                                </sec:ifAnyGranted>
+                                <sec:ifAnyGranted roles="ROLE_USER">
+                                    <li class="dropdown-item"><a id="user" href="${createLink(uri:"/user/show/${user.id}")}">User Details</a></li>
+                                </sec:ifAnyGranted>
+                                <li class="dropdown-item"><g:link controller="logout" action="index">Logout</g:link></li>
+                            </sec:ifLoggedIn>
+                            <sec:ifNotLoggedIn>
+                                <li class="dropdown-item"><g:link controller="user" action="create">Create User</g:link></li>
+                            </sec:ifNotLoggedIn>
                             <li role="separator" class="dropdown-divider"></li>
                             <li class="dropdown-header">Controllers</li>
-                            <li class="dropdown-item"><g:link controller="login" action="index">Login</g:link></li>
-                            <li class="dropdown-item"><g:link controller="logout" action="index">Logout</g:link></li>
+%{--                            <li class="dropdown-item"><g:link controller="login" action="index">Login</g:link></li>--}%
                             <sec:ifLoggedIn>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <li class="dropdown-item"><g:link controller="drink" action="index">Show Default Drinks</g:link></li>

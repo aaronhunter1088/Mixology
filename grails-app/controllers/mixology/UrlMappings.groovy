@@ -42,10 +42,6 @@ class UrlMappings {
             controller = "user"
             action = "create"
         }
-//        "/mixology/user/uploadImage" {
-//            controller = "user"
-//            action = "uploadImage"
-//        }
 
         "/"(view:"/index")
         "500"(view:'/error')

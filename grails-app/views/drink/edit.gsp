@@ -68,13 +68,7 @@
             <div class="container">
                 <section class="row" id="navigation">
                     <a href="#edit-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="list" action="index"><g:message code="default.list.label" args="[drinkObj]" /></g:link></li>
-                            <li><g:link class="create" action="create"><g:message code="default.new.label" args="[drinkObj]" /></g:link></li>
-                        </ul>
-                    </div>
+                    <g:render template="drinkNav"/>
                 </section>
                 <div id="edit-drink" class="col-12 scaffold-show">
 %{--                    <h1>Edit Drink</h1>--}%

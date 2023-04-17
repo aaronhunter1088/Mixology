@@ -74,15 +74,7 @@
             <div class="container">
                 <section class="row" id="navigation">
                     <a href="#show-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="home" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
-                            <li><g:link class="list" action="index">Drink List</g:link></li>
-                            <li><g:link class="create" action="create">New Drink</g:link></li>
-                            <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
-                        </ul>
-                    </div>
+                    <g:render template="drinkNav"/>
                 </section>
                 <div id="show-drink" class="col-12 scaffold-show">
                     <h1>Show Drink</h1>
@@ -158,10 +150,12 @@
                                 <fieldset class="buttons">
                                     <sec:ifLoggedIn>
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                        <g:if test="${drink.custom}">
+                                            <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
+                                            <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                        </g:if>
                                     </sec:ifLoggedIn>
-                                    <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                    <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                </fieldset>
+                                    </fieldset>
                             </g:form>
                         </div>
                     </div>
