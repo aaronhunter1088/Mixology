@@ -4,8 +4,6 @@ import enums.*
 import exceptions.UnsupportedGlassException
 import groovy.transform.ToString
 
-import java.beans.Transient
-
 @ToString
 class Drink implements Serializable{
 
@@ -21,11 +19,11 @@ class Drink implements Serializable{
     static constraints = {
         drinkName(size:3..30, blank:false)
         drinkSymbol(size:2..2, blank:false)
-        drinkNumber()
-        alcoholType()
+        drinkNumber(min:1)
+        alcoholType(blank:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
         ingredients(minSize:1, nullable:false)
-        mixingInstructions()
-        suggestedGlass()
+        mixingInstructions(blank:false, nullable:false)
+        suggestedGlass(blank:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
         canBeDeleted(nullable:true, default:true)
         custom(nullable:true, default:true)
     }
@@ -41,7 +39,6 @@ class Drink implements Serializable{
         drinkName + " ($drinkSymbol)" + " ($drinkNumber)"
     }
 
-    @Transient
     String getGlassImage() {
         String glassImage = ""
         switch (this.getSuggestedGlass()) {
