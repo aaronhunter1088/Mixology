@@ -19,11 +19,11 @@ class Drink implements Serializable{
     boolean custom
 
     static constraints = {
-        drinkName()
-        drinkSymbol(size:2..2)
+        drinkName(size:3..30, blank:false)
+        drinkSymbol(size:2..2, blank:false)
         drinkNumber()
         alcoholType()
-        ingredients()
+        ingredients(minSize:1, nullable:false)
         mixingInstructions()
         suggestedGlass()
         canBeDeleted(nullable:true, default:true)
