@@ -13,9 +13,9 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     boolean custom
 
     static constraints = {
-        name(nullable: false)
-        unit(nullable: false)
-        amount(nullable: false)
+        name(nullable:false, blank:false, size:3..30)
+        unit(nullable:false, blank:false, validator: { if (!(it in Unit.values())) return ['invalid.unit'] })
+        amount(nullable:false, blank:false)
         canBeDeleted(nullable:true, default:true)
         custom(nullable:true, default:true)
     }
@@ -43,7 +43,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     }
 
     static List<Ingredient> createFillerIngredients(count) {
-        List<Ingredient> fillerIngredients = new ArrayList<>();
+        List<Ingredient> fillerIngredients = new ArrayList<>()
         for (i in 1..count) {
             List<Unit> allUnits = Collections.unmodifiableList(Arrays.asList(Unit.values()))
             int size = allUnits.size()
@@ -59,15 +59,15 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     }
 
     static Set<Ingredient> copyAll(Set<Ingredient> ingredients) {
-        Set<Ingredient> copiedList = []
+        Set<Ingredient> copySet = []
         for (ingredient in ingredients) {
             Ingredient newIngredient = new Ingredient([
                 name:ingredient.name,
                 unit:ingredient.unit,
                 amount:ingredient.amount
             ])
-            copiedList << newIngredient
+            copySet << newIngredient
         }
-        return copiedList
+        return copySet
     }
 }

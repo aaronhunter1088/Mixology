@@ -11,8 +11,4 @@ class IngredientServiceSpec extends Specification implements ServiceUnitTest<Ing
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

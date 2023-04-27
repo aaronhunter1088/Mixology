@@ -11,8 +11,4 @@ class LogoutControllerSpec extends Specification implements ControllerUnitTest<L
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

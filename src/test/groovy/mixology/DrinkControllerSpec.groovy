@@ -92,12 +92,6 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         println "# of ingredients: ${ingredientService.count()}"
     }
 
-    // Kept for memory
-    void "dummy test"() {
-        expect:"fix me"
-            true
-    }
-
     Set<Ingredient> createIngredientsWithVodkaAndBAndC() {
         Set<Ingredient> ingredients = []
         Ingredient x = new Ingredient([
