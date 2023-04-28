@@ -5,6 +5,7 @@ import enums.GlassType
 import enums.Unit
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
+import org.junit.Test
 import spock.lang.Specification
 
 class DrinkControllerSpec extends Specification implements ControllerUnitTest<DrinkController>, DataTest {
@@ -39,12 +40,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 ingredients: createIngredientsWithVodkaAndDAndE()
         ])
         // save all ingredients
-        drink1.ingredients.each {
-            ingredientService.save(it)
-        }
-        drink2.ingredients.each {
-            ingredientService.save(it)
-        }
+        drink1.ingredients.each { ingredientService.save(it) }
+        drink2.ingredients.each { ingredientService.save(it) }
         drinkService.save(drink1)
         drinkService.save(drink2)
     }
@@ -52,6 +49,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     def cleanup() {
     }
 
+    @Test
     void "setup created two drinks with three ingredients"() {
         expect:"Drink1.id is null"
             drink1.id != null
@@ -67,11 +65,13 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         println "Drink2 Ingredients Size: ${drink2.ingredients.size()}"
     }
 
+    @Test
     void "confirm ingredient service saved all ingredients"() {
         expect:"Ingredients didn't add 6 ingredients"
             ingredientService.count() == 6
     }
 
+    @Test
     void "delete one drink doesn't delete other drink"() {
         expect:"Two drinks exist"
             drinkService.count() == 2

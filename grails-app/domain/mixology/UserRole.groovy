@@ -14,7 +14,6 @@ class UserRole implements Serializable {
 
 	User user
 	Role role
-	//def userRoleService
 
 	@Override
 	boolean equals(other) {
@@ -56,19 +55,31 @@ class UserRole implements Serializable {
 		instance
 	}
 
+	/**
+	 * In essence, removes the role_type from a user
+	 * @param u
+	 * @param r
+	 * @return
+	 */
 	static boolean remove(User u, Role r) {
 		if (u != null && r != null) {
-			UserRole.where { user == u && role == r }.deleteAll()
+			def ur = UserRole.withCriteria {
+				eq('user', u)
+				eq('role', r)
+			} as List<UserRole>
+			ur[0].delete(flush:true)
+			return true
 		}
+		return false
 	}
 
-	static int removeAll(User u) {
-		u == null ? 0 : UserRole.where { user == u }.deleteAll() as int
-	}
+//	static int removeAll(User u) {
+//		u == null ? 0 : UserRole.where { user == u }.deleteAll() as int
+//	}
 
-	static int removeAll(Role r) {
-		r == null ? 0 : UserRole.where { role == r }.deleteAll() as int
-	}
+//	static int removeAll(Role r) {
+//		r == null ? 0 : UserRole.where { role == r }.deleteAll() as int
+//	}
 
 	static constraints = {
 	    user nullable: false
