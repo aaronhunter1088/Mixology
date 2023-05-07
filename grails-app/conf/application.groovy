@@ -25,6 +25,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/drink/index',	 access: ['ROLE_ADMIN']],
 	[pattern: '/drink/customIndex',access: ['ROLE_USER']],
 	[pattern: '/drink/show/**',     access: ['permitAll']],
+	[pattern: '/drink/save',     access: ['permitAll']],
 	[pattern: '/drink/edit',     access: ['permitAll']],
 	[pattern: '/drink/copy',     access: ['permitAll']],
 	[pattern: '/drink/update',   access: ['permitAll']],

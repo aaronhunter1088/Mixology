@@ -9,7 +9,7 @@
                             <p style="margin:0;color:black;">${ingredient}</p>
                         </g:if><g:else>
                             <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
-                                <p style="margin:0;color:black;">${ingredient}</p>
+                                <p style="margin:0;color:black;">${ingredient.prettyName()}</p>
                             </g:link>
                         </g:else>
                     </g:each>

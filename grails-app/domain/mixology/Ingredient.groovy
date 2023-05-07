@@ -25,6 +25,10 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
 
     @Override
     String toString() {
+        name + " : " + amount + " : " + unit.getValue().toUpperCase()
+    }
+
+    String prettyName() {
         if (amount % 1 == 0) {
             (int)amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
         } else {

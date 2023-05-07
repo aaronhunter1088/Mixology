@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.FORBIDDEN
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
@@ -41,11 +42,9 @@ class DrinkController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def customIndex(Integer max) {
-        params.max = 5//Math.min(max ?: 5, 100)
-        def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
-        //List<Drink> customDrinks = Drink.findAllByCustom(true, params).collect()
+        params.max = Math.min(max ?: 5, 100)
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         List<Drink> customDrinks = user.drinks.collect()
-        //respond customDrinks, model:[drinkCount: Drink.findAllByCustom(true).collect().size()]
         render view:'index', model:[drinkList:customDrinks,drinkCount:customDrinks.size()]
     }
 
@@ -67,15 +66,25 @@ class DrinkController {
         respond drink
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def save() { // (Drink drink)
         if (!params) {//if (!drink) {
             notFound()
             return
         }
+        if (request.method != 'POST') {
+            println 'Only POST allowed'
+            respond status: METHOD_NOT_ALLOWED
+            return
+        }
         Drink drink = createDrinkFromParams(params)
-        UserRole ur = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         try {
-            if (drink.isCustom() || ur) drinkService.save(drink)
+            if (drink.isCustom() || ur) {
+                drinkService.save(drink)
+                user.addToDrinks(drink)
+            }
             else {
                 drink.errors.reject("You cannot save a default drink!")
             }
@@ -117,9 +126,14 @@ class DrinkController {
             notFound()
             return
         }
+        if (request.method != 'PUT') {
+            println 'Only PUT allowed'
+            respond status: METHOD_NOT_ALLOWED
+            return
+        }
         // Get UR based on current user
-        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
+        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
             // TODO: update logic
             drink.org_grails_datastore_gorm_GormValidateable__errors = null
@@ -138,22 +152,27 @@ class DrinkController {
                 }
                 drink.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
-                    if (!i.drinks.contains(drink)) i.addToDrinks(drink)
-                    i.save()
+                    if (!i.drinks.contains(drink)) i.addToDrinks(drink as Drink)
+                    //i.save()
                 }
                 // Find all ingredients currently associated with drink
                 //def sql = new Sql(grailsApplication.mainContext.getBean('dataSource') as Connection)
-                List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
-                    eq('drinks.id', drink.id)
-                } as List<Ingredient> // 1,2,3,4,38
+                List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
+//                List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
+//                    eq('drinks.id', drink.id)
+//                } as List<Ingredient> // 1,2,3,4,38
                 println "${associatedIngredientIds}"
-                for(Ingredient i : associatedIngredientIds) {
-                    if ( !(i.id in drink.ingredients*.id)) {
-                        println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
+                for(Long id : associatedIngredientIds) {
+                    if ( !(id in drink.ingredients*.id)) {
+                        println "id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.drinkName}"
+                        Ingredient i = Ingredient.findById(id)
                         i.removeFromDrinks(drink)
                     }
                 }
-                if (drink.validate()) drinkService.save(drink)
+                if (drink.validate()) {
+                    drinkService.save(drink)
+                    logger.info("default drink saved")
+                }
             }
             // if is a custom drink and user has either role
             else if (drink.isCustom() && (!adminRole || !userRole)) {
@@ -171,16 +190,19 @@ class DrinkController {
                 drink.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
                     if (!i.drinks.contains(drink)) i.addToDrinks(drink)
-                    i.save()
+                    //i.save()
                 }
-                List<Ingredient> associatedIngredientIds = Ingredient.withCriteria {
-                    eq('drinks.id', drink.id)
-                } as List<Ingredient> // 1,2,3,4,38
+                List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
+                //List<Ingredient> associatedIngredientIds = drink.ingredients*.id
+//                Ingredient.withCriteria {
+//                    eq('drinks', drink) //drinks.id, drink.id
+//                } as List<Ingredient>
                 println "${associatedIngredientIds}"
-                for(Ingredient i : associatedIngredientIds) {
-                    if ( !(i.id in drink.ingredients*.id)) {
-                        println "id ${i.id} not found in drink.ingredients. removing ${i} from drink: ${drink.drinkName}"
-                        i.removeFromDrinks(drink)
+                for(Long id : associatedIngredientIds) {
+                    if ( !(id in drink.ingredients*.id)) {
+                        println "id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.drinkName}"
+                        Ingredient i = Ingredient.findById(id)
+                        i.removeFromDrinks(drink as Drink)
                     }
                 }
                 if (drink.validate()) {
@@ -199,6 +221,9 @@ class DrinkController {
         }
 
         if (drink.errors.hasErrors()) {
+            List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
+            //TODO: transform id to Set
+            //Set<Ingredient> ingredients = associatedIngredientIds.each {return Ingredient.findById(it) }.collect()
             Set<Ingredient> ingredients = Ingredient.withCriteria {
                 eq('drinks.id', drink.id)
             } as List<Ingredient>
@@ -220,6 +245,7 @@ class DrinkController {
         }
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
         if (!id) {
             notFound()
@@ -262,8 +288,9 @@ class DrinkController {
      * not contain the given ingredients, or instructions.
      * @param drink
      */
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def copy(Drink drink) {
-        def user = User.findByUsername(springSecurityService?.authentication?.getPrincipal()?.username as String)
+        def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
         if (user) {
             logger.info("we have a user logged in ${user}")
             Drink copied = new Drink([
@@ -348,6 +375,7 @@ class DrinkController {
                             break
                         }
                     }
+                    if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
                     validIngredients.add(newIngredientFromParams)
                 }
             }
@@ -364,6 +392,7 @@ class DrinkController {
                         break
                     }
                 }
+                if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
                 validIngredients.add(newIngredientFromParams)
             }
         }
@@ -382,12 +411,12 @@ class DrinkController {
                 ingredients: validIngredients,
                 canBeDeleted: true,
                 custom: true
-        ])
+        ]).save(failOnError:true)
         // Associate all ingredients with this drink
         validIngredients.each { Ingredient it ->
             if (!it.drinks) it.drinks = new HashSet<Drink>()
             if (!it.drinks.contains(drink)) it.addToDrinks(drink)
-            it.save()
+            //it.save()
         }
         return drink
     }
