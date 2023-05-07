@@ -1,7 +1,9 @@
-package mixology
+package mixology.unit
 
 import enums.Alcohol
 import grails.testing.services.ServiceUnitTest
+import mixology.Drink
+import mixology.DrinkService
 import spock.lang.Specification
 
 class DrinkServiceSpec extends Specification implements ServiceUnitTest<DrinkService>{

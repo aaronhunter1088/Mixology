@@ -1,6 +1,7 @@
-package mixology
+package mixology.unit
 
 import grails.testing.gorm.DomainUnitTest
+import mixology.Role
 import org.junit.Test
 import spock.lang.Specification
 

@@ -1,9 +1,11 @@
-package mixology
+package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
 import exceptions.UnsupportedGlassException
 import grails.testing.gorm.DomainUnitTest
+import mixology.Drink
+import mixology.Ingredient
 import org.junit.Test
 import spock.lang.Specification
 import spock.lang.Unroll

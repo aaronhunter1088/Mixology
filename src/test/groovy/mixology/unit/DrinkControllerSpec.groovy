@@ -1,4 +1,4 @@
-package mixology
+package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
@@ -7,13 +7,21 @@ import grails.gorm.transactions.Rollback
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
+import mixology.Drink
+import mixology.DrinkController
+import mixology.DrinkService
+import mixology.Ingredient
+import mixology.IngredientService
+import mixology.Role
+import mixology.User
+import mixology.UserRole
 import org.junit.Test
 import spock.lang.Specification
 
 class DrinkControllerSpec extends Specification implements ControllerUnitTest<DrinkController>, DataTest {
 
     Class<?>[] getDomainClassesToMock(){
-        return [Drink,Ingredient,User] as Class[]
+        return [Drink, Ingredient, User] as Class[]
     }
 
     Drink drink1, drink2

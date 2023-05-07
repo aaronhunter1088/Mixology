@@ -1,7 +1,8 @@
-package mixology
+package mixology.unit
 
 import enums.Unit
 import grails.testing.gorm.DomainUnitTest
+import mixology.Ingredient
 import org.junit.Test
 import spock.lang.Specification
 import spock.lang.Unroll

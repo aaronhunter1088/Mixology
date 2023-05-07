@@ -1,6 +1,7 @@
-package mixology
+package mixology.unit
 
 import grails.testing.services.ServiceUnitTest
+import mixology.RoleService
 import spock.lang.Specification
 
 class RoleServiceSpec extends Specification implements ServiceUnitTest<RoleService>{
