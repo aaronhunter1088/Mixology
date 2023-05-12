@@ -15,6 +15,7 @@ class Drink implements Serializable{
     String drinkSymbol
     boolean canBeDeleted
     boolean custom
+    //User user
 
     static constraints = {
         drinkName(size:3..30, blank:false)
@@ -30,8 +31,8 @@ class Drink implements Serializable{
 
     static mapping = {}
 
-    static belongsTo = [Ingredient,User]
-    static hasMany = [ingredients:Ingredient,user:User]
+    static belongsTo = [Ingredient] // ,User
+    static hasMany = [ingredients:Ingredient] //,user:User
     static transients = ['glassImage']
 
     @Override
@@ -166,6 +167,7 @@ class Drink implements Serializable{
                 custom: true
         ])
     }
+
 }
 
 /*
