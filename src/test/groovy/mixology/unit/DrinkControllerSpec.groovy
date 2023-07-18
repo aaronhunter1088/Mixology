@@ -3,7 +3,6 @@ package mixology.unit
 import enums.Alcohol
 import enums.GlassType
 import enums.Unit
-import grails.gorm.transactions.Rollback
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
@@ -275,6 +274,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 firstName: "test",
                 lastName: "user"
         ]).save(validate:false)
+        Role role = new Role(authority: enums.Role.ADMIN.name).save()
+        UserRole.create(user, role)
         user.drinks = new HashSet<Drink>()
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user

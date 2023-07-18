@@ -2,6 +2,8 @@ package enums
 
 import lombok.ToString
 
+import java.security.SecureRandom
+
 @ToString
 enum Unit {
 
@@ -24,6 +26,13 @@ enum Unit {
     String value
     Unit(value) {
         this.value = value
+    }
+
+    static getRandomUnit() {
+        SecureRandom r = new SecureRandom()
+        int randNum = r.nextInt(values().length)
+        println "random unit: ${values()[randNum]}"
+        return values()[randNum]
     }
 
 }

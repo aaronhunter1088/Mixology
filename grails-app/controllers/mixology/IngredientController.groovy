@@ -3,10 +3,12 @@ package mixology
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import enums.Unit
+import mixology.User;
 
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
@@ -27,9 +29,11 @@ class IngredientController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def customIndex(Integer max) {
         params.max = 5//Math.min(max ?: 5, 100)
-        def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
-        List<Ingredient> customIngredients = Ingredient.findAllByCustom(true, params).collect()
-        customIngredients = customIngredients.each { it in user.drinks }
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        //List<Ingredient> customIngredients = Ingredient.findAllByCustom(true, params).collect()
+        //customIngredients = customIngredients.each { it in user.drinks*.ingredients }
+        List<Ingredient> customIngredients = []
+        user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << it} }
         respond customIngredients, model:[ingredientCount: customIngredients.size()]
     }
 
@@ -47,12 +51,18 @@ class IngredientController {
             notFound()
             return
         }
+        if (request.method != 'POST') {
+            println 'Only POST allowed'
+            respond status: METHOD_NOT_ALLOWED
+            return
+        }
         Ingredient errorI
         List<Ingredient> ingredientErrors = []
-        List<Ingredient> ingredients = createIngredientsFromParams(params)
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        List<Ingredient> ingredients = createIngredientsFromParams(params, adminRole, userRole)
         int savedCount = 0
-        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
             ingredients.each { ingredient ->
                 errorI = new Ingredient()
@@ -67,7 +77,7 @@ class IngredientController {
                     println "ingredient.name ${ingredient.name} already exists"
                     ingredientErrors << errorI
                 }
-                // if ingredient is not custom and user is not admin user
+                // if ingredient is not custom (default ingredient) and user is not admin user
                 else if (!ingredient.isCustom() && !adminRole)  {
                     errorI.name = ingredient.name
                     errorI.unit = ingredient.unit
@@ -83,7 +93,8 @@ class IngredientController {
                     // TODO: Implement
                 }
                 else {
-                    ingredientService.save(ingredient)
+                    //ingredientService.save(ingredient)
+                    ingredient.save(failOnError:true)
                     println "ingredient.id ${ingredient.id} saved"
                     savedCount++
                 }
@@ -94,7 +105,6 @@ class IngredientController {
             return
         }
 
-        //Predicate<Ingredient> isNull = id -> id == null
         List<Long> ingredientIds = ingredients*.id
         ingredientIds.removeAll([null])
         //ingredients.removeAll([isNull])
@@ -112,6 +122,7 @@ class IngredientController {
             }
         }
         else {
+            response.status = 400
             if (ingredientErrors.size() == 1) {
                 respond ingredientErrors.get(0).errors, view:'create'
             } else {
@@ -119,21 +130,6 @@ class IngredientController {
                     respond err.errors, view: 'create'
                 }
             }
-//            request.withFormat {
-//                form multipartForm {
-//                    if (ingredientIds.size() == 1) {
-//                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
-//                    } else if (ingredientIds.size() > 1) {
-//                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredients'), ingredientIds.each { id ->
-//                            id + " "
-//                        }])
-//                    } else {
-//                        flash.message = ''
-//                    }
-//                    redirect(controller: "ingredient", action: "create")
-//                }
-//                '*' { respond ingredientIds, [status: CREATED] }
-//            }
         }
     }
 
@@ -244,7 +240,7 @@ class IngredientController {
         }
     }
 
-    def createIngredientsFromParams(params) {
+    def createIngredientsFromParams(params, adminRole, userRole) {
         List<String> ingredientNames = new ArrayList<>()
         List<Unit> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
@@ -269,6 +265,10 @@ class IngredientController {
                     unit: units.get(i),
                     amount: ingredientAmounts.get(i)
             ])
+            if (userRole) {
+                ingredient.canBeDeleted = true
+                ingredient.custom = true
+            }
             ingredients.add(ingredient)
         }
         return ingredients

@@ -77,13 +77,14 @@ class DrinkController {
             respond status: METHOD_NOT_ALLOWED
             return
         }
-        Drink drink = createDrinkFromParams(params)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        Drink drink = createDrinkFromParams(params, ur)
         try {
             if (drink.isCustom() || ur) {
-                drinkService.save(drink)
-                user.addToDrinks(drink)
+                //drink.save(failOnError:true)
+                //drinkService.save(drink)
+                //user.addToDrinks(drink)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
@@ -103,6 +104,7 @@ class DrinkController {
             }
         } else {
             request.withFormat {
+                user.addToDrinks(drink)
                 form multipartForm {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                     redirect drink
@@ -120,6 +122,7 @@ class DrinkController {
         respond drink
     }
 
+    //@Secured(value=["hasAnyRole('ROLE_ADMIN',ROLE_USER')"], httpMethod='POST')
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def update(Drink drink) {
         if (!drink) {
@@ -398,20 +401,23 @@ class DrinkController {
         }
     }
 
-    def createDrinkFromParams(params) {
+    def createDrinkFromParams(params, role) {
         extractIngredientsFromParams(params)
 
         Drink drink = new Drink([
                 drinkName: params.drinkName,
                 drinkNumber: params.drinkNumber as Integer,
-                alcoholType: Alcohol.valueOf(params.alcoholType),
+                alcoholType: Alcohol.valueOf(params.alcoholType as String),
                 drinkSymbol: params.drinkSymbol,
-                suggestedGlass: GlassType.valueOf(params.glass),
+                suggestedGlass: GlassType.valueOf(params.glass as String),
                 mixingInstructions: params.instructions,
                 ingredients: validIngredients,
-                canBeDeleted: true,
-                custom: true
-        ]).save(failOnError:true)
+        ])//.save(failOnError:true)
+        if (!role) {
+            drink.canBeDeleted = true
+            drink.custom = true
+        }
+        drink.save(failOnError:true)
         // Associate all ingredients with this drink
         validIngredients.each { Ingredient it ->
             if (!it.drinks) it.drinks = new HashSet<Drink>()

@@ -11,6 +11,14 @@ grails.plugin.springsecurity.providerNames = [
 		'anonymousAuthenticationProvider',
 		'rememberMeAuthenticationProvider']
 
+grails.plugins.springsecurity.filterChain.filterNames = [
+		'filterInvocationInterceptor'
+		//,'securityContextPersistenceFilter', 'logoutFilter',
+		//   'authenticationProcessingFilter', 'myCustomProcessingFilter',
+		//   'rememberMeAuthenticationFilter', 'anonymousAuthenticationFilter',
+		//   'exceptionTranslationFilter',
+]
+
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],
 	[pattern: '/error',          access: ['permitAll']],
@@ -31,7 +39,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/drink/update',   access: ['permitAll']],
 	//[pattern: '/ingredient/**',  access: ['permitAll']], update for other methods
 	[pattern: '/ingredient/index',access: ['ROLE_ADMIN']],
-	[pattern: '/ingredient/customIndex',access: ['ROLE_USER']],
+	[pattern: '/ingredient/customIndex',access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/ingredient/show/**',     access: ['permitAll']],
 	[pattern: '/ingredient/edit',     access: ['permitAll']],
 	[pattern: '/ingredient/update',access: ['permitAll']],
