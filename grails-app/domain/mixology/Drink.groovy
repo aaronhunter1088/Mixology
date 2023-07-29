@@ -13,25 +13,25 @@ class Drink implements Serializable{
     GlassType suggestedGlass
     Alcohol alcoholType
     String drinkSymbol
-    boolean canBeDeleted
-    boolean custom
+    boolean canBeDeleted = true
+    boolean custom = true
     //User user
 
     static constraints = {
-        drinkName(size:3..30, blank:false)
-        drinkSymbol(size:2..2, blank:false)
-        drinkNumber(min:1)
-        alcoholType(blank:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
-        ingredients(minSize:1, nullable:false)
+        drinkName(size:3..30, blank:false, nullable:false)
+        drinkSymbol(size:2..2, blank:false, nullable:false)
+        drinkNumber(min:1, nullable:false)
+        alcoholType(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
+        ingredients(minSize:0, nullable:true)
         mixingInstructions(blank:false, nullable:false)
-        suggestedGlass(blank:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
-        canBeDeleted(nullable:true, default:true)
-        custom(nullable:true, default:true)
+        suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
+        canBeDeleted(default:true)
+        custom(default:true)
     }
 
     static mapping = {}
 
-    static belongsTo = [Ingredient] // ,User
+    static belongsTo = Ingredient // ,User
     static hasMany = [ingredients:Ingredient] //,user:User
     static transients = ['glassImage']
 

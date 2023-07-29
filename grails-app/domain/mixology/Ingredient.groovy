@@ -9,8 +9,8 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     String name
     Unit unit
     Double amount
-    boolean canBeDeleted
-    boolean custom
+    boolean canBeDeleted = true
+    boolean custom = true
 
     static constraints = {
         name(nullable:false, blank:false, size:3..30)

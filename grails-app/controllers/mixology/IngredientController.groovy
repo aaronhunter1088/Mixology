@@ -7,6 +7,7 @@ import mixology.User;
 
 import javax.servlet.http.HttpServletResponse
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
@@ -61,9 +62,10 @@ class IngredientController {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-        List<Ingredient> ingredients = createIngredientsFromParams(params, adminRole, userRole)
+        List<Ingredient> ingredients
         int savedCount = 0
         try {
+            ingredients = createIngredientsFromParams(params, adminRole)
             ingredients.each { ingredient ->
                 errorI = new Ingredient()
                 // if ingredient already exists, should not save
@@ -90,7 +92,9 @@ class IngredientController {
                 }
                 // if ingredient is custom and user has either role
                 else if (ingredient.isCustom() && (!adminRole || !userRole)) {
-                    // TODO: Implement
+                    ingredient.save(failOnError:true)
+                    println "ingredient.id ${ingredient.id} saved"
+                    savedCount++
                 }
                 else {
                     //ingredientService.save(ingredient)
@@ -101,7 +105,8 @@ class IngredientController {
             }
         }
         catch (ValidationException e) {
-            redirect(controller: "ingredient", action: "create") //respond ingredient.errors, view:'create'
+            //redirect(controller: "ingredient", action: "create") //respond ingredient.errors, view:'create'
+            respond errorI?.errors, view:'create', status: BAD_REQUEST
             return
         }
 
@@ -122,12 +127,11 @@ class IngredientController {
             }
         }
         else {
-            response.status = 400
             if (ingredientErrors.size() == 1) {
-                respond ingredientErrors.get(0).errors, view:'create'
+                respond ingredientErrors.get(0).errors, view:'create', status: BAD_REQUEST
             } else {
                 ingredientErrors.each { err ->
-                    respond err.errors, view: 'create'
+                    respond err.errors, view: 'create', status: BAD_REQUEST
                 }
             }
         }
@@ -240,7 +244,7 @@ class IngredientController {
         }
     }
 
-    def createIngredientsFromParams(params, adminRole, userRole) {
+    def createIngredientsFromParams(params, adminRole) {
         List<String> ingredientNames = new ArrayList<>()
         List<Unit> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
@@ -265,10 +269,11 @@ class IngredientController {
                     unit: units.get(i),
                     amount: ingredientAmounts.get(i)
             ])
-            if (userRole) {
+            if (!adminRole) {
                 ingredient.canBeDeleted = true
                 ingredient.custom = true
             }
+            //ingredient.save(failOnError:true)
             ingredients.add(ingredient)
         }
         return ingredients

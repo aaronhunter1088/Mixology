@@ -14,6 +14,7 @@ import java.sql.Connection
 import static org.apache.commons.lang3.StringUtils.isNotEmpty
 import javax.servlet.http.HttpServletResponse
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
@@ -79,32 +80,30 @@ class DrinkController {
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        Drink drink = createDrinkFromParams(params, ur)
+        Drink drink
         try {
-            if (drink.isCustom() || ur) {
-                //drink.save(failOnError:true)
-                //drinkService.save(drink)
-                //user.addToDrinks(drink)
+            drink = createDrinkFromParams(params, ur)
+            if (drink.isCustom() || ur?.role == enums.Role.ADMIN) {
+                user.addToDrinks(drink)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
             }
         }
         catch (ValidationException e) {
-            respond drink.errors, view:'create'
+            respond drink?.errors, view:'create', status: BAD_REQUEST
             return
         }
 
         if (drink.errors.hasErrors()) {
             request.withFormat {
                 form multipartForm {
-                    respond drink.errors, [status: FORBIDDEN]
+                    respond drink?.errors, [status: FORBIDDEN]
                 }
                 '*' { respond drink, [status: FORBIDDEN] }
             }
         } else {
             request.withFormat {
-                user.addToDrinks(drink)
                 form multipartForm {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                     redirect drink
@@ -149,7 +148,8 @@ class DrinkController {
                 drink.suggestedGlass = GlassType.valueOf(params.glass as String)
                 drink.mixingInstructions = params.instructions
                 drink.version = (params.version as Long)
-                extractIngredientsFromParams(params)
+                validIngredients = createNewIngredientsFromParams(params)
+                //extractIngredientsFromParams(params)
                 validIngredients.each{
                     drink.ingredients.add(it as Ingredient)
                 }
@@ -186,7 +186,8 @@ class DrinkController {
                 drink.suggestedGlass = GlassType.valueOf(params.glass as String)
                 drink.mixingInstructions = params.instructions
                 drink.version = (params.version as Long)
-                extractIngredientsFromParams(params)
+                validIngredients = createNewIngredientsFromParams(params)
+                //extractIngredientsFromParams(params)
                 validIngredients.each{
                     drink.ingredients.add(it as Ingredient)
                 }
@@ -227,9 +228,11 @@ class DrinkController {
             List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
             //TODO: transform id to Set
             //Set<Ingredient> ingredients = associatedIngredientIds.each {return Ingredient.findById(it) }.collect()
-            Set<Ingredient> ingredients = Ingredient.withCriteria {
-                eq('drinks.id', drink.id)
-            } as List<Ingredient>
+            Set<Ingredient> ingredients = Ingredient.findAllByDrinksInList(drink.ingredients as List)
+            //Set<Ingredient> ingredients = Ingredient.withCriteria {
+
+            //    eq('drinks.id', drink.id)
+            //} as Set<Ingredient>
             drink.ingredients = ingredients
             request.withFormat {
                 form multipartForm {
@@ -261,7 +264,8 @@ class DrinkController {
                 ingredient.removeFromDrinks(drink)
                 drink.removeFromIngredients(ingredient)
             }
-            drinkService.delete(id)
+            //drinkService.delete(id)
+            drink.delete(flush:true)
         } else {
             drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
         }
@@ -330,7 +334,8 @@ class DrinkController {
                     }
                     '*'{ respond drink, view:'show' }//redirect(drink:drink, view:'show') }
                 }
-            } else {
+            }
+            else {
                 logger.error("There was validation errors [{}] on the user", user.errors.allErrors.size())
                 request.withFormat {
                     form multipartForm {
@@ -344,65 +349,78 @@ class DrinkController {
         }
     }
 
-    protected void notFound() {
+    void notFound() {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
-                redirect action: "index", method: "GET"
+                redirect action: "index", method: "GET", status: NOT_FOUND
             }
             '*'{ render status: NOT_FOUND }
         }
     }
 
-    def extractIngredientsFromParams(params) {
-        //validIngredients = new HashSet<Ingredient>()
-        List<Ingredient> allIngredients = Ingredient.list()
-        Ingredient newIngredientFromParams
-        String ingredients = params.ingredients
-        if (isNotEmpty(ingredients)) {
-            ingredients = ingredients.replace('[','').replace(']','')
-            if (ingredients.indexOf(',') >= 0) {
-                println "has a comma"
-                String[] list = ingredients.split(',')
-                println list
-                for (it in list) {
-                    String[] parts = it.split ':'
-                    newIngredientFromParams = new Ingredient([
-                            name: parts[0].trim(),
-                            amount: parts[1].trim(),
-                            unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
-                    ])
-                    for (ingredient in allIngredients) {
-                        if (ingredient == newIngredientFromParams) {
-                            newIngredientFromParams = ingredient // set the id for referencing
-                            break
-                        }
-                    }
-                    if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
-                    validIngredients.add(newIngredientFromParams)
-                }
-            }
-            else {
-                String[] parts = ingredients.split ':'
-                newIngredientFromParams = new Ingredient([
-                        name  : parts[0].trim(),
-                        amount: parts[1].trim(),
-                        unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
-                ])
-                for (ingredient in allIngredients) {
-                    if (ingredient == newIngredientFromParams) {
-                        newIngredientFromParams = ingredient // set the id for referencing
-                        break
-                    }
-                }
-                if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
-                validIngredients.add(newIngredientFromParams)
-            }
-        }
-    }
+//    /**
+//     * Creates 1 or more ingredients and adds
+//     * them to the validIngredients list
+//     * @param params
+//     * @return
+//     */
+//    @Deprecated
+//    def extractIngredientsFromParams(params) {
+//        List<Ingredient> allIngredients = Ingredient.list()
+//        Ingredient newIngredientFromParams
+//        String ingredients = params.ingredients
+//        if (isNotEmpty(ingredients)) {
+//            ingredients = ingredients.replace('[','').replace(']','')
+//            if (ingredients.indexOf(',') >= 0) {
+//                println "has a comma"
+//                String[] list = ingredients.split(',')
+//                println list
+//                for (it in list) {
+//                    String[] parts = it.split ':'
+//                    newIngredientFromParams = new Ingredient([
+//                            name: parts[0].trim(),
+//                            amount: parts[1].trim(),
+//                            unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
+//                    ])
+//                    for (ingredient in allIngredients) {
+//                        if (ingredient == newIngredientFromParams) {
+//                            newIngredientFromParams = ingredient // set the id for referencing
+//                            break
+//                        }
+//                    }
+//                    if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
+//                    validIngredients.add(newIngredientFromParams)
+//                }
+//            }
+//            else {
+//                String[] parts = ingredients.split ':'
+//                newIngredientFromParams = new Ingredient([
+//                        name  : parts[0].trim(),
+//                        amount: parts[1].trim(),
+//                        unit  : Unit.valueOf(parts[2].trim().toUpperCase().replace(' ','_'))
+//                ])
+//                for (ingredient in allIngredients) {
+//                    if (ingredient == newIngredientFromParams) {
+//                        newIngredientFromParams = ingredient // set the id for referencing
+//                        break
+//                    }
+//                }
+//                if (newIngredientFromParams.idIsNull()) newIngredientFromParams.save(failOnError:true)
+//                validIngredients.add(newIngredientFromParams)
+//            }
+//        }
+//    }
 
-    def createDrinkFromParams(params, role) {
-        extractIngredientsFromParams(params)
+    /**
+     * Creates and returns a saved Drink
+     * @param params
+     * @param role
+     * @return
+     */
+    def createDrinkFromParams(params, role) throws ValidationException {
+        validIngredients = createNewIngredientsFromParams(params)
+        //extractIngredientsFromParams(params)
 
         Drink drink = new Drink([
                 drinkName: params.drinkName,
@@ -411,28 +429,36 @@ class DrinkController {
                 drinkSymbol: params.drinkSymbol,
                 suggestedGlass: GlassType.valueOf(params.glass as String),
                 mixingInstructions: params.instructions,
-                ingredients: validIngredients,
-        ])//.save(failOnError:true)
-        if (!role) {
+                ingredients: validIngredients
+                ,custom: Boolean.valueOf(params.custom as String)
+                ,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
+        ])
+        if ( !role && !role?.role == enums.Role.ADMIN) {
             drink.canBeDeleted = true
             drink.custom = true
         }
-        drink.save(failOnError:true)
+        if (!drink.save(failOnError:true)) {
+            throw new ValidationException("Failed to save drink", drink.errors)
+        }
         // Associate all ingredients with this drink
         validIngredients.each { Ingredient it ->
             if (!it.drinks) it.drinks = new HashSet<Drink>()
             if (!it.drinks.contains(drink)) it.addToDrinks(drink)
-            //it.save()
         }
         return drink
     }
 
+    /**
+     * Creates 1 or more ingredients
+     * @param params
+     * @return
+     */
     def createNewIngredientsFromParams(params) {
         List<String> ingredientNames = new ArrayList<>()
         List<String> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
-        if (params.ingredientName.size() > 1 && !(params.ingredientName instanceof String)) {
+        if (params.ingredientName?.size() > 1 && !(params.ingredientName instanceof String)) {
             params.ingredientName.each {
                 ingredientNames.add(it as String)
             }
@@ -459,6 +485,11 @@ class DrinkController {
         return ingredients
     }
 
+    /**
+     * Tests if an ingredient already exists overall
+     * @param ingredient
+     * @return
+     */
     def alreadyExists(ingredient) {
         boolean exists = false
         List<Ingredient> ingredients = ingredient.list()
@@ -470,6 +501,12 @@ class DrinkController {
         return exists
     }
 
+    /**
+     * Called from the UI which validates each
+     * ingredient, created while creating a new drink
+     * @param params
+     * @return
+     */
     def validateIngredients(params) {
         println "API Call # ${params.apiCallCount}"
         Ingredient ingredient = createNewIngredientsFromParams(params).get(0)

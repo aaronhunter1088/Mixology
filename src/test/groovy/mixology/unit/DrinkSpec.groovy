@@ -38,14 +38,15 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
             assert drink.toString() == 'Long Island Iced Tea (Li) (34)'
     }
 
-    @Test
-    void "test drink fails validation because no ingredients"() {
-        when:
-        domain.ingredients = null
-
-        then: 'drink validation fails'
-        !domain.validate(['ingredients'])
-    }
+    // Not valid anymore.
+//    @Test
+//    void "test drink fails validation because no ingredients"() {
+//        when:
+//        domain.ingredients = null
+//
+//        then: 'drink validation fails'
+//        !domain.validate(['ingredients'])
+//    }
 
     @Unroll('Drink.validate() with name: #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
