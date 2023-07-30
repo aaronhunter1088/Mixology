@@ -86,7 +86,7 @@ grails:
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
-            #text: text/plain
+            text: text/plain
             hal:
               - application/hal+json
               - application/hal+xml

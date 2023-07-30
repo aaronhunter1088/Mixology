@@ -14,12 +14,83 @@ import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
-class IngredientController {
+class IngredientController extends BaseController {
 
     IngredientService ingredientService
     def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+
+    @Override
+    void badRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
+    @Override
+    void notFound(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
+                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
+    @Override
+    void okRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'OK 200'
+                redirect action: "index", method: method ?: "create", status: OK
+            }
+            '*'{ render status: OK }
+        }
+    }
+    @Override
+    void createdRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: CREATED
+            }
+            '*'{ render status: CREATED }
+        }
+    }
+    @Override
+    void noContentRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No content'
+                redirect action: "index", method: method ?: "create", status: NO_CONTENT
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
+    @Override
+    void unauthorized(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'You are not authorized for the previous request'
+                redirect action: "index", method:method, status: UNAUTHORIZED
+            }
+            '*'{ render status: UNAUTHORIZED }
+        }
+    }
+    @Override
+    void methodNotAllowed(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'Check your request method!'
+                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+            }
+            '*'{ render status: METHOD_NOT_ALLOWED }
+        }
+    }
 
     @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
@@ -56,11 +127,11 @@ class IngredientController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def save() { //(Ingredient ingredient) {
         if (!params) {
-            notFound()
+            notFound('','')
             return
         }
         if (request.method != 'POST') {
-            methodNotAllowed()
+            methodNotAllowed('','')
             return
         }
         Ingredient errorI
@@ -222,7 +293,7 @@ class IngredientController {
         }
         if (ingredient.errors.hasErrors()) {
             if (!adminRole) {
-                unauthorizedRequest('show', 'You do not have the authority to delete this ingredient')
+                unauthorized('show', 'You do not have the authority to delete this ingredient')
             } else {
                 request.withFormat {
                     form multipartForm {
@@ -240,46 +311,6 @@ class IngredientController {
                 }
                 '*'{ render status:NO_CONTENT }
             }
-        }
-    }
-
-    void badRequest(def method, def message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message
-                redirect action: "index", method: method, status: BAD_REQUEST
-            }
-            '*'{ render status: BAD_REQUEST }
-        }
-    }
-
-    void unauthorizedRequest(def method, def message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message as String
-                redirect action: "index", method:method, status: UNAUTHORIZED
-            }
-            '*'{ render status: UNAUTHORIZED }
-        }
-    }
-
-    void methodNotAllowed() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = 'Check your request method!'
-                redirect action: "index", method: "create", status: METHOD_NOT_ALLOWED
-            }
-            '*'{ render status: METHOD_NOT_ALLOWED }
-        }
-    }
-
-    void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'ingredient.label', default: 'ingredient'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
         }
     }
 

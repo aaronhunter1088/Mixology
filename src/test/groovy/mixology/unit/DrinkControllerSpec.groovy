@@ -690,7 +690,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test not found returns 404"() {
         when:
-            controller.notFound()
+            controller.notFound('','')
 
         then:
             response.status == 404

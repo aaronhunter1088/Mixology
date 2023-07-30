@@ -9,24 +9,24 @@ import javax.transaction.Transactional
 class IngredientService {
 
     Ingredient get(Long id) {
-        return Ingredient.findById(id)
+        Ingredient.findById(id)
     }
 
     List<Ingredient> list(Map args) {
-        return Ingredient.list(args)
+        Ingredient.list(args)
     }
 
     Long count() {
-        return Ingredient.all.size()
+        Ingredient.all.size()
+    }
+
+
+    Ingredient save(Ingredient ingredient) {
+        if (ingredient.validate()) ingredient.save(flush:true)
     }
 
     void delete(Long id) {
         Drink drink = Drink.findById(id)
-        if (!drink) return
-        else drink.delete(flush:true)
-    }
-
-    Ingredient save(Ingredient ingredient) {
-        ingredient.save(flush:true)
+        if (drink) drink.delete(flush:true)
     }
 }

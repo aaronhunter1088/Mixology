@@ -21,16 +21,97 @@ import java.awt.image.BufferedImage
 import java.security.SecureRandom
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.NO_CONTENT
+import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
-class UserController {
+class UserController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(UserController.class)
 
     RoleService roleService
     UserService userService
     UserRoleService userRoleService
+
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+
+    @Override
+    void badRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
+    @Override
+    void notFound(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
+                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
+    @Override
+    void okRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'OK 200'
+                redirect action: "index", method: method ?: "create", status: OK
+            }
+            '*'{ render status: OK }
+        }
+    }
+    @Override
+    void createdRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: CREATED
+            }
+            '*'{ render status: CREATED }
+        }
+    }
+    @Override
+    void noContentRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No content'
+                redirect action: "index", method: method ?: "create", status: NO_CONTENT
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
+    @Override
+    void unauthorized(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'You are not authorized for the previous request'
+                redirect action: "index", method:method, status: UNAUTHORIZED
+            }
+            '*'{ render status: UNAUTHORIZED }
+        }
+    }
+    @Override
+    void methodNotAllowed(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'Check your request method!'
+                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+            }
+            '*'{ render status: METHOD_NOT_ALLOWED }
+        }
+    }
 
     @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
@@ -44,6 +125,7 @@ class UserController {
         respond user
     }
 
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def create() {
         //render view:'create'
         User user = new User(params)
@@ -52,7 +134,11 @@ class UserController {
 
     def save(User user) {
         if (!user) {
-            notFound()
+            badRequest('','')
+            return
+        }
+        if (request.method != 'POST') {
+            methodNotAllowed('','')
             return
         }
         if (!Boolean.valueOf(params.passwordsMatch)) {
@@ -61,97 +147,71 @@ class UserController {
                     [params.password, params.passwordConfirm] as Object[],
                     '[Password and PasswordConfirm do not match]')
             println "Password and PasswordConfirm do not match"
-            request.withFormat {
-                form multipartForm {
-                      respond user.errors, view:'create'
-                }
-                '*'{ respond user.errors, view:'create' }
-            }
+            badRequest('create', 'Passwords do not match')
+//            request.withFormat {
+//                flash.message = 'Passwords do not match'
+//                form multipartForm {respond user.errors, view:'create', status:BAD_REQUEST}
+//                '*'{ respond user.errors, view:'create', status:BAD_REQUEST }
+//            }
             return
         } else {
             MultipartRequest multipartRequest = request as MultipartRequest
             MultipartFile file = multipartRequest.getFile('photo')
             def userRole = roleService.findByAuthority(enums.Role.USER.name)
             user = createUserFromParams(user, params, file)
-            try {
-                user.validate()
-                if (!user.errors.hasErrors()) {
-                    user = userService.save(user)
-                    def roleOfUser = UserRole.create user, userRole
-                    userRoleService.save(roleOfUser)
+            user.validate()
+            if (!user.errors.hasErrors()) {
+                user = userService.save(user, true)
+                def roleOfUser = UserRole.create user, userRole
+                userRoleService.save(roleOfUser)
+                request.withFormat {
+                    form multipartForm {
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
+                        respond user, view:'show', status:OK
+                    }
+                    '*'{ respond user, [status: OK] }
                 }
-            } catch (ValidationException e) {
-                println "exception ${e.getMessage()}"
-                respond user.errors, view:'create'
-                return
-            }
-        }
-
-        if (user.errors.hasErrors()) {
-            request.withFormat {
-                form multipartForm {
-                    respond user.errors, view:'create'
+            } else {
+                request.withFormat {
+                    form multipartForm {
+                        respond user.errors, view:'create', status:BAD_REQUEST
+                    }
+                    '*'{ respond user.errors, [status:BAD_REQUEST] }
                 }
-                '*'{ respond user.errors, [status: 400] }
-            }
-        }
-        else {
-            request.withFormat {
-                form multipartForm {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                    respond user, view:'show'
-                }
-                '*'{ respond user, [status: OK] }
             }
         }
     }
 
     def createUserFromParams(user, params, file) {
-        if (params.password != params.passwordConfirm) {
-            user.errors.reject('default.invalid.user.password.instance',
-                    [params.password, params.passwordConfirm] as Object[],
-                    '[Password and PasswordConfirm do not match]')
-            println "Password and PasswordConfirm do not match"
-            //respond user.errors, view: 'create'
-            return user
-        }
+//        if (params.password != params.passwordConfirm) {
+//            user.errors.reject('default.invalid.user.password.instance',
+//                    [params.password, params.passwordConfirm] as Object[],
+//                    '[Password and PasswordConfirm do not match]')
+//            println "Password and PasswordConfirm do not match"
+//            //respond user.errors, view: 'create'
+//            return user
+//        }
 //        byte[] fileContent = FileUtils.readFileToByteArray(new File(params.photo as String))
 //        String encodedString = Base64.getEncoder().encodeToString(fileContent)
-        try {
-            String reduced = reduceImageSize(file)
-            user = new User([
-                    firstName: params.firstName,
-                    lastName: params.lastName,
-                    username: params.email,
-                    email: params.email,
-                    password: params.password,
-                    mobileNumber: params.cellphone,
-                    photo: reduced ?: ''
-            ])
-            return user
-        } catch (Exception e) {
-            println "Exception creating new user ${e.getMessage()}"
-            notFound()
-        }
+        String reduced = reduceImageSize(file)
+        user = new User([
+                firstName: params.firstName,
+                lastName: params.lastName,
+                username: params.email,
+                email: params.email,
+                password: params.password,
+                mobileNumber: params.cellphone,
+                photo: reduced ?: ''
+        ])
+        user
     }
-
-//    def createUsername(params) {
-//        int count = User.withCriteria {
-//            eq('username', params.firstName.toString()[0].toLowerCase() + params.lastName.toString().toLowerCase())
-//        }.collect().size()
-//        if (count == 0) params.firstName.toString()[0].toLowerCase() + params.lastName.toString().toLowerCase()
-//        else {
-//            params.firstName.toString()[0].toLowerCase() +
-//                    params.lastName.toString().toLowerCase() + '_' + params.mobileNumber
-//        }
-//    }
 
     def reduceImageSize(file) {
         int size = 200// size of the new image.
         //take the file as inputstream.
         //MultipartFile file = request.getFile('photo')
         String encodedString = ''
-        if (!file.filename) return encodedString
+        if (!file?.filename) return encodedString
         encodedString = Base64.getEncoder().encodeToString(file.getBytes() as byte[])
         //byte[] fileContent = FileUtils.readFileToByteArray(photo)
         //String encodedString = Base64.getEncoder().encodeToString(fileContent)
@@ -207,8 +267,10 @@ class UserController {
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def update(User user) {
         if (!user) {
-            notFound()
+            badRequest(null, 'No user passed in')
+            return
         }
+        //userService.update(user)
         MultipartRequest multipartRequest =  request as MultipartRequest
         MultipartFile file = multipartRequest.getFile('photo')
         String encodedString = null
@@ -216,58 +278,33 @@ class UserController {
         // only encode if file is present. will set to empty string
         // if photo was cleared.
         if (file && Boolean.valueOf(params.clearedImage as String)) encodedString = Base64.getEncoder().encodeToString(file.getBytes())
-        try {
-            user.firstName = params.firstName
-            user.lastName = params.lastName
-            user.email = params.email
-            params.drinks.each {
-                Drink drink = Drink.read(it as Long)
-                user.drinks.add(drink)
-            }
-            // only update password if both values are set
-            if (params.passwordConfirm && params.password == params.passwordConfirm) {
-                user.password = params.password
-                user.passwordConfirm = params.passwordConfirm
-            }
-            // update photo if photo was cleared. photo may not exist anymore
-            // and so user photo may be set to empty string
-            if (Boolean.valueOf(params.clearedImage as String)) user.photo = encodedString
-            user.org_grails_datastore_gorm_GormValidateable__errors = null
-            User.withTransaction {
-                user.save(validate:false,flush:true)
-                logger.info("user saved!")
-            }
-        } catch (ValidationException e) {
-            println "exception ${e.getMessage()}"
-            respond user.errors, view:'edit'
-            return
+        user.firstName = params?.firstName ?: user.firstName
+        user.lastName = params?.lastName ?: user.lastName
+        user.email = params?.email ?: user.email
+        params?.drinks?.each {
+            Drink drink = Drink.read(it as Long)
+            user.drinks.add(drink)
         }
+        // only update password if both values are set
+        if (params?.passwordConfirm && params?.password == params?.passwordConfirm) {
+            user.password = params.password
+            user.passwordConfirm = params.passwordConfirm
+        }
+        // update photo if photo was cleared. photo may not exist anymore
+        // and so user photo may be set to empty string
+        if (Boolean.valueOf(params.clearedImage as String)) user.photo = encodedString
+        user.org_grails_datastore_gorm_GormValidateable__errors = null
+//        User.withTransaction {
+            //user.save(validate:false,flush:true)
+        userService.save(user, false)
+        logger.info("user saved!")
+//        }
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                redirect (id:user.id, action:'show')
+                redirect (id:user.id, action:'show', status:OK)
             }
-            '*'{ redirect (id:user.id, action:'show') }
-        }
-    }
-
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-                redirect action: "index", method: "create"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
-
-    protected void badRequest() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = 'No request parameters found!'
-                redirect action: "index", method: "create", status: BAD_REQUEST
-            }
-            '*'{ render status: BAD_REQUEST }
+            '*'{ redirect (id:user.id, action:'show', status:OK) }
         }
     }
 

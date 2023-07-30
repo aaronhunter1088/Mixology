@@ -34,16 +34,88 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
-class DrinkController {
+class DrinkController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(DrinkController.class)
+    Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
     DrinkService drinkService
     UserService userService
     def springSecurityService
 
-    Set<Ingredient> validIngredients = new HashSet<Ingredient>()
+    @Override
+    void badRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
+    @Override
+    void notFound(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
+                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
+    @Override
+    void okRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'OK 200'
+                redirect action: "index", method: method ?: "create", status: OK
+            }
+            '*'{ render status: OK }
+        }
+    }
+    @Override
+    void createdRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: CREATED
+            }
+            '*'{ render status: CREATED }
+        }
+    }
+    @Override
+    void noContentRequest(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No content'
+                redirect action: "index", method: method ?: "create", status: NO_CONTENT
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
+    @Override
+    void unauthorized(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'You are not authorized for the previous request'
+                redirect action: "index", method:method, status: UNAUTHORIZED
+            }
+            '*'{ render status: UNAUTHORIZED }
+        }
+    }
+    @Override
+    void methodNotAllowed(method, message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'Check your request method!'
+                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+            }
+            '*'{ render status: METHOD_NOT_ALLOWED }
+        }
+    }
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -357,26 +429,6 @@ class DrinkController {
                 }
                 '*'{ render status: NO_CONTENT }
             }
-        }
-    }
-
-    void badRequest() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = 'No request parameters found!'
-                redirect action: "index", method: "create", status: BAD_REQUEST
-            }
-            '*'{ render status: BAD_REQUEST }
-        }
-    }
-
-    void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
-                redirect action: "index", method: "GET", status: NOT_FOUND
-            }
-            '*'{ render status: NOT_FOUND }
         }
     }
 

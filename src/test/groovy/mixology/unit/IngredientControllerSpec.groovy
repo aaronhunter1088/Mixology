@@ -737,7 +737,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     @Test
     void "test not found returns 404"() {
         when:
-        controller.notFound()
+        controller.notFound('','')
 
         then:
         response.status == 404
