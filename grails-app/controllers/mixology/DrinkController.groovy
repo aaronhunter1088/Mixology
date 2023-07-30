@@ -360,6 +360,16 @@ class DrinkController {
         }
     }
 
+    void badRequest() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = 'No request parameters found!'
+                redirect action: "index", method: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
+
     void notFound() {
         request.withFormat {
             form multipartForm {

@@ -3,7 +3,6 @@ package mixology
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import enums.Unit
-import mixology.User;
 
 import javax.servlet.http.HttpServletResponse
 
@@ -13,6 +12,7 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 class IngredientController {
 
@@ -42,7 +42,10 @@ class IngredientController {
         respond ingredientService.get(id)
     }
 
-    //TODO: def showCustomIngredient(){}
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def showCustomIngredients() {
+        //TODO: here for later implementation
+    }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def create() {
@@ -57,8 +60,7 @@ class IngredientController {
             return
         }
         if (request.method != 'POST') {
-            println 'Only POST allowed'
-            respond status: METHOD_NOT_ALLOWED
+            methodNotAllowed()
             return
         }
         Ingredient errorI
@@ -95,17 +97,17 @@ class IngredientController {
                     ingredientErrors << errorI
                 }
                 // if ingredient is custom and user has either role
-                else if (ingredient.isCustom() && (!adminRole || !userRole)) {
+                else { //if (ingredient.isCustom() && (!adminRole || !userRole)) {
                     ingredient.save(failOnError:true)
                     println "ingredient.id ${ingredient.id} saved"
                     savedCount++
                 }
-                else {
-                    //ingredientService.save(ingredient)
-                    ingredient.save(failOnError:true)
-                    println "ingredient.id ${ingredient.id} saved"
-                    savedCount++
-                }
+//                else {
+//                    //ingredientService.save(ingredient)
+//                    ingredient.save(failOnError:true)
+//                    println "ingredient.id ${ingredient.id} saved"
+//                    savedCount++
+//                }
             }
         }
         catch (ValidationException e) {
@@ -149,45 +151,35 @@ class IngredientController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def update(Ingredient ingredient) {
         if (!ingredient) {
-            notFound()
+            badRequest('show', 'No ingredient was sent in to update')
             return
         }
-        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.authentication.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
-        try {
-            ingredient.org_grails_datastore_gorm_GormValidateable__errors = null
-            if (!ingredient.isCustom() && adminRole) {
-                Set<Drink> ingredientsDrinks = ingredient.drinks
-                ingredientsDrinks.each { drink ->
-                    drink.addToIngredients(ingredient)
-                    drink.save()
-                }
-                ingredientService.save(ingredient)
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+//        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        ingredient.org_grails_datastore_gorm_GormValidateable__errors = null
+        if ( (!ingredient.isCustom() && adminRole) ||
+                (ingredient.isCustom()) ){
+            Set<Drink> ingredientsDrinks = ingredient?.drinks
+            ingredientsDrinks.each { drink ->
+                drink.addToIngredients(ingredient)
+                drink.save()
             }
-            else if (ingredient.isCustom() && (adminRole || userRole)) {
-                Set<Drink> ingredientsDrinks = ingredient.drinks
-                ingredientsDrinks.each { drink ->
-                    drink.addToIngredients(ingredient)
-                    drink.save()
-                }
-                ingredientService.save(ingredient)
-            }
-            else {
-                ingredient.errors.reject('default.updated.error.message', [ingredient.name] as Object[], '')
-            }
-        } catch (ValidationException e) {
-            respond ingredient.errors, view:'originalEdit'
-            return
+            ingredientService.save(ingredient)
+        }
+        else {
+            ingredient.errors.reject('default.updated.error.message', [ingredient.name] as Object[], '')
         }
 
         if (ingredient.errors.hasErrors()) {
-            Set<Drink> drinks = Drink.withCriteria {eq('ingredients.id', ingredient.id)} as List<Drink>
+            //Set<Drink> drinks = Drink.withCriteria {eq('ingredients.id', ingredient.id)} as List<Drink>
+            Set<Drink> drinks = Drink.findAllByIngredientsInList(ingredient.drinks as List)
             ingredient.drinks = drinks
             request.withFormat {
                 form multipartForm {
-                    respond ingredient.errors, view:'edit'
+                    respond ingredient.errors, view:'edit', status:BAD_REQUEST
                 }
-                '*'{ respond ingredient.errors, view:'edit' }
+                '*'{ respond ingredient.errors, [status:BAD_REQUEST] }
             }
         } else {
             request.withFormat {
@@ -211,12 +203,15 @@ class IngredientController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
         if (!id) {
-            notFound()
+            badRequest('show', 'No ingredient ID was sent in to delete')
             return
         }
         Ingredient ingredient = Ingredient.findById(id)
-        if (ingredient.canBeDeleted) {
-            List<Drink> drinks = ingredient.drinks.toArray() as List<Drink>
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        if ( (!ingredient.canBeDeleted && adminRole) ||
+             (ingredient.canBeDeleted) ){
+            List<Drink> drinks = ingredient.drinks.collect()
             drinks.each { drink ->
                 drink.removeFromIngredients(ingredient)
                 ingredient.removeFromDrinks(drink)
@@ -226,21 +221,55 @@ class IngredientController {
             ingredient.errors.reject('default.deleted.error.message', [ingredient.name] as Object[], '')
         }
         if (ingredient.errors.hasErrors()) {
-            request.withFormat {
-                form multipartForm {
-                    respond ingredient.errors, view:'show'
+            if (!adminRole) {
+                unauthorizedRequest('show', 'You do not have the authority to delete this ingredient')
+            } else {
+                request.withFormat {
+                    form multipartForm {
+                        respond ingredient.errors, view:'show', status:BAD_REQUEST
+                    }
+                    '*'{ respond ingredient.errors, view:'show', status:BAD_REQUEST }
                 }
-                '*'{ respond ingredient.errors, view:'show' }
             }
         }
         else {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient'), id])
-                    redirect action:"index", method:"GET"
+                    redirect action:"index", status:NO_CONTENT
                 }
-                '*'{ render status: NO_CONTENT }
+                '*'{ render status:NO_CONTENT }
             }
+        }
+    }
+
+    void badRequest(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message
+                redirect action: "index", method: method, status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
+
+    void unauthorizedRequest(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message as String
+                redirect action: "index", method:method, status: UNAUTHORIZED
+            }
+            '*'{ render status: UNAUTHORIZED }
+        }
+    }
+
+    void methodNotAllowed() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = 'Check your request method!'
+                redirect action: "index", method: "create", status: METHOD_NOT_ALLOWED
+            }
+            '*'{ render status: METHOD_NOT_ALLOWED }
         }
     }
 

@@ -24,6 +24,9 @@ import spock.lang.Specification
 import grails.testing.gorm.DataTest
 
 import static org.mockito.Mockito.*
+import static enums.Alcohol.*
+import static enums.GlassType.*
+import static enums.Unit.*
 
 @ContextConfiguration
 class IngredientControllerSpec extends Specification implements ControllerUnitTest<IngredientController>, DataTest {
@@ -141,6 +144,21 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
             ingredientE
         }
     }
+    def defaultIngredient
+    def createDefaultIngredient = {
+        if ( !defaultIngredient ) {
+            defaultIngredient = new Ingredient([
+                    name: 'DefaultIngredient',
+                    unit: Unit.OZ,
+                    amount: 1.5,
+                    canBeDeleted: false,
+                    custom: false
+            ])
+        }
+        else if ( !defaultIngredient.idIsNull() ) {
+            defaultIngredient
+        }
+    }
 
     def setup() {
         mockDomain Drink
@@ -171,6 +189,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         // save all ingredients
         drink1.ingredients.each { ingredientService.save(it) }
         drink2.ingredients.each { ingredientService.save(it) }
+        ingredientService.save(createDefaultIngredient())
         drinkService.save(drink1)
         drinkService.save(drink2)
     }
@@ -329,6 +348,35 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
 
     @Test
+    void "test saving fails because of multiple validation errors"() {
+        given:
+        request.method = 'POST'
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role role = new Role(authority: enums.Role.USER.name).save()
+        UserRole.create(user, role)
+        controller.params.prop = ''
+        controller.metaClass.createIngredientsFromParams { params, aRole ->
+            return [
+                    new Ingredient([name:'', unit: WEDGE, amount: 0, custom:false]),
+                    new Ingredient([name:'', unit: FRUIT, amount: 0, custom:false])
+            ]
+        }
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
+        when:
+        controller.save()
+
+        then:
+        response.status == 400
+    }
+
+    @Test
     void "test saving one ingredient"() {
         given:
         request.method = 'POST'
@@ -339,13 +387,13 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         ]).save(validate:false)
         Ingredient testIngredient = new Ingredient([
                 name: 'testIngredient',
-                unit: Unit.randomUnit,
+                unit: randomUnit,
                 amount: 1.0,
                 canBeDeleted: true,
                 custom: true
         ])
         controller.params.ingredientName = 'testIngredient'
-        controller.params.ingredientUnit = Unit.randomUnit
+        controller.params.ingredientUnit = randomUnit
         controller.params.ingredientAmount = 1.0
         controller.params.canBeDeleted = true
         controller.params.custom = true
@@ -358,8 +406,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         }
 
         when:
-        Role.findByAuthority('ROLE_ADMIN') >> role
-        Role.findByAuthority('ROLE_USER') >> null
+        //Role.findByAuthority('ROLE_ADMIN') >> role
+        //Role.findByAuthority('ROLE_USER') >> null
         controller.save()
 
         then:
@@ -501,6 +549,162 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
 
     // TODO: Test updating
+    @Test
+    void "update ingredient fails when no ingredient"() {
+        when:
+            request.method = 'PUT'
+            controller.update(null)
+
+        then:
+            response.status == 400
+    }
+
+    @Test
+    void "update ingredient fails because it is non admin updating default ingredient"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.USER.name)
+        UserRole.create(user, userRole)
+        Ingredient ingredient = new Ingredient([
+                name: 'testDefaultIngredient',
+                unit: randomUnit,
+                amount: 1.0,
+                canBeDeleted: false,
+                custom: false
+        ])
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        User.findByUsername(user.username) >> user
+
+        when:
+            request.method = 'PUT'
+            controller.update(ingredient)
+
+        then:
+            response.status == 400
+    }
+
+    @Test
+    void "test updating an ingredient with admin user and is default"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.ADMIN.name)
+        UserRole.create(user, userRole)
+        Ingredient ingredient = new Ingredient([
+                name: 'testDefaultIngredient',
+                unit: randomUnit,
+                amount: 1.0,
+                canBeDeleted: false,
+                custom: false
+        ])
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        controller.ingredientService = Stub(IngredientService) { save(_) >> ingredient}
+        User.findByUsername(user.username) >> user
+
+        when:
+        request.method = 'PUT'
+        controller.update(ingredient)
+
+        then:
+        response.status == 200
+    }
+
+    @Test
+    void "test updating an ingredient with non admin and is custom"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.USER.name)
+        UserRole.create(user, userRole)
+        Ingredient ingredient = new Ingredient([
+                name: 'testDefaultIngredient',
+                unit: randomUnit,
+                amount: 1.0,
+                canBeDeleted: true,
+                custom: true
+        ])
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        controller.ingredientService = Stub(IngredientService) { save(_) >> ingredient}
+        User.findByUsername(user.username) >> user
+
+        when:
+        request.method = 'PUT'
+        controller.update(ingredient)
+
+        then:
+        response.status == 200
+    }
+
+    @Test
+    void "test fails to delete ingredient because ID is not present"() {
+        when:
+            request.method = 'DELETE'
+            controller.delete(null)
+
+        then:
+            response.status == 400
+    }
+
+    @Test
+    void "test delete ingredient fails because non admin user and default"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.USER.name)
+        UserRole.create(user, userRole)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
+        when:
+            request.method = 'DELETE'
+            controller.delete(defaultIngredient.id as Long)
+
+        then:
+            response.status == 401
+    }
+
+    @Test
+    void "test delete ingredient is successful"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.ADMIN.name)
+        UserRole.create(user, userRole)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        controller.ingredientService = ingredientService
+
+        when:
+        request.method = 'DELETE'
+        controller.delete(defaultIngredient.id as Long)
+
+        then:
+        response.status == 204
+    }
 
     // Test UI Call
     @Test
