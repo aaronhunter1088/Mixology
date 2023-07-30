@@ -1,11 +1,13 @@
 package mixology
 
 import grails.gorm.services.Service
+import javax.transaction.Transactional
 
+@Transactional
 @Service(Role)
-interface RoleService {
+class RoleService {
 
-    Role save(String authority)
-    Role findByAuthority(String authority)
+    Role save(String authority) {}
+    Role findByAuthority(String authority) {}
 
 }

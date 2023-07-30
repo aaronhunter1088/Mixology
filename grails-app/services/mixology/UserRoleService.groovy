@@ -1,10 +1,12 @@
 package mixology
 
 import grails.gorm.services.Service
+import javax.transaction.Transactional
 
+@Transactional
 @Service(UserRole)
-interface UserRoleService {
+class UserRoleService {
 
-    UserRole save(UserRole ur)
+    UserRole save(UserRole ur) {}
 
 }
