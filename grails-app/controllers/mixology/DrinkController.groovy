@@ -5,6 +5,19 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import groovy.sql.Sql
+import groovy.text.GStringTemplateEngine
+import groovy.text.TemplateEngine
+import groovy.text.markup.MarkupTemplateEngine
+
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import jakarta.mail.Authenticator;
+import javax.mail.internet.MimeMessage;
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.grails.datastore.mapping.collection.PersistentSet
@@ -27,7 +40,6 @@ class DrinkController {
     private static Logger logger = LogManager.getLogger(DrinkController.class)
 
     DrinkService drinkService
-    //IngredientService ingredientService
     UserService userService
     def springSecurityService
 
@@ -121,7 +133,6 @@ class DrinkController {
         respond drink
     }
 
-    //@Secured(value=["hasAnyRole('ROLE_ADMIN',ROLE_USER')"], httpMethod='POST')
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def update(Drink drink) {
         if (!drink) {
@@ -251,43 +262,6 @@ class DrinkController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def delete(Long id) {
-        if (!id) {
-            notFound()
-            return
-        }
-        Drink drink = Drink.findById(id)
-        if (drink.canBeDeleted) {
-            List<Ingredient> ingredients = drink.ingredients.toArray() as List<Ingredient>
-            ingredients.each { ingredient ->
-                ingredient.removeFromDrinks(drink)
-                drink.removeFromIngredients(ingredient)
-            }
-            //drinkService.delete(id)
-            drink.delete(flush:true)
-        } else {
-            drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
-        }
-
-        if (drink.errors.hasErrors()) {
-            request.withFormat {
-                form multipartForm {
-                    respond drink.errors, view:'show'
-                }
-                '*'{ respond drink.errors, view:'show' }
-            }
-        } else {
-            request.withFormat {
-                form multipartForm {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                    redirect action:"index", method:"GET"
-                }
-                '*'{ render status: NO_CONTENT }
-            }
-        }
-    }
-
     /**
      * By default, a drink will be copied with all ingredients
      * By clicking on the action button which states that you
@@ -301,15 +275,15 @@ class DrinkController {
         if (user) {
             logger.info("we have a user logged in ${user}")
             Drink copied = new Drink([
-                drinkName : drink.drinkName,
-                drinkSymbol : drink.drinkSymbol,
-                drinkNumber : drink.drinkNumber,
-                alcoholType : drink.alcoholType,
-                ingredients : Ingredient.copyAll(drink.ingredients),
-                mixingInstructions : drink.mixingInstructions,
-                suggestedGlass : drink.suggestedGlass,
-                canBeDeleted : true,
-                custom : true
+                    drinkName : drink.drinkName,
+                    drinkSymbol : drink.drinkSymbol,
+                    drinkNumber : drink.drinkNumber,
+                    alcoholType : drink.alcoholType,
+                    ingredients : Ingredient.copyAll(drink.ingredients),
+                    mixingInstructions : drink.mixingInstructions,
+                    suggestedGlass : drink.suggestedGlass,
+                    canBeDeleted : true,
+                    custom : true
             ])
             Drink.withSession {
                 Drink.withTransaction {
@@ -345,6 +319,43 @@ class DrinkController {
                     '*' { respond drink.errors, view:'show' }
                     //'*'{ redirect(action:'show', params:[id:drink.id]) }
                 }
+            }
+        }
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def delete(Long id) {
+        if (!id) {
+            notFound()
+            return
+        }
+        Drink drink = Drink.findById(id)
+        if (drink.canBeDeleted) {
+            List<Ingredient> ingredients = drink.ingredients.toArray() as List<Ingredient>
+            ingredients.each { ingredient ->
+                ingredient.removeFromDrinks(drink)
+                drink.removeFromIngredients(ingredient)
+            }
+            //drinkService.delete(id)
+            drink.delete(flush:true)
+        } else {
+            drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
+        }
+
+        if (drink.errors.hasErrors()) {
+            request.withFormat {
+                form multipartForm {
+                    respond drink.errors, view:'show'
+                }
+                '*'{ respond drink.errors, view:'show' }
+            }
+        } else {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    redirect action:"index", method:"GET"
+                }
+                '*'{ render status: NO_CONTENT }
             }
         }
     }
@@ -525,4 +536,99 @@ class DrinkController {
         }
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def sendADrinkEmail() {
+        if (!params) {
+            badRequest()
+        }
+        if (request.method != 'GET') {
+            badRequest()
+        }
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        // Create email
+        // Save email
+        // Send email
+        println "SimpleEmail Start"
+        //String smtpHostServer = "smtp.example.com";
+        //String emailID = "email_me@example.com";
+        Properties props = new Properties()
+        String host = 'sandbox.smtp.mailtrap.io'
+        int port = 465
+        String username = '12e26122e12ed7'
+        String password = '3b4a64f536617e'
+        props.put("mail.smtp.host", host)
+        props.put("mail.smtp.user", username)
+        props.put("mail.smtp.password", password)
+        props.put('mail.smtp.port', port)
+        props.put('mail.smtp.starttls.enable', 'true')
+        props.put('mail.smtp.auth', 'true')
+//        jakarta.mail.Authenticator authenticator = new jakarta.mail.Authenticator() {
+//            protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+//                new jakarta.mail.PasswordAuthentication(username, password)
+//            }
+//        }
+        def auth = new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        username, password);
+            }
+        }
+        Session session = Session.getInstance(props, auth)
+        def bindMap = ['user':user, 'drink': Drink.findById(params.id as Long)]
+        def emailTemplate = new File('grails-app/views/email/drinkEmail.gsp')
+        def emailText = new GStringTemplateEngine().createTemplate(emailTemplate).make(bindMap)
+
+        boolean sent = sendEmail(session, "aaronhunter@live.com", "Test Email", emailText.toString())
+//        sendEmail(session, "aaronhunter@live.com",  "Test Email", """
+//        Hi ${user.firstName + ' ' + user.lastName},
+//        This is a test email which will soon be built
+//        out to share this drink, ${Drink.findById(params.id as Long).drinkName}.
+//
+//        Stay tuned!
+//        """.toString())
+        if (sent) {
+            flash.message = 'Email was sent'
+            //redirect show(params.id as Long)
+            redirect action:'show', params:[id:params.id], method: "GET", status: OK
+            //redirect (view:'show', model:['id', params.id])
+            //redirect show(params.id as Long)
+        } else {
+            withFormat {
+                flash.message = 'There was an error sending the email'
+                form multipartForm {
+                    redirect show(params.id as Long)
+                }
+            }
+        }
+    }
+
+    static boolean sendEmail(Session session, String toEmail, String subject, String body){
+        try {
+            MimeMessage msg = new MimeMessage(session);
+            //set message headers
+            msg.setHeader("Content-Type", "text/html; charset=UTF-8")
+            msg.setHeader("Content-Length", body.length() as String)
+            msg.setHeader("format", "flowed")
+            msg.setHeader("Content-Transfer-Encoding", "8bit")
+
+            msg.setFrom(new InternetAddress("mixology@noreply.com", "mixology@noreply.com"))
+            msg.setReplyTo(InternetAddress.parse("mixology@noreply.com", false))
+            msg.setSubject(subject, "UTF-8")
+            msg.setText(body, "UTF-8")
+            msg.setContent(body, "text/html")
+            msg.setSentDate(new Date())
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false))
+
+            msg.saveChanges()
+            println "Message is ready"
+            Transport.send(msg)
+
+            println "Email Sent Successfully!!"
+            return true
+        }
+        catch (Exception e) {
+            e.printStackTrace()
+            return false
+        }
+    }
 }

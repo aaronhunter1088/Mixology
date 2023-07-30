@@ -1,5 +1,17 @@
 ---
 grails:
+    mail:
+        host: "smtp.gmail.com"
+        port: 465
+        username: "youremail@gmail.com"
+        password: "yourpassword"
+        props:
+            mail.smtp.auth: "true"
+            mail.smtp.socketFactory.port: "465"
+            mail.smtp.socketFactory.class: "javax.net.ssl.SSLSocketFactory"
+            mail.smtp.socketFactory.fallback: "false"
+---
+grails:
     profile: web
     codegen:
         defaultPackage: mygrailsapp
@@ -74,7 +86,7 @@ grails:
             multipartForm: multipart/form-data
             pdf: application/pdf
             rss: application/rss+xml
-            text: text/plain
+            #text: text/plain
             hal:
               - application/hal+json
               - application/hal+xml

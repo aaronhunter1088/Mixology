@@ -42,11 +42,15 @@ class IngredientController {
         respond ingredientService.get(id)
     }
 
+    //TODO: def showCustomIngredient(){}
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def create() {
         Ingredient ingredient = new Ingredient(params)
         respond ingredient
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def save() { //(Ingredient ingredient) {
         if (!params) {
             notFound()
@@ -142,6 +146,7 @@ class IngredientController {
         respond ingredientService.get(id)
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def update(Ingredient ingredient) {
         if (!ingredient) {
             notFound()
@@ -195,6 +200,15 @@ class IngredientController {
         }
     }
 
+    /**
+     * TODO: Update copy doc
+     */
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def copy(Ingredient ingredient) {
+
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
         if (!id) {
             notFound()
@@ -230,11 +244,7 @@ class IngredientController {
         }
     }
 
-    def copy(Ingredient ingredient) {
-
-    }
-
-    protected void notFound() {
+    void notFound() {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'ingredient.label', default: 'ingredient'), params.id])
@@ -244,7 +254,13 @@ class IngredientController {
         }
     }
 
-    def createIngredientsFromParams(params, adminRole) {
+    /**
+     * Creates and returns a List of Ingredients
+     * @param params
+     * @param role
+     * @return
+     */
+    def createIngredientsFromParams(def params, def adminRole) {
         List<String> ingredientNames = new ArrayList<>()
         List<Unit> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
@@ -279,6 +295,11 @@ class IngredientController {
         return ingredients
     }
 
+    /**
+     * Tests if an ingredient already exists overall
+     * @param ingredient
+     * @return
+     */
     def alreadyExists(ingredient) {
         boolean exists = false
         List<Ingredient> ingredients = ingredient.list()
@@ -290,9 +311,16 @@ class IngredientController {
         return exists
     }
 
+    //TODO: Rename to validateIngredient(s)
+    /**
+     * Called from the UI which validates an
+     * ingredient, created while creating a new ingredient
+     * @param params
+     * @return
+     */
     def validate(params) {
         println "Ingredients: API call # ${params.apiCallCount}"
-        Ingredient ingredient = createIngredientsFromParams(params).get(0)
+        Ingredient ingredient = createIngredientsFromParams(params, null).get(0)
         boolean result = alreadyExists(ingredient)
         response.setContentType("text/json")
         if (result) {

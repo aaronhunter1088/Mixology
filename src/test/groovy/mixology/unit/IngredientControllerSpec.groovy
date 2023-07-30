@@ -36,6 +36,112 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     def drinkService = getDatastore().getService(DrinkService)
     def ingredientService = getDatastore().getService(IngredientService)
 
+    Set<Ingredient> createCustomIngredients(int numberToCreate) {
+        Set<Ingredient> customIngredients = []
+        (1..numberToCreate).each {
+            def customIngredient = new Ingredient([
+                    name: 'CustomIngredient'+"{$it}",
+                    unit: Unit.getRandomUnit(),
+                    amount: 1
+            ])
+            customIngredients << customIngredient
+        } as Set<Ingredient>
+        customIngredients
+    }
+    Set<Ingredient> createIngredientsWithAAndBAndC() {
+        Set<Ingredient> ingredients = []
+        ingredientA = createAIngredient()
+        ingredientB = createBIngredient()
+        ingredientC = createCIngredient()
+        return ingredients << ingredientA << ingredientB << ingredientC
+    }
+    Set<Ingredient> createIngredientsWithVodkaAndDAndE() {
+        Set<Ingredient> ingredients = []
+        vodka = createVodkaIngredient()
+        ingredientD = createDIngredient()
+        ingredientE = createEIngredient()
+        return ingredients << vodka << ingredientD << ingredientE
+    }
+
+    def vodka
+    def createVodkaIngredient = {
+        if ( !vodka ) {
+            vodka = new Ingredient([
+                    name: 'Vodka',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if (!vodka.idIsNull()) {
+            vodka
+        }
+    }
+    def ingredientA
+    def createAIngredient = {
+        if ( !ingredientA ) {
+            ingredientA = new Ingredient([
+                    name: 'IngredientA',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if (!ingredientA.idIsNull()) {
+            ingredientA
+        }
+    }
+    def ingredientB
+    def createBIngredient = {
+        if ( !ingredientB ) {
+            ingredientB = new Ingredient([
+                    name: 'IngredientB',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if ( !ingredientB.idIsNull()) {
+            ingredientB
+        }
+    }
+    def ingredientC
+    def createCIngredient = {
+        if ( !ingredientC ) {
+            ingredientC = new Ingredient([
+                    name: 'IngredientC',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if ( !ingredientC.idIsNull() ) {
+            ingredientC
+        }
+    }
+    def ingredientD
+    def createDIngredient = {
+        if ( !ingredientD ) {
+            ingredientD = new Ingredient([
+                    name: 'IngredientD',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if ( !ingredientD.idIsNull() ) {
+            ingredientD
+        }
+    }
+    def ingredientE
+    def createEIngredient = {
+        if ( !ingredientE ) {
+            ingredientE = new Ingredient([
+                    name: 'IngredientE',
+                    unit: Unit.OZ,
+                    amount: 1.5
+            ])
+        }
+        else if ( !ingredientE.idIsNull() ) {
+            ingredientE
+        }
+    }
+
     def setup() {
         mockDomain Drink
         mockDomain Ingredient
@@ -47,7 +153,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 suggestedGlass: GlassType.HURRICANE,
                 alcoholType: Alcohol.TEQUILA,
                 drinkSymbol: 'D1',
-                ingredients: createIngredientsWithVodkaAndBAndC(),
+                ingredients: createIngredientsWithAAndBAndC(),
                 canBeDeleted: true,
                 custom: true
         ])
@@ -72,65 +178,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     def cleanup() {
         Ingredient.all.each { it.delete()}
         println "Total ingredients after cleanup: ${Ingredient.count()}"
-    }
-
-    Set<Ingredient> createIngredientsWithVodkaAndBAndC() {
-        Set<Ingredient> ingredients = []
-        Ingredient x = new Ingredient([
-                name: 'Vodka',
-                unit: Unit.OZ,
-                amount: 1.5
-        ]).save(failOnError:true)
-        Ingredient y = new Ingredient([
-                name: 'IngredientB',
-                unit: Unit.OZ,
-                amount: 1.5
-        ]).save(failOnError:true)
-        Ingredient z = new Ingredient([
-                name: 'IngredientC',
-                unit: Unit.OZ,
-                amount: 1.5
-        ]).save(failOnError:true)
-        ingredients.add(x)
-        ingredients.add(y)
-        ingredients.add(z)
-        return ingredients
-    }
-
-    Set<Ingredient> createIngredientsWithVodkaAndDAndE() {
-        Set<Ingredient> ingredients = []
-        Ingredient x = new Ingredient([
-                name: 'Vodka',
-                unit: Unit.OZ,
-                amount: 1.5
-        ])
-        Ingredient y = new Ingredient([
-                name: 'IngredientD',
-                unit: Unit.OZ,
-                amount: 1.5
-        ])
-        Ingredient z = new Ingredient([
-                name: 'IngredientE',
-                unit: Unit.OZ,
-                amount: 1.5
-        ])
-        ingredients.add(x)
-        ingredients.add(y)
-        ingredients.add(z)
-        return ingredients
-    }
-
-    Set<Ingredient> createCustomIngredients(int numberToCreate) {
-        Set<Ingredient> customIngredients = []
-        (1..numberToCreate).each {
-            def customIngredient = new Ingredient([
-                    name: 'CustomIngredient'+"{$it}",
-                    unit: Unit.getRandomUnit(),
-                    amount: 1
-            ])
-            customIngredients << customIngredient
-        } as Set<Ingredient>
-        customIngredients
     }
 
     @Test
@@ -408,7 +455,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
             Ingredient test = new Ingredient([
                     name: 'testIngredientX',
                     unit: Unit.WEDGE,
-                    amount: 2.2
+                    amount: 2.2,
+                    custom: false
             ])
             return [test]
         }
@@ -452,4 +500,42 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         response.status == 200
     }
 
+    // TODO: Test updating
+
+    // Test UI Call
+    @Test
+    void "test validateIngredients returns bad request"() {
+        controller.params.apiCallCount = 1
+        controller.metaClass.createIngredientsFromParams { params, role ->
+            return [ingredientA]
+        }
+        when:
+        controller.validate(params)
+
+        then:
+        response.status == 400
+    }
+
+    @Test
+    void "test validateIngredients returns ok"() {
+        controller.params.apiCallCount = 1
+        controller.params.ingredientName = 'New Ingredient'
+        controller.params.ingredientUnit = 'WEDGE'
+        controller.params.ingredientAmount = 2.5
+        when:
+        controller.validate(params)
+
+        then:
+        response.status == 200
+    }
+
+    // notFound()
+    @Test
+    void "test not found returns 404"() {
+        when:
+        controller.notFound()
+
+        then:
+        response.status == 404
+    }
 }

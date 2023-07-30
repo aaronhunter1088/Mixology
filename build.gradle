@@ -40,6 +40,13 @@ configurations {
 }
 
 dependencies {
+    // mail
+    implementation 'com.sun.activation:javax.activation:1.2.0'
+    implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+    //compileOnly 'org.grails.plugins:mail:3.0.0'
+    //compileOnly "org.grails.plugins:mail:2.0.0.RC6"
     // log4j2
     //implementation 'org.grails:grails-plugin-log4j:2.5.6'
     implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
@@ -107,6 +114,12 @@ dependencies {
     testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:4.0.0"
 }
 
+bootJar {
+    manifest {
+        attributes 'Main-Class': 'init.mixology.Application'
+    }
+    //mainClassName = 'init.mixology.Application'
+}
 bootRun {
     ignoreExitValue true
     jvmArgs(

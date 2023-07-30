@@ -2,6 +2,11 @@ package mixology
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+import jakarta.mail.Message
+import jakarta.mail.Session
+import jakarta.mail.Transport
+import jakarta.mail.internet.InternetAddress
+import jakarta.mail.internet.MimeMessage
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -15,6 +20,7 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import java.security.SecureRandom
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 
@@ -255,9 +261,14 @@ class UserController {
         }
     }
 
-//    def uploadImage() {
-//        imageFile = request.getFile('uploadImage')
-//        flash.message = 'File uploaded!'
-//    }
+    protected void badRequest() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = 'No request parameters found!'
+                redirect action: "index", method: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    }
 
 }

@@ -152,6 +152,7 @@
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                         <g:if test="${drink.custom}">
                                             <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
+                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}"><g:message code="default.email.share" default="Share"/></g:link>
                                             <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                                         </g:if>
                                     </sec:ifLoggedIn>

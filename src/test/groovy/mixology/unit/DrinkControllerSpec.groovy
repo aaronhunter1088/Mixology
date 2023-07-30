@@ -34,7 +34,6 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         ingredientC = createCIngredient()
         return ingredients << ingredientA << ingredientB << ingredientC
     }
-
     Set<Ingredient> createIngredientsWithVodkaAndDAndE() {
         Set<Ingredient> ingredients = []
         vodka = createVodkaIngredient()
