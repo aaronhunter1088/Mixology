@@ -20,12 +20,12 @@ class IngredientService {
     }
 
 
-    Ingredient save(Ingredient ingredient) {
+    Ingredient save(Ingredient ingredient, boolean validate = false) {
         if (ingredient.validate()) ingredient.save(flush:true)
     }
 
     void delete(Long id) {
-        Drink drink = Drink.findById(id)
-        if (drink) drink.delete(flush:true)
+        Ingredient ingredient = Ingredient.findById(id)
+        if (ingredient) ingredient.delete(flush:true)
     }
 }
