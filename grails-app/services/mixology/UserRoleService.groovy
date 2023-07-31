@@ -7,6 +7,11 @@ import javax.transaction.Transactional
 @Service(UserRole)
 class UserRoleService {
 
-    UserRole save(UserRole ur) {}
+    UserRole save(User user, Role roleOfUser, boolean flush = false) {
+        if (flush) {
+            UserRole.create(user, roleOfUser, flush)
+        }
+        else UserRole.create(user, roleOfUser)
+    }
 
 }

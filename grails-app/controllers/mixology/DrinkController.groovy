@@ -398,7 +398,7 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
         if (!id) {
-            notFound()
+            notFound('','')
             return
         }
         Drink drink = Drink.findById(id)

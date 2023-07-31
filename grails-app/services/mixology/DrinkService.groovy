@@ -7,13 +7,28 @@ import javax.transaction.Transactional
 @Service(Drink)
 class DrinkService {
 
-    Drink get(Long id) {}
+    Drink get(Long id) {
+        Drink.findById(id)
+    }
 
-    List<Drink> list(Map args) {}
+    List<Drink> list(Map args) {
+        Drink.list(args)
+    }
 
-    Long count() {}
+    Long count() {
+        Drink.all.size()
+    }
 
-    void delete(Long id) {}
+    Drink save(Drink drink, boolean validate = false) {
+        if (validate) {
+            drink.save(validate:validate, flush:true, failOnError:true)
+        }
+        else drink.save(validate:false, flush:true, failOnError:false)
+        drink
+    }
 
-    Drink save(Drink drink) {}
+    void delete(Long id) {
+        Drink drink = Drink.findById(id)
+        if (drink) drink.delete(flush:true)
+    }
 }

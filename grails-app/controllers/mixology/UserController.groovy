@@ -162,8 +162,8 @@ class UserController extends BaseController {
             user.validate()
             if (!user.errors.hasErrors()) {
                 user = userService.save(user, true)
-                def roleOfUser = UserRole.create user, userRole
-                userRoleService.save(roleOfUser)
+                //def usrRoleObj = UserRole.create user, userRole
+                userRoleService.save(user, userRole, true)
                 request.withFormat {
                     form multipartForm {
                         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.toString()])

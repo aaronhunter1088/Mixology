@@ -24,7 +24,7 @@ class UserService {
 
     }
 
-    User save(User user, boolean validate) {
+    User save(User user, boolean validate = false) {
         user.save(validate:validate, flush:true, failOnError:true)
         user
     }
