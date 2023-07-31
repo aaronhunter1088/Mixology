@@ -3,6 +3,8 @@ package mixology
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import enums.Unit
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 import javax.servlet.http.HttpServletResponse
 
@@ -15,6 +17,8 @@ import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 class IngredientController extends BaseController {
+
+    private static Logger logger = LogManager.getLogger(IngredientController.class)
 
     IngredientService ingredientService
     def springSecurityService
@@ -100,12 +104,10 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def customIndex(Integer max) {
-        params.max = 5//Math.min(max ?: 5, 100)
+        params.max = Math.min(max ?: 5, 100)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        //List<Ingredient> customIngredients = Ingredient.findAllByCustom(true, params).collect()
-        //customIngredients = customIngredients.each { it in user.drinks*.ingredients }
         List<Ingredient> customIngredients = []
-        user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << it} }
+        user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
         respond customIngredients, model:[ingredientCount: customIngredients.size()]
     }
 
@@ -134,7 +136,7 @@ class IngredientController extends BaseController {
             methodNotAllowed('','')
             return
         }
-        Ingredient errorI
+        Ingredient errorI = new Ingredient()
         List<Ingredient> ingredientErrors = []
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
@@ -144,8 +146,6 @@ class IngredientController extends BaseController {
         try {
             ingredients = createIngredientsFromParams(params, adminRole)
             ingredients.each { ingredient ->
-                errorI = new Ingredient()
-                // if ingredient already exists, should not save
                 if (alreadyExists(ingredient)) {
                     errorI.name = ingredient.name
                     errorI.unit = ingredient.unit
@@ -168,28 +168,20 @@ class IngredientController extends BaseController {
                     ingredientErrors << errorI
                 }
                 // if ingredient is custom and user has either role
-                else { //if (ingredient.isCustom() && (!adminRole || !userRole)) {
+                else {
                     ingredient.save(failOnError:true)
                     println "ingredient.id ${ingredient.id} saved"
                     savedCount++
                 }
-//                else {
-//                    //ingredientService.save(ingredient)
-//                    ingredient.save(failOnError:true)
-//                    println "ingredient.id ${ingredient.id} saved"
-//                    savedCount++
-//                }
             }
         }
         catch (ValidationException e) {
-            //redirect(controller: "ingredient", action: "create") //respond ingredient.errors, view:'create'
             respond errorI?.errors, view:'create', status: BAD_REQUEST
             return
         }
 
         List<Long> ingredientIds = ingredients*.id
         ingredientIds.removeAll([null])
-        //ingredients.removeAll([isNull])
         if (!ingredientIds.isEmpty()) {
             request.withFormat {
                 form multipartForm {
@@ -227,7 +219,6 @@ class IngredientController extends BaseController {
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-//        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         ingredient.org_grails_datastore_gorm_GormValidateable__errors = null
         if ( (!ingredient.isCustom() && adminRole) ||
                 (ingredient.isCustom()) ){
@@ -243,7 +234,6 @@ class IngredientController extends BaseController {
         }
 
         if (ingredient.errors.hasErrors()) {
-            //Set<Drink> drinks = Drink.withCriteria {eq('ingredients.id', ingredient.id)} as List<Drink>
             Set<Drink> drinks = Drink.findAllByIngredientsInList(ingredient.drinks as List)
             ingredient.drinks = drinks
             request.withFormat {
@@ -267,9 +257,7 @@ class IngredientController extends BaseController {
      * TODO: Update copy doc
      */
     @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def copy(Ingredient ingredient) {
-
-    }
+    def copy(Ingredient ingredient) { /*TODO: Implement here if needed */ }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
@@ -349,7 +337,6 @@ class IngredientController extends BaseController {
                 ingredient.canBeDeleted = true
                 ingredient.custom = true
             }
-            //ingredient.save(failOnError:true)
             ingredients.add(ingredient)
         }
         return ingredients

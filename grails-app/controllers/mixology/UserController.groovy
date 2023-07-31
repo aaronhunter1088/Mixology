@@ -1,36 +1,16 @@
 package mixology
 
 import grails.plugin.springsecurity.annotation.Secured
-import grails.validation.ValidationException
-import jakarta.mail.Message
-import jakarta.mail.Session
-import jakarta.mail.Transport
-import jakarta.mail.internet.InternetAddress
-import jakarta.mail.internet.MimeMessage
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartRequest
-import validators.PasswordValidator
-
 import javax.imageio.ImageIO
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.security.SecureRandom
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST
-import static org.springframework.http.HttpStatus.CREATED
-import static org.springframework.http.HttpStatus.CREATED
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
-import static org.springframework.http.HttpStatus.NOT_FOUND
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.OK
-import static org.springframework.http.HttpStatus.UNAUTHORIZED
-import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.*
 
 class UserController extends BaseController {
 
@@ -127,7 +107,6 @@ class UserController extends BaseController {
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def create() {
-        //render view:'create'
         User user = new User(params)
         respond user
     }
@@ -148,11 +127,6 @@ class UserController extends BaseController {
                     '[Password and PasswordConfirm do not match]')
             println "Password and PasswordConfirm do not match"
             badRequest('create', 'Passwords do not match')
-//            request.withFormat {
-//                flash.message = 'Passwords do not match'
-//                form multipartForm {respond user.errors, view:'create', status:BAD_REQUEST}
-//                '*'{ respond user.errors, view:'create', status:BAD_REQUEST }
-//            }
             return
         } else {
             MultipartRequest multipartRequest = request as MultipartRequest
@@ -162,7 +136,6 @@ class UserController extends BaseController {
             user.validate()
             if (!user.errors.hasErrors()) {
                 user = userService.save(user, true)
-                //def usrRoleObj = UserRole.create user, userRole
                 userRoleService.save(user, userRole, true)
                 request.withFormat {
                     form multipartForm {
@@ -183,16 +156,6 @@ class UserController extends BaseController {
     }
 
     def createUserFromParams(user, params, file) {
-//        if (params.password != params.passwordConfirm) {
-//            user.errors.reject('default.invalid.user.password.instance',
-//                    [params.password, params.passwordConfirm] as Object[],
-//                    '[Password and PasswordConfirm do not match]')
-//            println "Password and PasswordConfirm do not match"
-//            //respond user.errors, view: 'create'
-//            return user
-//        }
-//        byte[] fileContent = FileUtils.readFileToByteArray(new File(params.photo as String))
-//        String encodedString = Base64.getEncoder().encodeToString(fileContent)
         String reduced = reduceImageSize(file)
         user = new User([
                 firstName: params.firstName,
@@ -209,12 +172,9 @@ class UserController extends BaseController {
     def reduceImageSize(file) {
         int size = 200// size of the new image.
         //take the file as inputstream.
-        //MultipartFile file = request.getFile('photo')
         String encodedString = ''
         if (!file?.filename) return encodedString
         encodedString = Base64.getEncoder().encodeToString(file.getBytes() as byte[])
-        //byte[] fileContent = FileUtils.readFileToByteArray(photo)
-        //String encodedString = Base64.getEncoder().encodeToString(fileContent)
         InputStream imageStream = new ByteArrayInputStream(file.getBytes() as byte[])
         //read the image as a BufferedImage.
         BufferedImage image = ImageIO.read(imageStream)
@@ -226,11 +186,7 @@ class UserController extends BaseController {
         encodedString = Base64.getEncoder().encodeToString(fileContent)
         // remove file before returning
         outputfile.delete();
-        return encodedString
-        //String path = getServletContext().getRealPath("/image");
-        //write file.
-        //File file = new File(path, "testimage.jpg");
-        //ImageIO.write(newImage, "JPG", file);
+        encodedString
     }
 
     private BufferedImage scaleImage(BufferedImage bufferedImage, int size) {
@@ -248,12 +204,8 @@ class UserController extends BaseController {
         int scaledWidth = (int) (scale * origWidth)
         int scaledHeight = (int) (scale * origHeight)
         Image scaledImage = bufferedImage.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH)
-        // new ImageIcon(image); // load image
-        // scaledWidth = scaledImage.getWidth(null);
-        // scaledHeight = scaledImage.getHeight(null);
         BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_RGB)
         Graphics2D g = scaledBI.createGraphics()
-        //g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR)
         g.drawImage(scaledImage, 0, 0, null)
         g.dispose()
         return (scaledBI)
@@ -270,7 +222,6 @@ class UserController extends BaseController {
             badRequest(null, 'No user passed in')
             return
         }
-        //userService.update(user)
         MultipartRequest multipartRequest =  request as MultipartRequest
         MultipartFile file = multipartRequest.getFile('photo')
         String encodedString = null
@@ -294,11 +245,8 @@ class UserController extends BaseController {
         // and so user photo may be set to empty string
         if (Boolean.valueOf(params.clearedImage as String)) user.photo = encodedString
         user.org_grails_datastore_gorm_GormValidateable__errors = null
-//        User.withTransaction {
-            //user.save(validate:false,flush:true)
         userService.save(user, false)
         logger.info("user saved!")
-//        }
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])

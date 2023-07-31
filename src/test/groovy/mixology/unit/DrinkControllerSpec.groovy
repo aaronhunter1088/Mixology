@@ -152,6 +152,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         drink2.ingredients.each { ingredientService.save(it) }
         drinkService.save(drink1)
         drinkService.save(drink2)
+        controller.drinkService = drinkService
     }
 
     def cleanup() {
