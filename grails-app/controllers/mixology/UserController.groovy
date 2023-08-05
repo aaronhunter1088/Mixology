@@ -111,6 +111,13 @@ class UserController extends BaseController {
         respond user
     }
 
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    def edit(Long id) {
+        User user = userService.get(id)
+        respond user
+    }
+
+    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
     def save(User user) {
         if (!user) {
             badRequest('','')
@@ -189,7 +196,8 @@ class UserController extends BaseController {
         encodedString
     }
 
-    private BufferedImage scaleImage(BufferedImage bufferedImage, int size) {
+    //protected static BufferedImage scaleImage(BufferedImage bufferedImage, int size) {
+    def scaleImage(bufferedImage, size) {
         double boundSize = size
         int origWidth = bufferedImage.getWidth()
         int origHeight = bufferedImage.getHeight()
@@ -211,24 +219,35 @@ class UserController extends BaseController {
         return (scaledBI)
     }
 
-    def edit(Long id) {
-        User user = userService.get(id)
-        respond user
-    }
 
     @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-    def update(User user) {
-        if (!user) {
+    def update() { // User user
+        User user
+        if (!params) {
             badRequest(null, 'No user passed in')
+            return
+        } else {
+            user = userService.get(params.id as Long)
+        }
+        if (!user) {
+            badRequest('','')
             return
         }
         MultipartRequest multipartRequest =  request as MultipartRequest
         MultipartFile file = multipartRequest.getFile('photo')
-        String encodedString = null
+        //String encodedString = null
+        String reduced
         // if file is present and they cleared the current image
         // only encode if file is present. will set to empty string
         // if photo was cleared.
-        if (file && Boolean.valueOf(params.clearedImage as String)) encodedString = Base64.getEncoder().encodeToString(file.getBytes())
+        if (file) {
+            //encodedString = Base64.getEncoder().encodeToString(file.getBytes())
+            reduced = reduceImageSize(file)
+            user.photo = reduced
+        } else if  (Boolean.valueOf(params.clearedImage as String)){
+            user.photo = ''
+        }
+
         user.firstName = params?.firstName ?: user.firstName
         user.lastName = params?.lastName ?: user.lastName
         user.email = params?.email ?: user.email
@@ -243,9 +262,10 @@ class UserController extends BaseController {
         }
         // update photo if photo was cleared. photo may not exist anymore
         // and so user photo may be set to empty string
-        if (Boolean.valueOf(params.clearedImage as String)) user.photo = encodedString
         user.org_grails_datastore_gorm_GormValidateable__errors = null
-        userService.save(user, false)
+        User.withTransaction {
+            userService.save(user, false)
+        }
         logger.info("user saved!")
         request.withFormat {
             form multipartForm {

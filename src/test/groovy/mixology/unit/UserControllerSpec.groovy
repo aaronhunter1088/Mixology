@@ -14,9 +14,21 @@ import mixology.UserRoleService
 import mixology.Ingredient
 import mixology.User
 import mixology.UserController
+import org.asynchttpclient.request.body.multipart.part.InputStreamMultipartPart
+import org.grails.plugins.testing.GrailsMockMultipartFile
+import org.grails.plugins.testing.MockPart
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartRequest
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
+import java.awt.image.BufferedImage
+
+import static org.mockito.Mockito.*
+import static org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.StandardMultipartFile
 
 @ContextConfiguration
 class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest {
@@ -309,5 +321,29 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             controller.update(regularUser)
         then:
             response.status == 302
+    }
+
+    @Test
+    void "test reduce image size"() {
+        given:
+            BufferedImage bufImg = new BufferedImage(5,5,1)
+            Expando file = new Expando()
+            file.filename = 'Test File'
+            file.metaClass.getBytes = {-> new byte[1]}
+            controller.metaClass.scaleImage = {one, two -> bufImg}
+        when:
+            controller.reduceImageSize(file)
+        then:
+            response.status == 200
+    }
+
+    @Test
+    void "test scale image"() {
+        given:
+            BufferedImage mockedBufImg = new BufferedImage(500,500,1)
+        when:
+            controller.scaleImage(mockedBufImg, 200)
+        then:
+            response.status == 200
     }
 }

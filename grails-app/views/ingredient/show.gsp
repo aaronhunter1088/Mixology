@@ -61,12 +61,25 @@
         <div id="content">
             <div class="container">
                 <section class="row">
-                    <a href="#show-ingredient" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+%{--                    <g:render template="../customMenu" model="[drink:drink]"/>--}%
+                    <%
+
+                    %>
                     <div class="nav" role="navigation">
                         <ul>
                             <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="home" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
-                            <li><g:link class="list" action="index">Ingredient List</g:link></li>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <li><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
+                            </sec:ifAnyGranted>
+                            <sec:ifAnyGranted roles="ROLE_USER">
+                                <li><g:link controller="drink" action="customIndex">Show Drinks</g:link></li>
+                            </sec:ifAnyGranted>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <li><g:link controller="ingredient" action="index">Show Default Ingredients</g:link></li>
+                            </sec:ifAnyGranted>
+                            <sec:ifAnyGranted roles="ROLE_USER">
+                                <li><g:link controller="ingredient" action="customIndex">Show Ingredients</g:link></li>
+                            </sec:ifAnyGranted>
                             <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
                             <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
                         </ul>

@@ -50,18 +50,19 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/drink/update',   access: ['permitAll']],
 	[pattern: '/drink/sendADrinkEmail', access: ['permitAll']],
 		/* Ingredient Controller */
-	[pattern: '/ingredient/index',access: ['ROLE_ADMIN']],
+	[pattern: '/ingredient/index',	  access: ['ROLE_ADMIN']],
 	[pattern: '/ingredient/customIndex',access: ['ROLE_ADMIN','ROLE_USER']],
-	[pattern: '/ingredient/show/**',     access: ['permitAll']],
+	[pattern: '/ingredient/show',     access: ['permitAll']],
+	[pattern: '/ingredient/save',     access: ['permitAll']],
 	[pattern: '/ingredient/edit',     access: ['permitAll']],
-	[pattern: '/ingredient/update',access: ['permitAll']],
+	[pattern: '/ingredient/update',	  access: ['permitAll']],
 		/* User Controller */
-	[pattern: '/user/index',	 access: ['ROLE_ADMIN']],
-	[pattern: '/user/show',      access: ['permitAll']],
-	[pattern: '/user/create',    access: ['permitAll']],
-	[pattern: '/user/save',      access: ['permitAll']],
-	[pattern: '/user/edit',      access: ['ROLE_ADMIN']],
-	[pattern: '/index.gsp',      access: ['permitAll']],
+	[pattern: '/user/index',	 	  access: ['ROLE_ADMIN']],
+	[pattern: '/user/show',      	  access: ['permitAll']],
+	[pattern: '/user/create',    	  access: ['permitAll']],
+	[pattern: '/user/save',      	  access: ['permitAll']],
+	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN']],
+	[pattern: '/index.gsp',           access: ['permitAll']],
 		/* More ... */
 ]
 

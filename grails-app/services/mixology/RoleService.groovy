@@ -3,10 +3,10 @@ package mixology
 import grails.gorm.services.Service
 import javax.transaction.Transactional
 
-@Transactional
 @Service(Role)
 class RoleService {
 
+    @Transactional
     Role save(String authority, boolean validate = false) {
         if (validate) {
             new Role(authority:authority).save(validate:validate, flush:true)

@@ -28,7 +28,7 @@ class DrinkController extends BaseController {
     private static Logger logger = LogManager.getLogger(DrinkController.class)
     Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
-    def drinkService
+    DrinkService drinkService
     def springSecurityService
 
     @Override

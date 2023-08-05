@@ -73,8 +73,18 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <a href="#show-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                    <g:render template="drinkNav"/>
+%{--                    <g:render template="../customMenu" model="[drink:drink]"/>--}%
+                    <div class="nav" role="navigation">
+                        <ul>
+                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+                            <g:if test="${drink.custom}">
+                                <li><g:link class="home" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
+                            </g:if>
+                            <li><g:link class="list" action="index">Ingredient List</g:link></li>
+                            <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
+                            <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
+                        </ul>
+                    </div>
                 </section>
                 <div id="show-drink" class="col-12 scaffold-show">
                     <h1>Show Drink</h1>
@@ -97,43 +107,43 @@
                                 </legend>
                                 <div id="drink" style="width:100%;float:left;">
                                     <div class="formfield" id="name">
-                                        <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
+                                        <label for='drinkName'>Drink Name</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkName" value="${drink.drinkName}" required="" id="drinkName" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="number">
-                                        <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
+                                        <label for='drinkNumber'>Drink Number</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkNumber" value="${drink.drinkNumber}" required="" id="drinkNumber" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="alcohol">
-                                        <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
+                                        <label for='alcoholType'>Drink Type</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="alcoholType" value="${drink.alcoholType}" required="" id="alcoholType" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="symbol">
-                                        <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
+                                        <label for='drinkSymbol'>Drink Symbol</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkSymbol" value="${drink.drinkSymbol}" required="" id="drinkSymbol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="glass">
-                                        <label for="glassType"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                        <label for="glassType">Suggested Glass</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkSymbol" value="${drink.suggestedGlass}" required="" id="glassType" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="instructions">
-                                        <label for='instructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
+                                        <label for='instructions'>Mixing Instructions</label>
                                         <div class="input-wrapper">
                                             <textarea disabled readonly name="instructions" rows="5" cols="40">${drink.mixingInstructions}</textarea>
                                         </div>
                                     </div>
                                     <div class="formfield" id="ingredients">
-                                        <label><span class='required-indicator'>*</span> Ingredients</label><br/>
+                                        <label>Ingredients</label><br/>
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;">
                                             <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
                                                 <g:if test="${drink.ingredients.contains(ingredient)}">

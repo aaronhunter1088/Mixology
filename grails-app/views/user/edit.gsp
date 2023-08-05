@@ -174,13 +174,13 @@
                                             <div class="formfield">
                                                 <label for='password'>Password</label>
                                                 <div class="input-wrapper">
-                                                    <input type="text" name="password" value="${user.password}" id="password" />
+                                                    <input type="text" name="password" value="" id="password" />
                                                 </div>
                                             </div>
                                             <div class="formfield">
                                                 <label for='passwordConfirm'>Confirm Password</label>
                                                 <div class="input-wrapper">
-                                                    <input type="text" name="passwordConfirm" value="${user.passwordConfirm}" id="passwordConfirm" />
+                                                    <input type="text" name="passwordConfirm" value="" id="passwordConfirm" />
                                                 </div>
                                             </div>
                                             <g:if test="${!user.photo}">
@@ -221,6 +221,7 @@
                                         <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser">Update</button>
                                     </div>
                                     <input type="hidden" name="clearedImage" id="clearedImage" value="false"/>
+                                    <input type="hidden" name="id" id="id" value="${user.id}"/>
                                 </g:form>
                             </fieldset>
                         </div>

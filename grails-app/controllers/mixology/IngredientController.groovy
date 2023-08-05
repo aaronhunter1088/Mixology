@@ -106,9 +106,9 @@ class IngredientController extends BaseController {
     def customIndex(Integer max) {
         params.max = Math.min(max ?: 5, 100)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        List<Ingredient> customIngredients = []
+        def customIngredients = []
         user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
-        respond customIngredients, model:[ingredientCount: customIngredients.size()]
+        render view:'index', model:[ingredientList: customIngredients, ingredientCount: customIngredients.size()]
     }
 
     def show(Long id) {
