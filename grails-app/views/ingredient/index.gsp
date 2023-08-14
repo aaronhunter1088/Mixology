@@ -9,6 +9,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -18,15 +19,8 @@
     <body>
     <div id="content">
         <div class="container">
-            <section class="row">
-                <a href="#list-ingredient" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                <div class="nav" role="navigation">
-                    <ul>
-                        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
-                        <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
-                    </ul>
-                </div>
+            <section class="row" id="navigation">
+                <g:render template="ingredientNav"/>
             </section>
             <section class="row">
                 <div id="list-ingredient" class="col-12 content scaffold-list" role="main">
@@ -38,7 +32,7 @@
 
                     <g:if test="${ingredientCount > params.int('max')}">
                     <div class="pagination">
-                        <g:paginate total="${ingredientCount ?: 0}" />
+                        <g:paginate total="${ingredientCount ?: 0}" controller="ingredient" action="customIndex" />
                     </div>
                     </g:if>
                 </div>

@@ -470,11 +470,21 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test edit action"() {
         given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user",
+                password: 'p@ssword1',
+                email: "testusername@gmail.com"
+        ]).save(validate:false)
         def drink = Stub(Drink) {
             id >> 1
         }
         controller.drinkService = Stub(DrinkService) {
             get(_) >> drink
+        }
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
         }
 
         when:
@@ -620,10 +630,12 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 email: "testusername@gmail.com"
         ]).save(validate:false)
         user.drinks = new HashSet<Drink>()
-        User.findByUsername(user.username) >> user
+        //User.findByUsername(user.username) >> user
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
+        controller.drinkService = drinkService
+        controller.ingredientService = ingredientService
         user.drinks.size() == 0
 
         when:
@@ -638,12 +650,14 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         copied.drinkSymbol == drink1.drinkSymbol
         copied.mixingInstructions == drink1.mixingInstructions
         copied.suggestedGlass == drink1.suggestedGlass
+        copied.id != drink1.id
         copied.ingredients.size() == drink1.ingredients.size()
         copied.ingredients.each {Ingredient copiedIng ->
             drink1.ingredients.each {Ingredient originalIng ->
                 copiedIng.name == originalIng.name
                 copiedIng.unit == originalIng.unit
                 copiedIng.amount == originalIng.amount
+                copiedIng.id != originalIng.id
             }
         }
     }

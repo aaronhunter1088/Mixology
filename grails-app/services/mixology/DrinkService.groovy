@@ -23,6 +23,7 @@ class DrinkService {
         Drink.all.size()
     }
 
+    @Deprecated
     @Transactional
     Drink save(Drink drink, boolean validate = false) {
         if (validate) {
@@ -33,6 +34,18 @@ class DrinkService {
         ingredients.each {
             it.addToDrinks(drink)
         }
+        drink
+    }
+
+    @Transactional
+    Drink save(Drink drink, User user, boolean validate = false) {
+        if (!drink || !user) return null
+        if (validate) {
+            if (drink.validate()) drink.save(flush:true)
+            else return null
+        } else drink.save(flush:true)
+        user.addToDrinks(drink)
+        user.save(flush:true, deepValidate:false)
         drink
     }
 

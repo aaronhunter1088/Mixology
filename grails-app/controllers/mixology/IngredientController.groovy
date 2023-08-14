@@ -104,11 +104,14 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def customIndex(Integer max) {
-        params.max = Math.min(max ?: 5, 100)
+        if (!params.max) params.max = 10 else params.max = max
+        if (!params.offset) params.offset = 0
+        if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def customIngredients = []
-        user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
-        render view:'index', model:[ingredientList: customIngredients, ingredientCount: customIngredients.size()]
+        def customIngredients = ingredientService.listFromUser(params, user)
+        //user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
+        //customIngredients = customIngredients.sort { it.id }
+        render view:'index', model:[ingredientList: customIngredients, ingredientCount: user.ingredients.size(), max:10]
     }
 
     def show(Long id) {
@@ -117,7 +120,7 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomIngredients() {
-        //TODO: here for later implementation
+          customIndex(null )
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
@@ -169,9 +172,18 @@ class IngredientController extends BaseController {
                 }
                 // if ingredient is custom and user has either role
                 else {
-                    ingredient.save(failOnError:true)
-                    println "ingredient.id ${ingredient.id} saved"
-                    savedCount++
+                    //ingredient.save(failOnError:true)
+                    Ingredient saved = ingredientService.save(ingredient, user, true)
+                    if (!saved) {
+                        errorI.errors.reject('default.invalid.ingredient.instance',
+                        [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                        '[There was an error saving the ingredient]')
+                        ingredientErrors << errorI
+                    }
+                    else {
+                        println "ingredient.id ${saved.id} saved"
+                        savedCount++
+                    }
                 }
             }
         }
@@ -257,7 +269,40 @@ class IngredientController extends BaseController {
      * TODO: Update copy doc
      */
     @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def copy(Ingredient ingredient) { /*TODO: Implement here if needed */ }
+    def copy(Ingredient ingredient) {
+        if (!ingredient) {
+            notFound('','')
+            return
+        }
+        def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
+        if (user) {
+            logger.info("we have a user logged in ${user}")
+            Ingredient copied = new Ingredient([
+                    name: ingredient.name,
+                    unit: ingredient.unit,
+                    amount: ingredient.amount,
+                    canBeDeleted: true,
+                    custom: true
+            ])
+            Ingredient.withSession {
+                Ingredient.withTransaction {
+                    ingredientService.save(copied, user, false)
+                    logger.info("ingredient.id:${copied.id} has been copied")
+                    request.withFormat {
+                        form multipartForm {
+                            if (copied) {
+                                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), copied.id])
+                            } else {
+                                flash.message = ''
+                            }
+                            redirect(controller:"ingredient", action:"show", params:[id:copied.id])
+                        }
+                        '*' { redirect(controller:"ingredient", action:"show", params:[id:copied.id]) }
+                    }
+                }
+            }
+        }
+    }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
@@ -265,7 +310,7 @@ class IngredientController extends BaseController {
             badRequest('show', 'No ingredient ID was sent in to delete')
             return
         }
-        Ingredient ingredient = Ingredient.findById(id)
+        Ingredient ingredient = ingredientService.get(id)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         if ( (!ingredient.canBeDeleted && adminRole) ||
@@ -333,6 +378,7 @@ class IngredientController extends BaseController {
                     unit: units.get(i),
                     amount: ingredientAmounts.get(i)
             ])
+            // TODO: change to if (admin) canBeDeleted = false, custom = false
             if (!adminRole) {
                 ingredient.canBeDeleted = true
                 ingredient.custom = true

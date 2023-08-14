@@ -11,6 +11,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -60,30 +61,8 @@
     <body>
         <div id="content">
             <div class="container">
-                <section class="row">
-%{--                    <g:render template="../customMenu" model="[drink:drink]"/>--}%
-                    <%
-
-                    %>
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <li><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
-                            </sec:ifAnyGranted>
-                            <sec:ifAnyGranted roles="ROLE_USER">
-                                <li><g:link controller="drink" action="customIndex">Show Drinks</g:link></li>
-                            </sec:ifAnyGranted>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <li><g:link controller="ingredient" action="index">Show Default Ingredients</g:link></li>
-                            </sec:ifAnyGranted>
-                            <sec:ifAnyGranted roles="ROLE_USER">
-                                <li><g:link controller="ingredient" action="customIndex">Show Ingredients</g:link></li>
-                            </sec:ifAnyGranted>
-                            <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
-                            <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
-                        </ul>
-                    </div>
+                <section class="row" id="navigation">
+                    <g:render template="ingredientNav"/>
                 </section>
                 <div id="show-ingredient" class="col-12 scaffold-show">
                     <h1>Show Ingredient</h1>
@@ -138,10 +117,13 @@
                             <g:form resource="${this.ingredient}" method="DELETE">
                                 <fieldset class="buttons" style="width:100%;">
                                     <sec:ifLoggedIn>
-                                        <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                     </sec:ifLoggedIn>
-                                    <g:link class="edit" action="edit" resource="${this.ingredient}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                    <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                    <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                    <g:link class="fa sharp fa-solid fa-trash-can" action="delete" resource="${this.ingredient}">&nbsp;<g:message code="default.button.delete.label" default="Delete" /></g:link>
+                                    <i class="fa-solid fa-trash-can">
+                                    <input class="fa-sharp fa-solid fa-trash-can" type="submit" value="&nbsp;${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                    </i>
                                 </fieldset>
                             </g:form>
                         </div>

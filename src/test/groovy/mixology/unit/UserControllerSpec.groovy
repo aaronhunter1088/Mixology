@@ -266,8 +266,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is GET"() {
         given:
             request.method = 'GET'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
@@ -276,8 +277,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is POST"() {
         given:
             request.method = 'POST'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
@@ -286,17 +288,19 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is DELETE"() {
         given:
             request.method = 'DELETE'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
 
     @Test
     void "test updating fails because no user"() {
-        when:
+        given:
             request.method = 'PUT'
-            controller.update(null)
+        when:
+            controller.update()
         then:
             response.status == 400
     }
@@ -317,8 +321,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                 custom: true
             ])
             regularUser.drinks = [drink]
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 302
     }

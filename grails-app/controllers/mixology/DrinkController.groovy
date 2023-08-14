@@ -29,6 +29,7 @@ class DrinkController extends BaseController {
     Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
     DrinkService drinkService
+    IngredientService ingredientService
     def springSecurityService
 
     @Override
@@ -183,7 +184,14 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def edit(Long id) {
         Drink drink = drinkService.get(id)
-        respond drink
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def drinkIngredients = drink.ingredients
+        def customIngredients = user.ingredients
+        render view:'edit', model:[
+                drink:drink,
+                drinkIngredients:drinkIngredients,
+                ingredients:customIngredients
+        ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
@@ -312,7 +320,7 @@ class DrinkController extends BaseController {
         }
         def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
         if (user) {
-            logger.info("we have a user logged in ${user}")
+            logger.info("we have a user logged in ${user.firstName} ${user.lastName}")
             Drink copied = new Drink([
                     drinkName : drink.drinkName,
                     drinkSymbol : drink.drinkSymbol,
@@ -324,19 +332,24 @@ class DrinkController extends BaseController {
                     canBeDeleted : true,
                     custom : true
             ])
+            copied.ingredients.each { newIngredient ->
+                ingredientService.save(newIngredient, user, true)
+            }
             Drink.withSession {
                 Drink.withTransaction {
                     logger.info("drink has been copied")
-                    copied.ingredients.each { it.save(flush:true) }
-                    copied.save(flush:true)
+                    //copied.ingredients.each { it.save(flush:true) }
+                    //copied.ingredients.each { ingredientService.save(it, user, true) }
+                    //copied.save(flush:true)
+                    drinkService.save(copied, user)
                     logger.info("drink has been saved")
-                    User.withSession {
-                        User.withTransaction {
-                            logger.info("adding $drink to user")
-                            user.addToDrinks(copied)
-                            user.save(flush:true, validate:false)
-                        }
-                    }
+//                    User.withSession {
+//                        User.withTransaction {
+//                            logger.info("adding $drink to user")
+//                            user.addToDrinks(copied)
+//                            user.save(flush:true, validate:false)
+//                        }
+//                    }
                 }
             }
             if (!user.hasErrors()) {
@@ -367,7 +380,7 @@ class DrinkController extends BaseController {
             notFound('','')
             return
         }
-        Drink drink = Drink.findById(id)
+        Drink drink = drinkService.get(id)
         if (drink.canBeDeleted) {
             List<Ingredient> ingredients = drink.ingredients.toArray() as List<Ingredient>
             ingredients.each { ingredient ->

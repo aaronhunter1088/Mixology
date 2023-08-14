@@ -11,7 +11,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" scope="request" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -73,18 +73,7 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-%{--                    <g:render template="../customMenu" model="[drink:drink]"/>--}%
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <g:if test="${drink.custom}">
-                                <li><g:link class="home" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
-                            </g:if>
-                            <li><g:link class="list" action="index">Ingredient List</g:link></li>
-                            <li><g:link class="create" controller="drink" action="create">New Drink</g:link></li>
-                            <li><g:link class="create" controller="ingredient" action="create">New Ingredient</g:link></li>
-                        </ul>
-                    </div>
+                    <g:render template="drinkNav"/>
                 </section>
                 <div id="show-drink" class="col-12 scaffold-show">
                     <h1>Show Drink</h1>
@@ -159,11 +148,13 @@
                             <g:form resource="${this.drink}" method="DELETE">
                                 <fieldset class="buttons">
                                     <sec:ifLoggedIn>
-                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                         <g:if test="${drink.custom}">
-                                            <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}"><g:message code="default.email.share" default="Share"/></g:link>
-                                            <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                            <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
+                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>
+                                            <i class="fa-solid fa-trash-can">
+                                            <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                            </i>
                                         </g:if>
                                     </sec:ifLoggedIn>
                                     </fieldset>

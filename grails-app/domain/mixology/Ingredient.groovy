@@ -68,7 +68,9 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
             Ingredient newIngredient = new Ingredient([
                 name:ingredient.name,
                 unit:ingredient.unit,
-                amount:ingredient.amount
+                amount:ingredient.amount,
+                canBeDeleted:true,
+                custom:true
             ])
             copySet << newIngredient
         }

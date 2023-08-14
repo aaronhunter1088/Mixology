@@ -15,7 +15,6 @@ class Drink implements Serializable{
     String drinkSymbol
     boolean canBeDeleted = true
     boolean custom = true
-    //User user
 
     static constraints = {
         drinkName(size:3..30, blank:false, nullable:false)

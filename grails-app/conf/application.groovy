@@ -49,6 +49,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/drink/copy',     access: ['permitAll']],
 	[pattern: '/drink/update',   access: ['permitAll']],
 	[pattern: '/drink/sendADrinkEmail', access: ['permitAll']],
+	[pattern: '/drink/delete',   access: ['permitAll']],
 		/* Ingredient Controller */
 	[pattern: '/ingredient/index',	  access: ['ROLE_ADMIN']],
 	[pattern: '/ingredient/customIndex',access: ['ROLE_ADMIN','ROLE_USER']],
@@ -56,6 +57,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/ingredient/save',     access: ['permitAll']],
 	[pattern: '/ingredient/edit',     access: ['permitAll']],
 	[pattern: '/ingredient/update',	  access: ['permitAll']],
+	[pattern: '/ingredient/delete',   access: ['permitAll']],
 		/* User Controller */
 	[pattern: '/user/index',	 	  access: ['ROLE_ADMIN']],
 	[pattern: '/user/show',      	  access: ['permitAll']],
@@ -63,6 +65,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/save',      	  access: ['permitAll']],
 	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN']],
 	[pattern: '/index.gsp',           access: ['permitAll']],
+	[pattern: '/user/delete',         access: ['permitAll']],
 		/* More ... */
 ]
 

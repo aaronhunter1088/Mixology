@@ -28,6 +28,7 @@ class User implements Serializable {
 
     static hasMany = [
         drinks:Drink,
+        ingredients:Ingredient,
         roles:UserRole
     ]
 
