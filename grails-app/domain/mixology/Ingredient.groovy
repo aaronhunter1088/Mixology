@@ -20,6 +20,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         custom(nullable:true, default:true)
     }
 
+    // This creates a join table: drink_ingredients
     static belongsTo = Drink
     static hasMany = [drinks:Drink]
 

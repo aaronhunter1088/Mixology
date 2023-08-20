@@ -28,7 +28,11 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <f:table collection="${ingredientList}" />
+                    <g:if test="${ingredientCount > 0}">
+                        <f:table collection="${ingredientList}" />
+                    </g:if><g:else>
+                        <p>No custom ingredients found!</p>
+                    </g:else>
 
                     <g:if test="${ingredientCount > params.int('max')}">
                     <div class="pagination">

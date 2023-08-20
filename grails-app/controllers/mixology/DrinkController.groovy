@@ -1,6 +1,7 @@
 package mixology
 
 import enums.*
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
@@ -14,14 +15,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import javax.servlet.http.HttpServletResponse
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST
-import static org.springframework.http.HttpStatus.CREATED
-import static org.springframework.http.HttpStatus.FORBIDDEN
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
-import static org.springframework.http.HttpStatus.NOT_FOUND
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.OK
-import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.*
 
 class DrinkController extends BaseController {
 
@@ -105,10 +99,15 @@ class DrinkController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
-        respond drinkService.list(params), model:[drinkCount: drinkService.count()]
+        withFormat {
+            html {
+                respond drinkService.list(params), model:[drinkCount: drinkService.count()]
+            }
+            json { drinkService.list(params) as JSON }
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
@@ -382,12 +381,17 @@ class DrinkController extends BaseController {
         }
         Drink drink = drinkService.get(id)
         if (drink.canBeDeleted) {
-            List<Ingredient> ingredients = drink.ingredients.toArray() as List<Ingredient>
-            ingredients.each { ingredient ->
-                ingredient.removeFromDrinks(drink)
-                drink.removeFromIngredients(ingredient)
+            // do not remove ingredient here
+            // ingredient removed when it is called to be
+            // we are deleting drink, not ingredient
+            try {
+                Drink.withNewTransaction { drinkService.delete(id) }
+            } catch (Exception e) {
+                drink.errors.reject('default.deleted.error2.message',
+                    [drink.drinkName] as Object[],
+                    "There was an exception deleting the drink: ${e.message}"
+                )
             }
-            drinkService.delete(id)
         } else {
             drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
         }

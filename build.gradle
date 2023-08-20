@@ -24,8 +24,12 @@ apply plugin:"com.bertramlabs.asset-pipeline"
 
 repositories {
     mavenCentral()
+    maven { url "https://grails.org/plugins" }
     maven { url "https://repo.grails.org/grails/core" }
+    maven { url "https://repo.grails.org/ui/native/plugins" }
+    maven { url "https://maven.restlet.talend.com" }
 }
+
 
 configurations {
     developmentOnly
@@ -40,6 +44,9 @@ configurations {
 }
 
 dependencies {
+    // javax
+    implementation 'org.jboss.resteasy:jaxrs-api:3.0.12.Final'
+    implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.15.2'
     // mail
     implementation 'com.sun.activation:javax.activation:1.2.0'
     implementation 'com.sun.mail:javax.mail:1.6.2'
@@ -114,6 +121,8 @@ dependencies {
     testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:4.0.0"
 }
 
+
+
 bootJar {
     manifest {
         attributes 'Main-Class': 'init.mixology.Application'
@@ -169,3 +178,4 @@ assets {
     minifyJs = true
     minifyCss = true
 }
+

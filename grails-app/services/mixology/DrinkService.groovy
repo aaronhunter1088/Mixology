@@ -52,6 +52,12 @@ class DrinkService {
     @Transactional
     void delete(Long id) {
         Drink drink = Drink.findById(id)
-        if (drink) drink.delete(flush:true)
+        List<Ingredient> ingredients = drink.ingredients as List<Ingredient>
+        // detach fully ingredient from drink
+        ingredients.each { ingredient ->
+            drink.removeFromIngredients(ingredient)
+            ingredient.removeFromDrinks(drink)
+        }
+        drink.delete(flush:true)
     }
 }

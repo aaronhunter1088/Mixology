@@ -552,7 +552,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         response.status == 200
     }
 
-    // TODO: Test updating
     @Test
     void "update ingredient fails when no ingredient"() {
         when:

@@ -315,12 +315,7 @@ class IngredientController extends BaseController {
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         if ( (!ingredient.canBeDeleted && adminRole) ||
              (ingredient.canBeDeleted) ){
-            List<Drink> drinks = ingredient.drinks.collect()
-            drinks.each { drink ->
-                drink.removeFromIngredients(ingredient)
-                ingredient.removeFromDrinks(drink)
-            }
-            ingredientService.delete(id)
+            Ingredient.withNewTransaction { ingredientService.delete(id) }
         } else {
             ingredient.errors.reject('default.deleted.error.message', [ingredient.name] as Object[], '')
         }

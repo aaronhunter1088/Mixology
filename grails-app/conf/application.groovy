@@ -1,13 +1,3 @@
-
-//grails {
-//	host = "sandbox.smtp.mailtrap.io"
-//	port = 2525
-//	ssl = no
-//	tls = yes
-//	user = "12e26122e12ed7"
-//	password = "3b4a64f536617e"
-//}
-
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'mixology.User'
@@ -67,6 +57,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/index.gsp',           access: ['permitAll']],
 	[pattern: '/user/delete',         access: ['permitAll']],
 		/* More ... */
+
+
+]
+
+grails.plugins.springsecurity.interceptUrlMap = [
+	/* Resources */
+	/* Drink Resource */
+	[pattern: '/v1/**',		  		  access: ['IS_AUTHENTICATED_ANONYMOUSLY']]
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
@@ -77,4 +75,3 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**/favicon.ico', filters: 'none'],
 	[pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
-

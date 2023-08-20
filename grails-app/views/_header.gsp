@@ -71,16 +71,18 @@
                             <sec:ifLoggedIn>
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <li class="dropdown-item"><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
+                                    <li class="dropdown-item"><g:link controller="drink" action="customIndex">Show Your Drinks</g:link></li>
                                 </sec:ifAnyGranted>
                                 <sec:ifAnyGranted roles="ROLE_USER">
-                                    <li class="dropdown-item"><g:link controller="drink" action="customIndex">Show Drinks</g:link></li>
+                                    <li class="dropdown-item"><g:link controller="drink" action="customIndex">Show Your Drinks</g:link></li>
                                 </sec:ifAnyGranted>
                             </sec:ifLoggedIn>
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <li class="dropdown-item"><g:link controller="ingredient" action="index">Show Default Ingredients</g:link></li>
+                                <li class="dropdown-item"><g:link controller="ingredient" action="customIndex">Show Your Ingredients</g:link></li>
                             </sec:ifAnyGranted>
                             <sec:ifAnyGranted roles="ROLE_USER">
-                                <li class="dropdown-item"><g:link controller="ingredient" action="customIndex">Show Ingredients</g:link></li>
+                                <li class="dropdown-item"><g:link controller="ingredient" action="customIndex">Show Your Ingredients</g:link></li>
                             </sec:ifAnyGranted>
                             <li class="dropdown-item"><g:link controller="secure" action="index">Secure</g:link></li>
                             <!-- Something is causing the Login and Logout Controllers to repeat twice. But just them. manually adding for now -->

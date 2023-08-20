@@ -118,12 +118,14 @@
                                 <fieldset class="buttons" style="width:100%;">
                                     <sec:ifLoggedIn>
                                         <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                        <g:if test="${ingredient.custom}">
+                                            <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                        %{--<g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>--}%
+                                            <i class="fa-solid fa-trash-can">
+                                            <input type="submit" value="&nbsp;${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                            </i>
+                                        </g:if>
                                     </sec:ifLoggedIn>
-                                    <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                    <g:link class="fa sharp fa-solid fa-trash-can" action="delete" resource="${this.ingredient}">&nbsp;<g:message code="default.button.delete.label" default="Delete" /></g:link>
-                                    <i class="fa-solid fa-trash-can">
-                                    <input class="fa-sharp fa-solid fa-trash-can" type="submit" value="&nbsp;${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                    </i>
                                 </fieldset>
                             </g:form>
                         </div>

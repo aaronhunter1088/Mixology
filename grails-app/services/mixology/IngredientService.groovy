@@ -45,21 +45,23 @@ class IngredientService {
      * @param user
      * @return
      */
-    List<Ingredient> listFromUser(Map args, User user) {
-        def returnList = []
-        def userIngredientsIds = user.ingredients.collect { it.id }
-        def icrit = Ingredient.createCriteria()
-        def results = icrit.list (max: 100) {
-            order("${args.sort}", "${args.order}")
-        } as List<Ingredient>
-        results.each { Ingredient allI ->
-            while (returnList.size() < args.max as int ?: 10) {
-                if (userIngredientsIds.contains(allI.id)) {
-                    returnList << allI
-                }
-            }
-            return
-        }
+    def listFromUser(Map args, User user) {
+        //TODO: Fix me
+        return user.ingredients
+//        def returnList = []
+//        def userIngredientsIds = user.ingredients.collect { it.id }
+//        def icrit = Ingredient.createCriteria()
+//        def results = icrit.list (max: 100) {
+//            order("${args.sort}", "${args.order}")
+//        } as List<Ingredient>
+//        results.each { Ingredient allI ->
+//            while (returnList.size() < args.max as int ?: 10) {
+//                if (userIngredientsIds.contains(allI.id)) {
+//                    returnList << allI
+//                }
+//            }
+//            return
+//        }
 //        results.each { result -> userIngredients << result }
 //        if (args.sort && args.order) {
 //            user.ingredients.collect { it."${args.sort}"}
@@ -67,7 +69,7 @@ class IngredientService {
 //            userIngredients = user.ingredients.drop(args?.offset as int ?: 0)
 //        }
 
-        returnList
+//        returnList
     }
 
     Long count() {
@@ -96,6 +98,12 @@ class IngredientService {
     @Transactional
     void delete(Long id) {
         Ingredient ingredient = Ingredient.findById(id)
-        if (ingredient) ingredient.delete(flush:true)
+        def drinks = ingredient.drinks
+        // detach fully ingredient from drink
+        drinks.each { drink ->
+            drink.removeFromIngredients(ingredient)
+            ingredient.removeFromDrinks(drink)
+        }
+        ingredient.delete(flush:true)
     }
 }

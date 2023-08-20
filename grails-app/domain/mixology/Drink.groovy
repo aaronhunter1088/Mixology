@@ -30,6 +30,7 @@ class Drink implements Serializable{
 
     static mapping = {}
 
+    // This creates a join table: ingredient_drinks
     static belongsTo = Ingredient // ,User
     static hasMany = [ingredients:Ingredient] //,user:User
     static transients = ['glassImage']

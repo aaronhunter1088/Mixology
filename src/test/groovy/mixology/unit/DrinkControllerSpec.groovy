@@ -663,6 +663,24 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     }
 
     @Test
+    void "test delete drink deletes only drink"() {
+        given:
+        def numOfDrinks = drinkService.count()
+        def drinkIngredients = drink1.ingredients as List<Ingredient>
+        request.method = 'DELETE'
+
+        when:
+        controller.delete(drink1.id)
+
+        then:
+        assert drinkService.count() == numOfDrinks - 1
+        drinkIngredients?.each {
+            assert it.id
+        }
+        response.status == 204
+    }
+
+    @Test
     void "test already existing ingredient returns true"() {
         boolean result
         when:
