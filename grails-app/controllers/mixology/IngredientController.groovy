@@ -21,6 +21,7 @@ class IngredientController extends BaseController {
     private static Logger logger = LogManager.getLogger(IngredientController.class)
 
     IngredientService ingredientService
+    UserService userService
     def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -104,14 +105,38 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def customIndex(Integer max) {
-        if (!params.max) params.max = 10 else params.max = max
+        if (!params.max) params.max = 10
         if (!params.offset) params.offset = 0
         if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         def customIngredients = ingredientService.listFromUser(params, user)
+        def maxSize = customIngredients.size()
         //user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
         //customIngredients = customIngredients.sort { it.id }
-        render view:'index', model:[ingredientList: customIngredients, ingredientCount: user.ingredients.size(), max:10]
+        // TODO: work out logic better
+        customIngredients = customIngredients.findAll{ it.custom }.sort{it.id }
+        if (params.max && !params.offset) {
+            customIngredients = customIngredients.take( params.max as int )
+        }
+        if (!params.max || params.offset) {
+            def offsetIngredients = []
+            customIngredients.eachWithIndex { Ingredient i, int idx ->
+                if ( (params.offset as int) > idx ) {
+                    logger.info("Skipping index $idx")
+                } else {
+                    logger.info("Adding ingredient: [$i]")
+                    offsetIngredients << i
+                }
+            }
+            customIngredients = offsetIngredients.take( params.max as int )
+        }
+        render view:'index',
+               model:[ingredientList: customIngredients,
+                      ingredientCount: maxSize,
+                      max:10
+               ]
     }
 
     def show(Long id) {
@@ -149,6 +174,20 @@ class IngredientController extends BaseController {
         try {
             ingredients = createIngredientsFromParams(params, adminRole)
             ingredients.each { ingredient ->
+                Ingredient saved = ingredientService.save(ingredient, user, true)
+                if (!saved) {
+                    errorI.errors.reject('default.invalid.ingredient.instance',
+                            [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                            '[There was an error saving the ingredient]')
+                    ingredientErrors << errorI
+                }
+                else {
+                    println "ingredient.id ${saved.id} saved"
+                    userService.saveIngredientToUser(user, ingredient)
+                    savedCount++
+                }
+            }
+            /*ingredients.each { ingredient ->
                 if (alreadyExists(ingredient)) {
                     errorI.name = ingredient.name
                     errorI.unit = ingredient.unit
@@ -185,7 +224,7 @@ class IngredientController extends BaseController {
                         savedCount++
                     }
                 }
-            }
+            }*/
         }
         catch (ValidationException e) {
             respond errorI?.errors, view:'create', status: BAD_REQUEST
@@ -220,7 +259,9 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def edit(Long id) {
-        respond ingredientService.get(id)
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        render view:'edit', model:[ingredient:ingredientService.get(id), user:user]
+        //respond ingredientService.get(id)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])

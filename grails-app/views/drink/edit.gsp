@@ -157,7 +157,7 @@
                                                 <div style="display:block;">
                                                     <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-success btn-xs" onclick="addIngredient('${ingredient.id}');">Added</button>
                                                     <button id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
-                                                    <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/> ${ingredient} : ${ingredient.id} &emsp14;
+                                                    <input hidden type="checkbox" name="ingredients" checked id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient.prettyNameWithoutName()} <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient.name}</g:link> : ${ingredient.id}
                                                 </div>
                                             </g:if>
                                         </g:each>
@@ -165,7 +165,7 @@
                                             <div style="display:block;">
                                                 <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
                                                 <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
-                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient}"/> ${ingredient} : ${ingredient.id} &emsp14;
+                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient.prettyNameWithoutName()} <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient.name}</g:link> : ${ingredient.id}
                                             </div>
                                         </g:each>
                                     </div>

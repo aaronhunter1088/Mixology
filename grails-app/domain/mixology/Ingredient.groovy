@@ -21,7 +21,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     }
 
     // This creates a join table: drink_ingredients
-    static belongsTo = Drink
+    static belongsTo = [Drink, User]
     static hasMany = [drinks:Drink]
 
     @Override
@@ -34,6 +34,14 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
             (int)amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
         } else {
             amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
+        }
+    }
+
+    String prettyNameWithoutName() {
+        if (amount % 1 == 0) {
+            (int)amount + ' ' + unit.getValue().toUpperCase() + ' of '
+        } else {
+            amount + ' ' + unit.getValue().toUpperCase() + ' of '
         }
     }
 

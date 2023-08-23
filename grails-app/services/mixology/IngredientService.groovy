@@ -87,11 +87,18 @@ class IngredientService {
     Ingredient save(Ingredient ingredient, User user, boolean validate = false) {
         if (!ingredient || !user) return null
         if (validate) {
-            if (ingredient.validate()) ingredient.save(flush:true, validate:validate)
+            if (ingredient.validate()) {
+                try {
+                    Ingredient.withTransaction {
+                        ingredient.save(flush:true)
+                    }
+                } catch (Exception e) {
+                    println "could not save ingredient"
+                    return null
+                }
+            }
             else return null
         } else ingredient.save(flush:true)
-        user.addToIngredients(ingredient)
-        user.save(flush:true, deepValidate:validate)
         ingredient
     }
 

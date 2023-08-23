@@ -2,7 +2,6 @@ package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import mixology.Drink
@@ -14,21 +13,11 @@ import mixology.UserRoleService
 import mixology.Ingredient
 import mixology.User
 import mixology.UserController
-import org.asynchttpclient.request.body.multipart.part.InputStreamMultipartPart
-import org.grails.plugins.testing.GrailsMockMultipartFile
-import org.grails.plugins.testing.MockPart
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.MultipartRequest
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import spock.lang.Specification
 
-import javax.servlet.http.HttpServletRequest
 import java.awt.image.BufferedImage
-
-import static org.mockito.Mockito.*
-import static org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.StandardMultipartFile
 
 @ContextConfiguration
 class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest {
@@ -52,7 +41,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "regular",
                         lastName: "user"
                 ])
-                regularUser = userService.save(regularUser, false)
+                regularUser = userService.saveIngredientToUser(regularUser, false)
                 Role regularRole = new Role(authority: enums.Role.USER.name)
                 UserRole.create(regularUser, regularRole)
                 regularUser
@@ -67,7 +56,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "admin",
                         lastName: "user"
                 ])
-                adminUser = userService.save(adminUser, false)
+                adminUser = userService.saveIngredientToUser(adminUser, false)
                 Role adminRole = new Role(authority: enums.Role.ADMIN.name)
                 UserRole.create(adminUser, adminRole)
                 adminUser
@@ -245,7 +234,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             controller.params.email = unsavedUser.username
             controller.params.cellphone = '1234560789'
             controller.roleService = Stub(RoleService) {findByAuthority(enums.Role.USER.name) >> userRole }
-            controller.userService = Stub(UserService) {save(_,_) >> regularUser }
+            controller.userService = Stub(UserService) {saveIngredientToUser(_,_) >> regularUser }
         when:
             controller.save(unsavedUser)
         then:

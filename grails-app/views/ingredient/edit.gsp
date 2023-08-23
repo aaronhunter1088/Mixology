@@ -123,10 +123,10 @@
                             </div>
                             <div id="update-ingredient2" style="width:60%;display:block;float:right;">
                                 <div class="formfield">
-                                    <label style="text-align:right;padding-right:30px;"><span class='required-indicator'>*</span> Drinks</label><br>
+                                    <label style="text-align:right;padding-right:30px;">Drinks</label><br>
                                     <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                        <g:each in="${Drink.list(sort: ['drinkName':'asc'])}" var="drink" status="i">
-                                            <g:if test="${ingredient.drinks.contains(drink)}">
+                                        <g:each in="${user.drinks}" var="drink" status="i">
+                                            <g:if test="${(ingredient as Ingredient).drinks.contains(drink)}">
                                                 <div style="display:block;">
                                                     <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-success btn-xs" onclick="addDrink('${drink.id}');">Added</button>
                                                     <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
@@ -134,8 +134,8 @@
                                                 </div>
                                             </g:if>
                                         </g:each>
-                                        <g:each in="${Drink.list(sort: ['drinkName':'asc'])}" var="drink" status="i">
-                                            <g:if test="${!ingredient.drinks.contains(drink)}">
+                                        <g:each in="${user.drinks}" var="drink" status="i">
+                                            <g:if test="${!(ingredient as Ingredient).drinks.contains(drink)}">
                                                 <div style="display:block;">
                                                     <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>
                                                     <button hidden id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>

@@ -41,7 +41,16 @@ class DrinkService {
     Drink save(Drink drink, User user, boolean validate = false) {
         if (!drink || !user) return null
         if (validate) {
-            if (drink.validate()) drink.save(flush:true)
+            if (drink.validate()) {
+                try {
+                    Drink.withTransaction {
+                        drink.save(flush:true)
+                    }
+                } catch (Exception e) {
+                    println "could not save drink"
+                    return null
+                }
+            }
             else return null
         } else drink.save(flush:true)
         user.addToDrinks(drink)

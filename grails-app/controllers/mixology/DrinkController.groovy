@@ -111,11 +111,19 @@ class DrinkController extends BaseController {
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def customIndex(Integer max) {
-        params.max = Math.min(max ?: 5, 100)
+    def customIndex() {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        List<Drink> customDrinks = user.drinks.collect()
-        render view:'index', model:[drinkList:customDrinks,drinkCount:customDrinks.size()]
+        def customDrinks = user.drinks.sort { it.id }
+        // TODO: Does not take into account offset. Need to rework
+//        if (params.max as String) {
+//            customDrinks = customDrinks.stream().limit(params.max as int).collect()
+//        }
+        render view:'index',
+               model:[drinkList:customDrinks,
+                      drinkCount:customDrinks.size(),
+                      params:params,
+                      max:10
+               ]
     }
 
     def show(Long id) {
@@ -184,8 +192,13 @@ class DrinkController extends BaseController {
     def edit(Long id) {
         Drink drink = drinkService.get(id)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         def drinkIngredients = drink.ingredients
-        def customIngredients = user.ingredients
+        def customIngredients = user.ingredients + drinkIngredients
+        if (userRole) {
+            customIngredients = customIngredients.findAll{ it.custom }
+        }
         render view:'edit', model:[
                 drink:drink,
                 drinkIngredients:drinkIngredients,
@@ -204,6 +217,7 @@ class DrinkController extends BaseController {
             return
         }
         // Get UR based on current user
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
         UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
@@ -237,10 +251,8 @@ class DrinkController extends BaseController {
                         i.removeFromDrinks(drink)
                     }
                 }
-                if (drink.validate()) {
-                    drinkService.save(drink)
-                    logger.info("default drink saved")
-                }
+                drinkService.save(drink, user, false)
+                logger.info("default drink saved")
             }
             // if is a custom drink and user has either role
             else if (drink.isCustom() && (!adminRole || !userRole)) {
@@ -251,7 +263,12 @@ class DrinkController extends BaseController {
                 drink.suggestedGlass = GlassType.valueOf(params.glass as String)
                 drink.mixingInstructions = params.instructions
                 drink.version = (params.version as Long)
-                validIngredients = createNewIngredientsFromParams(params)
+                //TODO: wrong approach. no need to create ingredients here. grab using id
+                //First get current ingredients
+                // REWORK
+                validIngredients = drink.ingredients
+                validIngredients = obtainFromParams(params)
+//                validIngredients = //createNewIngredientsFromParams(params)
                 validIngredients.each{
                     drink.ingredients.add(it as Ingredient)
                 }
@@ -269,10 +286,8 @@ class DrinkController extends BaseController {
                         i.removeFromDrinks(drink as Drink)
                     }
                 }
-                if (drink.validate()) {
-                    drinkService.save(drink)
-                    logger.info("custom drink saved!")
-                }
+                drinkService.save(drink, user, true)
+                logger.info("custom drink saved!")
             }
             else {
                 drink.errors.reject('default.updated.error.message', [drink.drinkName] as Object[], '')
@@ -295,11 +310,11 @@ class DrinkController extends BaseController {
             }
         } else {
             request.withFormat {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                 form multipartForm {
-                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
-                    respond drink, view:'edit'
+                    respond drink, view:'show'
                 }
-                '*'{ respond drink, [status: OK] }
+                '*'{ respond drink, view:'show', status: OK }
             }
         }
     }
@@ -415,6 +430,18 @@ class DrinkController extends BaseController {
         }
     }
 
+    def obtainFromParams(params) throws Exception {
+        // get list of ids or single id
+        // find ingredient from id
+        // return list of ingredients found
+        def listOfIngredients = []
+        def allIds = (params.ingredients as String[]).each{ it.trim()}
+        allIds.each {
+            Ingredient found = Ingredient.findById( it as Long )
+            if (found) listOfIngredients << found
+        }
+        listOfIngredients
+    }
     /**
      * Creates and returns a saved Drink
      * @param params
@@ -453,34 +480,39 @@ class DrinkController extends BaseController {
 
     /**
      * Creates 1 or more ingredients
+     * params.ingredients = ["Tequila : 1.0 : OZ",...]
+     * or
+     * params.ingredients = "Tequila : 1.0 : OZ"
      * @param params
      * @return
      */
     def createNewIngredientsFromParams(params) {
         List<String> ingredientNames = new ArrayList<>()
-        List<String> units = new ArrayList<>()
+        List<Unit> ingredientUnits = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
-        if (params.ingredientName?.size() > 1 && !(params.ingredientName instanceof String)) {
-            params.ingredientName.each {
-                ingredientNames.add(it as String)
-            }
-            params.ingredientUnit.each {
-                units.add(it as String)
-            }
-            params.ingredientAmount.each {
-                ingredientAmounts.add(Double.parseDouble(it as String))
+        if (params.ingredients?.size() > 1 && !(params.ingredients instanceof String)) {
+            def ingredientOptions = (params.ingredients as String).split(',')
+            ingredientOptions.each { def opt -> // "Tequila : 1.0 : OZ"
+                def options = (opt as String).split(':')
+                ingredientNames.add((options[0] as String).trim().replace('[',''))
+                ingredientAmounts.add(Double.parseDouble(options[1]))
+                ingredientUnits.add(Unit.valueOf((options[2] as String).trim().replace(']','')))
             }
         } else {
-            ingredientNames.add(params.ingredientName as String)
-            units.add(params.ingredientUnit as String)
-            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+//            ingredients.add(params.ingredientName as String)
+//            units.add(params.ingredientUnit as String)
+//            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+            def options = (params.ingredients as String).split(':')
+            ingredientNames.add(options[0] as String)
+            ingredientAmounts.add(Double.parseDouble(options[1]))
+            ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
         }
         int createNum = ingredientNames.size()
         for (int i=0; i<createNum; i++) {
             Ingredient ingredient = new Ingredient([
                     name: ingredientNames.get(i),
-                    unit: units.get(i),
+                    unit: ingredientUnits.get(i),
                     amount: ingredientAmounts.get(i)
             ])
             ingredients.add(ingredient)

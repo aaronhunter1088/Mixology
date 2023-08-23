@@ -28,15 +28,50 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <g:if test="${ingredientCount > 0}">
-                        <f:table collection="${ingredientList}" />
-                    </g:if><g:else>
-                        <p>No custom ingredients found!</p>
-                    </g:else>
+%{--                <f:table collection="${ingredientList}" />--}%
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Count</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Unit</th>
+                                <th>Amount</th>
+                                <th>Drinks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:if test="${ingredientCount > 0}">
+                            <% int index = 1; %>
+                            <g:each in="${ingredientList}" var="ingredient">
+                                <g:if test="${params.offset && (params.offset as int) != 0}">
+                                    <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                </g:if><g:else>
+                                    <g:set var="idx" value="${index}"/>
+                                </g:else>
+                                <tr>
+                                    <td>${idx}</td>
+                                    <td>${ingredient.id}</td>
+                                    <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${ingredient.name}</g:link> </td>
+                                    <td>${ingredient.unit}</td>
+                                    <td>${ingredient.amount}</td>
+                                    <td>${ingredient.drinks}</td>
+                                </tr>
+                                <% index++; %>
+                            </g:each>
+                            </g:if><g:else>
+                            <p>No custom ingredients found!</p>
+                            </g:else>
+                        </tbody>
+                    </table>
 
-                    <g:if test="${ingredientCount > params.int('max')}">
+                    <g:if test="${ingredientCount > max}">
                     <div class="pagination">
-                        <g:paginate total="${ingredientCount ?: 0}" controller="ingredient" action="customIndex" />
+                        <g:paginate total="${ingredientCount}"
+                                    controller="ingredient"
+                                    action="${params.action}"
+                                    max="${params.max ?: 10}" />
+                                    <!--action="customIndex" -->
                     </div>
                     </g:if>
                 </div>
