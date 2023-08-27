@@ -29,6 +29,7 @@ class UserService {
 
     }
 
+    // TODO: Rename to Save User
     @Transactional
     User saveIngredientToUser(User user, boolean validate = false) {
         user.save(validate:validate, flush:true, failOnError:true)

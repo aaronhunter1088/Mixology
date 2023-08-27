@@ -47,7 +47,13 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
 
     @Override
     int compareTo(Ingredient i) {
-        if (this.name == i.name && this.unit.value == i.unit.value && this.amount == i.amount) return 0
+        if (
+             // if the name, unit, and amount are the same
+             (this.name == i.name && this.unit.value == i.unit.value && this.amount == i.amount)
+             // or if the id is the same
+             || (this.id == i.id)
+            )
+            return 0
         else return 1
     }
 

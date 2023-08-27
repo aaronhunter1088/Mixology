@@ -4,6 +4,8 @@ import enums.*
 
 import javax.servlet.http.HttpServletResponse
 
+// Will do searching in specific controller. Delete
+@Deprecated
 class SearchController {
 
     DrinkService drinkService

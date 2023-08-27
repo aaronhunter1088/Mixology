@@ -454,12 +454,12 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.params.drinkSymbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
-        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-        controller.params.ingredientAmount = [1.5, 1.5]
-        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-        controller.params.custom = true
-        controller.params.canBeDeleted = true
+        controller.params.ingredients = ['100 Proof Vodka : 1.5 : OZ', 'Orange Juice : 1.0 : SPLASH']
+        //controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
+        //controller.params.ingredientAmount = [1.5, 1.5]
+        //controller.params.ingredientUnit = ['OZ', 'SPLASH']
+        //controller.params.custom = true
+        //controller.params.canBeDeleted = true
         controller.save()
 
         then:

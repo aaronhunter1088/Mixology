@@ -15,8 +15,6 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import javax.servlet.http.HttpServletResponse
 
-import static org.springframework.http.HttpStatus.*
-
 class DrinkController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(DrinkController.class)
@@ -24,78 +22,8 @@ class DrinkController extends BaseController {
 
     DrinkService drinkService
     IngredientService ingredientService
+    UserService userService
     def springSecurityService
-
-    @Override
-    void badRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No request parameters found!'
-                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
-            }
-            '*'{ render status: BAD_REQUEST }
-        }
-    }
-    @Override
-    void notFound(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
-                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
-    @Override
-    void okRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'OK 200'
-                redirect action: "index", method: method ?: "create", status: OK
-            }
-            '*'{ render status: OK }
-        }
-    }
-    @Override
-    void createdRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No request parameters found!'
-                redirect action: "index", method: method ?: "create", status: CREATED
-            }
-            '*'{ render status: CREATED }
-        }
-    }
-    @Override
-    void noContentRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No content'
-                redirect action: "index", method: method ?: "create", status: NO_CONTENT
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
-    @Override
-    void unauthorized(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'You are not authorized for the previous request'
-                redirect action: "index", method:method, status: UNAUTHORIZED
-            }
-            '*'{ render status: UNAUTHORIZED }
-        }
-    }
-    @Override
-    void methodNotAllowed(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'Check your request method!'
-                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
-            }
-            '*'{ render status: METHOD_NOT_ALLOWED }
-        }
-    }
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -157,7 +85,9 @@ class DrinkController extends BaseController {
         try {
             drink = createDrinkFromParams(params, ur)
             if (drink.isCustom() || ur?.role == enums.Role.ADMIN) {
+                drinkService.save(drink, user, false)
                 user.addToDrinks(drink)
+                user.save(flush:true, validate:false)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
@@ -442,6 +372,7 @@ class DrinkController extends BaseController {
         }
         listOfIngredients
     }
+
     /**
      * Creates and returns a saved Drink
      * @param params
@@ -449,8 +380,14 @@ class DrinkController extends BaseController {
      * @return
      */
     def createDrinkFromParams(params, role) throws ValidationException {
-        validIngredients = createNewIngredientsFromParams(params)
-        //extractIngredientsFromParams(params)
+        //if (!validIngredients) validIngredients = createNewIngredientsFromParams(params)
+        params?.ingredients?.each { String id ->
+            Ingredient ingredient = Ingredient.findById(id as Long)
+            if (alreadyExists(ingredient)) {
+                ingredient = getExisting(ingredient)
+                if (ingredient?.id) validIngredients.add(ingredient)
+            }
+        }
 
         Drink drink = new Drink([
                 drinkName: params.drinkName,
@@ -460,10 +397,10 @@ class DrinkController extends BaseController {
                 suggestedGlass: GlassType.valueOf(params.glass as String),
                 mixingInstructions: params.instructions,
                 ingredients: validIngredients
-                ,custom: Boolean.valueOf(params.custom as String)
-                ,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
+                //,custom: Boolean.valueOf(params.custom as String)
+                //,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
         ])
-        if ( !role && !role?.role == enums.Role.ADMIN) {
+        if ( !role && !(role?.role == enums.Role.ADMIN) ) {
             drink.canBeDeleted = true
             drink.custom = true
         }
@@ -480,9 +417,11 @@ class DrinkController extends BaseController {
 
     /**
      * Creates 1 or more ingredients
-     * params.ingredients = ["Tequila : 1.0 : OZ",...]
+     * params.ingredients = ["34", "289"]
      * or
-     * params.ingredients = "Tequila : 1.0 : OZ"
+     * "ingredientName": value, String
+     * "ingredientUnit": value, String
+     * "ingredientAmount": value, String
      * @param params
      * @return
      */
@@ -500,13 +439,16 @@ class DrinkController extends BaseController {
                 ingredientUnits.add(Unit.valueOf((options[2] as String).trim().replace(']','')))
             }
         } else {
-//            ingredients.add(params.ingredientName as String)
-//            units.add(params.ingredientUnit as String)
-//            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
-            def options = (params.ingredients as String).split(':')
-            ingredientNames.add(options[0] as String)
-            ingredientAmounts.add(Double.parseDouble(options[1]))
-            ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
+            def options = (params.ingredients as String)?.split(':')
+            if (options) {
+                ingredientNames.add(options[0] as String)
+                ingredientAmounts.add(Double.parseDouble(options[1]))
+                ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
+            } else {
+                ingredientNames.add(params.ingredientName as String)
+                ingredientUnits.add(Unit.valueOf((params.ingredientUnit as String).trim()))
+                ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+            }
         }
         int createNum = ingredientNames.size()
         for (int i=0; i<createNum; i++) {
@@ -515,30 +457,51 @@ class DrinkController extends BaseController {
                     unit: ingredientUnits.get(i),
                     amount: ingredientAmounts.get(i)
             ])
-            ingredients.add(ingredient)
+            if (alreadyExists(ingredient)) {
+                ingredient = getExisting(ingredient)
+                if (ingredient?.id) ingredients.add(ingredient)
+            } else {
+                ingredients.add(ingredient)
+            }
         }
         return ingredients
     }
 
     /**
      * Tests if an ingredient already exists overall
+     * If you pass in returnExists as true, it will return
+     * the already existing ingredient, instead of a boolean
      * @param ingredient
      * @return
      */
     def alreadyExists(ingredient) {
         boolean exists = false
-        List<Ingredient> ingredients = ingredient.list()
-        ingredients.each {
+        List<Ingredient> ingredients = Ingredient.list()
+        ingredients?.each {
             if (ingredient.compareTo(it) == 0) {
-                return (exists = true)
+                exists = true
             }
         }
-        return exists
+        exists
+    }
+
+    def getExisting(Ingredient noIdIngredient) {
+        List<Ingredient> ingredients = Ingredient.list()
+        Ingredient ingredient = null
+        ingredients?.each {
+            if (noIdIngredient == it) {
+                ingredient = it as Ingredient
+            }
+        }
+        ingredient
     }
 
     /**
      * Called from the UI which validates each
      * ingredient, created while creating a new drink
+     * Single drink: ingredientName, ingredientUnit, ingredientAmount
+     * as single String values.
+     * Is called once for each new ingredient
      * @param params
      * @return
      */

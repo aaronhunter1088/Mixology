@@ -8,10 +8,6 @@ class UrlMappings {
                 // apply constraints here
             }
         }
-        "/v1/drink/" {
-            controller = "drink"
-            action = "index"
-        }
 
         "/mixology/drink/save" {
             controller = "drink"
@@ -36,6 +32,10 @@ class UrlMappings {
         "/mixology/validate" {
             controller = "ingredient"
             action = "validate"
+        }
+        "/mixology/drink/validateIngredients" {
+            controller = "drink"
+            action = "validateIngredients"
         }
 
         "/mixology/search" {

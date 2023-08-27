@@ -164,7 +164,7 @@
                                                 <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
                                                 <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
                                                 <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
-                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient}"/> ${ingredient} &emsp14;
+                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient} &emsp14;
                                             </div>
                                         </div>
                                     </g:each>
@@ -365,8 +365,10 @@
                                 //let response = JSON.parse(JSON.stringify(data['responseJSON']))
                                 //let response = JSON.parse(JSON.stringify(data))
                                 let message;
+                                let addedHeight = 50;
                                 if (failCount === 1) {
                                     message = response.message;
+                                    addedHeight = 75;
                                 } else {
                                     message = "Some ingredients have already been created!";
                                 }
@@ -377,8 +379,11 @@
                                 errorMessage.html(message);
                                 let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                 tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
-                                let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + 50;
+                                let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + addedHeight;
                                 document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
+                            },
+                            403: function(data) {
+                                console.log(JSON.stringify(data));
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));

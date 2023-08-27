@@ -44,6 +44,10 @@ class DrinkService {
             if (drink.validate()) {
                 try {
                     Drink.withTransaction {
+                        User.withTransaction {
+                            user.addToDrinks(drink)
+                            user.save(flush:true, deepValidate:false)
+                        }
                         drink.save(flush:true)
                     }
                 } catch (Exception e) {
@@ -52,9 +56,20 @@ class DrinkService {
                 }
             }
             else return null
-        } else drink.save(flush:true)
-        user.addToDrinks(drink)
-        user.save(flush:true, deepValidate:false)
+        } else {
+            try {
+                Drink.withTransaction {
+                    User.withTransaction {
+                        user.addToDrinks(drink)
+                        user.save(flush:true, deepValidate:false)
+                    }
+                    drink.save(flush:true)
+                }
+            } catch (Exception e) {
+                println "could not save drink"
+                return null
+            }
+        }
         drink
     }
 

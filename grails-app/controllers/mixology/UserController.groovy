@@ -10,7 +10,6 @@ import javax.imageio.ImageIO
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
-import static org.springframework.http.HttpStatus.*
 
 class UserController extends BaseController {
 
@@ -21,77 +20,6 @@ class UserController extends BaseController {
     UserRoleService userRoleService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
-    @Override
-    void badRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No request parameters found!'
-                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
-            }
-            '*'{ render status: BAD_REQUEST }
-        }
-    }
-    @Override
-    void notFound(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
-                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
-    @Override
-    void okRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'OK 200'
-                redirect action: "index", method: method ?: "create", status: OK
-            }
-            '*'{ render status: OK }
-        }
-    }
-    @Override
-    void createdRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No request parameters found!'
-                redirect action: "index", method: method ?: "create", status: CREATED
-            }
-            '*'{ render status: CREATED }
-        }
-    }
-    @Override
-    void noContentRequest(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'No content'
-                redirect action: "index", method: method ?: "create", status: NO_CONTENT
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
-    @Override
-    void unauthorized(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'You are not authorized for the previous request'
-                redirect action: "index", method:method, status: UNAUTHORIZED
-            }
-            '*'{ render status: UNAUTHORIZED }
-        }
-    }
-    @Override
-    void methodNotAllowed(method, message) {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message ?: 'Check your request method!'
-                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
-            }
-            '*'{ render status: METHOD_NOT_ALLOWED }
-        }
-    }
 
     @Secured(['ROLE_ADMIN'])
     def index(Integer max) {
