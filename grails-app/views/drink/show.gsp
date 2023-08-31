@@ -134,12 +134,11 @@
                                     <div class="formfield" id="ingredients">
                                         <label>Ingredients</label><br/>
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;">
-                                            <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
-                                                <g:if test="${drink.ingredients.contains(ingredient)}">
-                                                    <div style="display:block;">
-                                                        <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/> ${ingredient} &emsp14;
-                                                    </div>
-                                                </g:if>
+                                            <g:each in="${drink.ingredients.sort{ it.id } }" var="ingredient" status="i">
+                                                <div style="display:block;">
+                                                    <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
+                                                    <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link> : ${ingredient.id}
+                                                </div>
                                             </g:each>
                                         </div>
                                     </div>

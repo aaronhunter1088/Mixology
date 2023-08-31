@@ -16,6 +16,7 @@ import mixology.UserController
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
+import static org.springframework.http.HttpStatus.*
 
 import java.awt.image.BufferedImage
 

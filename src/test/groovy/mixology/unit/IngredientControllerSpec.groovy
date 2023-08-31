@@ -187,11 +187,11 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 custom: true
         ])
         // save all ingredients
-        drink1.ingredients.each { ingredientService.save(it) }
-        drink2.ingredients.each { ingredientService.save(it) }
-        ingredientService.save(createDefaultIngredient())
-        drinkService.save(drink1)
-        drinkService.save(drink2)
+        drink1.ingredients.each { ingredientService.save(it, false) }
+        drink2.ingredients.each { ingredientService.save(it, false) }
+        ingredientService.save(createDefaultIngredient(), false)
+        drinkService.save(drink1, false)
+        drinkService.save(drink2, false)
     }
 
     def cleanup() {
@@ -367,6 +367,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                     new Ingredient([name:'', unit: FRUIT, amount: 0, custom:false])
             ]
         }
+        controller.ingredientService = Stub(IngredientService) {save(_,_,_) >> null}
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
@@ -406,15 +407,13 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.springSecurityService = Stub(SpringSecurityService) {
              getPrincipal() >> user
         }
+        //controller.ingredientService = Stub(IngredientService) { saveIngredientToUser() >> null}
         controller.ingredientService = ingredientService
 
         when:
-        //Role.findByAuthority('ROLE_ADMIN') >> role
-        //Role.findByAuthority('ROLE_USER') >> null
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 201
     }
 
@@ -472,6 +471,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
+        controller.ingredientService = ingredientService
 
         when:
         Role.findByAuthority('ROLE_ADMIN') >> role
@@ -479,7 +479,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 400
     }
 
@@ -498,6 +497,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
+        controller.ingredientService = ingredientService
 
         when:
         controller.params.ingredientName = 'testIngredientX'
@@ -518,7 +518,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 400
     }
 
@@ -543,7 +542,15 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 unit: Unit.WEDGE,
                 amount: 2.2
         ])
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role role = new Role(authority: enums.Role.USER.name).save()
+        UserRole.create(user, role)
         controller.ingredientService = Stub(IngredientService) { get(5L) >> test}
+        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> user}
 
         when:
         controller.edit(5L)

@@ -5,6 +5,7 @@ import grails.validation.ValidationException
 import enums.Unit
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import static org.springframework.http.HttpStatus.*
 
 import javax.servlet.http.HttpServletResponse
 
@@ -32,7 +33,7 @@ class IngredientController extends BaseController {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-        def customIngredients = ingredientService.listFromUser(params, user)
+        def customIngredients = user.ingredients
         def maxSize = customIngredients.size()
         //user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
         //customIngredients = customIngredients.sort { it.id }
@@ -95,57 +96,34 @@ class IngredientController extends BaseController {
         try {
             ingredients = createIngredientsFromParams(params, adminRole)
             ingredients.each { ingredient ->
-                Ingredient saved = ingredientService.save(ingredient, user, true)
-                if (!saved) {
+                Ingredient saved = null
+                if (
+                     // if ingredient is default and adminRole is present
+                     ( !(ingredient.isCustom()) && adminRole )
+                     || ( ingredient.isCustom() && (adminRole || userRole) )
+                     // if ingredient is custom and either role is present
+                ) {
+                    if (!alreadyExists(ingredient)) {
+                        saved = ingredientService.save(ingredient, user, true)
+                    }
+                    if (saved) {
+                        logger.info("ingredient.id ${saved.id} saved")
+                        savedCount++
+                    } else if (saved == null) {
+                        logger.info("ingredient not saved. it already exists")
+                        errorI.errors.reject('default.invalid.ingredient.instance',
+                                [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
+                                "[The ingredient, ${ingredient.name}, already exists.]")
+                        ingredientErrors << errorI
+                    }
+                }
+                else {
                     errorI.errors.reject('default.invalid.ingredient.instance',
                             [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
                             '[There was an error saving the ingredient]')
                     ingredientErrors << errorI
                 }
-                else {
-                    println "ingredient.id ${saved.id} saved"
-                    userService.saveIngredientToUser(user, ingredient)
-                    savedCount++
-                }
             }
-            /*ingredients.each { ingredient ->
-                if (alreadyExists(ingredient)) {
-                    errorI.name = ingredient.name
-                    errorI.unit = ingredient.unit
-                    errorI.amount = ingredient.amount
-                    errorI.errors.reject('default.invalid.ingredient.instance',
-                            [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
-                            '[Ingredient has already been created]')
-                    println "ingredient.name ${ingredient.name} already exists"
-                    ingredientErrors << errorI
-                }
-                // if ingredient is not custom (default ingredient) and user is not admin user
-                else if (!ingredient.isCustom() && !adminRole)  {
-                    errorI.name = ingredient.name
-                    errorI.unit = ingredient.unit
-                    errorI.amount = ingredient.amount
-                    errorI.errors.reject('default.invalid.ingredient.instance',
-                        [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
-                        '[You cannot save a default ingredient]')
-                    println "You cannot save a default ingredient"
-                    ingredientErrors << errorI
-                }
-                // if ingredient is custom and user has either role
-                else {
-                    //ingredient.save(failOnError:true)
-                    Ingredient saved = ingredientService.save(ingredient, user, true)
-                    if (!saved) {
-                        errorI.errors.reject('default.invalid.ingredient.instance',
-                        [ingredient.name, ingredient.unit, ingredient.amount] as Object[],
-                        '[There was an error saving the ingredient]')
-                        ingredientErrors << errorI
-                    }
-                    else {
-                        println "ingredient.id ${saved.id} saved"
-                        savedCount++
-                    }
-                }
-            }*/
         }
         catch (ValidationException e) {
             respond errorI?.errors, view:'create', status: BAD_REQUEST
@@ -162,9 +140,9 @@ class IngredientController extends BaseController {
                     } else {
                         flash.message = ''
                     }
-                    redirect(controller: "ingredient", action: "create")
+                    redirect(controller:'ingredient',view:'show')
                 }
-                '*' { respond ingredients.get(0), [status: CREATED] }
+                '*' { respond ingredients.get(0), view:'show', [status: CREATED] }
             }
         }
         else {
@@ -335,10 +313,9 @@ class IngredientController extends BaseController {
                     unit: units.get(i),
                     amount: ingredientAmounts.get(i)
             ])
-            // TODO: change to if (admin) canBeDeleted = false, custom = false
-            if (!adminRole) {
-                ingredient.canBeDeleted = true
-                ingredient.custom = true
+            if (adminRole) {
+                ingredient.canBeDeleted = false
+                ingredient.custom = false
             }
             ingredients.add(ingredient)
         }

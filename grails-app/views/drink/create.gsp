@@ -158,7 +158,7 @@
                             <div class="formfield">
                                 <label><span class='required-indicator'>*</span> Ingredients</label><br>
                                 <div style="margin-top:-25px;height:200px;overflow-y:auto;">
-                                    <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
+                                    <g:each in="${user.ingredients.sort{-it.id}}" var="ingredient" status="i"> <!-- sort{'negative'...} returns list in reverse sort -->
                                         <div style="display:block;">
                                             <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
                                                 <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
@@ -187,9 +187,9 @@
                                     <div id="ingredientTableDiv" class="tableFixHead" style="">
                                         <table id="ingredientTable" style="width:100%;">
                                             <thead>
-                                                <th style="width:144px;"><span class='required-indicator'>*</span>Name</th>
-                                                <th style="width:175px;"><span class='required-indicator'>*</span>Unit</th>
-                                                <th style="width:100px;"><span class='required-indicator'>*</span>Amount</th>
+                                                <th style="width:144px;">Name</th>
+                                                <th style="width:175px;">Unit</th>
+                                                <th style="width:100px;">Amount</th>
                                                 <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
                                             </thead>
                                             <script>

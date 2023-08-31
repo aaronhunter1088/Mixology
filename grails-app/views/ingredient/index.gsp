@@ -28,27 +28,28 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-%{--                <f:table collection="${ingredientList}" />--}%
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Count</th>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Unit</th>
-                                <th>Amount</th>
-                                <th>Drinks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:if test="${ingredientCount > 0}">
-                            <% int index = 1; %>
-                            <g:each in="${ingredientList}" var="ingredient">
+                    <g:if test="${ingredientCount <= 0}">
+                        <p>No custom ingredients found!</p>
+                    </g:if><g:else>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Count</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Amount</th>
+                                    <th>Drinks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% int index = 1; %>
+                                <g:each in="${ingredientList}" var="ingredient">
                                 <g:if test="${params.offset && (params.offset as int) != 0}">
                                     <g:set var="idx" value="${index + (params.offset as int)}"/>
                                 </g:if><g:else>
-                                    <g:set var="idx" value="${index}"/>
-                                </g:else>
+                                <g:set var="idx" value="${index}"/>
+                            </g:else>
                                 <tr>
                                     <td>${idx}</td>
                                     <td>${ingredient.id}</td>
@@ -59,19 +60,15 @@
                                 </tr>
                                 <% index++; %>
                             </g:each>
-                            </g:if><g:else>
-                            <p>No custom ingredients found!</p>
-                            </g:else>
-                        </tbody>
-                    </table>
-
+                            </tbody>
+                        </table>
+                    </g:else>
                     <g:if test="${ingredientCount > max}">
                     <div class="pagination">
                         <g:paginate total="${ingredientCount}"
                                     controller="ingredient"
                                     action="${params.action}"
                                     max="${params.max ?: 10}" />
-                                    <!--action="customIndex" -->
                     </div>
                     </g:if>
                 </div>

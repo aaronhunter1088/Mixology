@@ -1,33 +1,35 @@
 package mixology
 
 import grails.gorm.services.Service
-import groovy.sql.Sql
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 import javax.transaction.Transactional
 
 @Service(Ingredient)
 class IngredientService {
 
-    def dataSource
+    private static Logger logger = LogManager.getLogger(IngredientService.class)
 
+    /**
+     * This method takes in an ID of type Long
+     * and finds an Ingredient object. If one is found,
+     * it returns it. Otherwise it will return null
+     * @param id
+     * @return
+     */
     Ingredient get(Long id) {
         Ingredient ingredient = Ingredient.findById(id)
-//        def sql = Sql.newInstance(dataSource)
-//        def results = sql.rows("select drink_id from drink_ingredients" +
-//                " where ingredient_id = ${ingredient.id};")
-//        results = results.collect { (it.drink_id as Long) }
-//        def drinks  = [] as Set<Drink>
-//        results.each { drinks << Drink.findById(it as Long) }
-//        drinks.each {
-//            it.addToIngredients(ingredient)
-//        }
         ingredient
     }
 
+    /**
+     * Returns all the Ingredients as a List
+     * @param args
+     * @return
+     */
     List<Ingredient> list(Map args) {
-        def returnList = []
-        if (args.max) returnList = Ingredient.list(args)
-
+        def returnList = Ingredient.list(args)
         returnList
     }
 
@@ -72,18 +74,41 @@ class IngredientService {
 //        returnList
     }
 
+    /**
+     * Returns all total count of all ingredients
+     * @return
+     */
     Long count() {
         Ingredient.all.size()
     }
 
-    @Deprecated
+    /**
+     * This save method is used for testing method purposes only!
+     * It will save the Ingredient. It returns the ingredient
+     * @param ingredient
+     * @param validate
+     * @return
+     */
     @Transactional
     Ingredient save(Ingredient ingredient, boolean validate = false) {
-        if (ingredient.validate()) ingredient.save(flush:true)
+        if (validate) { if (ingredient.validate()) { ingredient.save(flush:true) } }
+        else ingredient.save(flush:true)
         ingredient
     }
 
-    @Transactional
+    /**
+     * This save method is used for saving a real Ingredient.
+     * This saves the Ingredient onto the User first, then saves
+     * the user. Then it saves the Ingredient itself. It returns
+     * the ingredient.
+     * An Ingredient, other than a default ingredient, will always
+     * belong to a user, of type Role Admin or Role User. Therefore,
+     * a user is required when saving an Ingredient.
+     * @param ingredient
+     * @param user
+     * @param validate
+     * @return
+     */
     Ingredient save(Ingredient ingredient, User user, boolean validate = false) {
         if (!ingredient || !user) return null
         if (validate) {
@@ -91,9 +116,13 @@ class IngredientService {
                 try {
                     Ingredient.withTransaction {
                         ingredient.save(flush:true)
+                        //User.withTransaction {
+                        user.addToIngredients(ingredient)
+                        user.save(flush:true)
+                        //}
                     }
                 } catch (Exception e) {
-                    println "could not save ingredient"
+                    logger.error("Could not save ingredient:: $ingredient")
                     return null
                 }
             }
@@ -102,11 +131,19 @@ class IngredientService {
         ingredient
     }
 
+    /**
+     * This delete method takes in an ID of type Long.
+     * It uses it to find an Ingredient object. If an
+     * Ingredient is found, the drinks are detached from
+     * the ingredient.
+     * Likewise, each ingredient is detached from the Drink.
+     * This method does not return anything.
+     * @param id
+     */
     @Transactional
     void delete(Long id) {
-        Ingredient ingredient = Ingredient.findById(id)
+        Ingredient ingredient = get(id)
         def drinks = ingredient.drinks
-        // detach fully ingredient from drink
         drinks.each { drink ->
             drink.removeFromIngredients(ingredient)
             ingredient.removeFromDrinks(drink)

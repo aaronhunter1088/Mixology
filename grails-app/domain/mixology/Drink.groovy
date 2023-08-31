@@ -28,11 +28,16 @@ class Drink implements Serializable{
         custom(default:true)
     }
 
-    static mapping = {}
+    static mapping = {
+    }
 
-    // This creates a join table: ingredient_drinks
-    static belongsTo = [Ingredient ,User]
-    static hasMany = [ingredients:Ingredient] //,user:User
+    /*
+    Drink belongs to a User
+    There will be a foreign key in the User table referencing the Drink primary key
+     */
+    static hasMany = [
+            ingredients:Ingredient // tbl: drink_ingredients
+    ]
     static transients = ['glassImage']
 
     @Override

@@ -5,6 +5,8 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
+import static org.springframework.http.HttpStatus.*
+
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
 import javax.mail.Session
@@ -38,10 +40,10 @@ class DrinkController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def customDrinks = user.drinks.sort { it.id }
+        def customDrinks = user.drinks
         // TODO: Does not take into account offset. Need to rework
 //        if (params.max as String) {
 //            customDrinks = customDrinks.stream().limit(params.max as int).collect()
@@ -54,6 +56,7 @@ class DrinkController extends BaseController {
                ]
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         respond drinkService.get(id)
     }
@@ -63,13 +66,15 @@ class DrinkController extends BaseController {
         render(view:'customDrinks')
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         Drink drink = new Drink(params)
-        respond drink
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        render view:'create', model:[user:user, drink:drink]
+        //respond drink
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save() {
         if (!params) {
             notFound('','')
@@ -83,11 +88,9 @@ class DrinkController extends BaseController {
         UserRole ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         Drink drink
         try {
-            drink = createDrinkFromParams(params, ur)
+            drink = createDrinkFromParams(params, user, ur)
             if (drink.isCustom() || ur?.role == enums.Role.ADMIN) {
                 drinkService.save(drink, user, false)
-                user.addToDrinks(drink)
-                user.save(flush:true, validate:false)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
@@ -118,7 +121,7 @@ class DrinkController extends BaseController {
         validIngredients.clear()
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         Drink drink = drinkService.get(id)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
@@ -136,7 +139,7 @@ class DrinkController extends BaseController {
         ]
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def update(Drink drink) {
         if (!drink) {
             notFound('','')
@@ -155,21 +158,21 @@ class DrinkController extends BaseController {
             drink.org_grails_datastore_gorm_GormValidateable__errors = null
             // if not a custom drink and user has adminRole
             if (!drink.isCustom() && adminRole) {
-                drink.drinkName = params.drinkName
-                drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
-                drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
-                drink.drinkSymbol = params.drinkSymbol
-                drink.suggestedGlass = GlassType.valueOf(params.glass as String)
-                drink.mixingInstructions = params.instructions
-                drink.version = (params.version as Long)
-                validIngredients = createNewIngredientsFromParams(params)
+                drink.drinkName = params?.drinkName ?: drink.drinkName
+                drink.drinkNumber = params?.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.drinkNumber
+                drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drink.alcoholType
+                drink.drinkSymbol = params?.drinkSymbol ?: drink.drinkSymbol
+                drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
+                drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
+                drink.version = (params?.version as Long) ?: drink.version
+                //validIngredients = createNewIngredientsFromParams(params)
+                validIngredients = obtainFromParams(params)
                 validIngredients.each{
                     drink.ingredients.add(it as Ingredient)
                 }
                 drink.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
                     if (!i.drinks.contains(drink)) i.addToDrinks(drink as Drink)
-                    //i.save()
                 }
                 // Find all ingredients currently associated with drink
                 List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
@@ -186,17 +189,17 @@ class DrinkController extends BaseController {
             }
             // if is a custom drink and user has either role
             else if (drink.isCustom() && (!adminRole || !userRole)) {
-                drink.drinkName = params.drinkName
-                drink.drinkNumber = Integer.valueOf(params.drinkNumber as String)
-                drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
-                drink.drinkSymbol = params.drinkSymbol
-                drink.suggestedGlass = GlassType.valueOf(params.glass as String)
-                drink.mixingInstructions = params.instructions
-                drink.version = (params.version as Long)
+                drink.drinkName = params?.drinkName ?: drink.drinkName
+                drink.drinkNumber = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.drinkNumber
+                drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drink.alcoholType
+                drink.drinkSymbol = params?.drinkSymbol ?: drink.drinkSymbol
+                drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
+                drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
+                drink.version = (params?.version as Long) ?: drink.version
                 //TODO: wrong approach. no need to create ingredients here. grab using id
                 //First get current ingredients
                 // REWORK
-                validIngredients = drink.ingredients
+                //validIngredients = drink.ingredients
                 validIngredients = obtainFromParams(params)
 //                validIngredients = //createNewIngredientsFromParams(params)
                 validIngredients.each{
@@ -240,8 +243,8 @@ class DrinkController extends BaseController {
             }
         } else {
             request.withFormat {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                 form multipartForm {
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
                     respond drink, view:'show'
                 }
                 '*'{ respond drink, view:'show', status: OK }
@@ -256,7 +259,7 @@ class DrinkController extends BaseController {
      * not contain the given ingredients, or instructions.
      * @param drink
      */
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def copy(Drink drink) {
         if (!drink) {
             notFound('','')
@@ -276,26 +279,12 @@ class DrinkController extends BaseController {
                     canBeDeleted : true,
                     custom : true
             ])
-            copied.ingredients.each { newIngredient ->
-                ingredientService.save(newIngredient, user, true)
+            logger.info("drink has been copied")
+            copied.ingredients.each { newIngredient -> ingredientService.save(newIngredient, user, true)
             }
-            Drink.withSession {
-                Drink.withTransaction {
-                    logger.info("drink has been copied")
-                    //copied.ingredients.each { it.save(flush:true) }
-                    //copied.ingredients.each { ingredientService.save(it, user, true) }
-                    //copied.save(flush:true)
-                    drinkService.save(copied, user)
-                    logger.info("drink has been saved")
-//                    User.withSession {
-//                        User.withTransaction {
-//                            logger.info("adding $drink to user")
-//                            user.addToDrinks(copied)
-//                            user.save(flush:true, validate:false)
-//                        }
-//                    }
-                }
-            }
+            copied = drinkService.save(copied, user, true)
+            logger.info("drink has been saved")
+            user.clearErrors()
             if (!user.hasErrors()) {
                 flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName, user], default: "Copied $copied to $user. You can edit your version as you see fit.") as Object
                 request.withFormat {
@@ -306,7 +295,7 @@ class DrinkController extends BaseController {
                 }
             }
             else {
-                logger.error("There was validation errors [{}] on the user", user.errors.allErrors.size())
+                logger.error("There was validation [{}] errors on the user", user.errors.allErrors.size())
                 request.withFormat {
                     form multipartForm {
                         respond drink.errors, view:'show'
@@ -318,7 +307,7 @@ class DrinkController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def delete(Long id) {
         if (!id) {
             notFound('','')
@@ -379,16 +368,21 @@ class DrinkController extends BaseController {
      * @param role
      * @return
      */
-    def createDrinkFromParams(params, role) throws ValidationException {
-        //if (!validIngredients) validIngredients = createNewIngredientsFromParams(params)
+    def createDrinkFromParams(params, user, role) throws ValidationException {
+        // Save validIngredients. Save id's to params.ingredients
+        def validIds = saveValidIngredients(user)
+        def validStringIds = validIds.collect { it as String }
         params?.ingredients?.each { String id ->
+            validStringIds.add(id)
+        }
+
+        validStringIds.each { String id ->
             Ingredient ingredient = Ingredient.findById(id as Long)
             if (alreadyExists(ingredient)) {
                 ingredient = getExisting(ingredient)
                 if (ingredient?.id) validIngredients.add(ingredient)
             }
         }
-
         Drink drink = new Drink([
                 drinkName: params.drinkName,
                 drinkNumber: params.drinkNumber as Integer,
@@ -400,17 +394,9 @@ class DrinkController extends BaseController {
                 //,custom: Boolean.valueOf(params.custom as String)
                 //,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
         ])
-        if ( !role && !(role?.role == enums.Role.ADMIN) ) {
-            drink.canBeDeleted = true
-            drink.custom = true
-        }
-        if (!drink.save(failOnError:true)) {
-            throw new ValidationException("Failed to save drink", drink.errors)
-        }
-        // Associate all ingredients with this drink
-        validIngredients.each { Ingredient it ->
-            if (!it.drinks) it.drinks = new HashSet<Drink>()
-            if (!it.drinks.contains(drink)) it.addToDrinks(drink)
+        if ( role && role?.role == enums.Role.ADMIN ) {
+            drink.canBeDeleted = false
+            drink.custom = false
         }
         return drink
     }
@@ -431,13 +417,12 @@ class DrinkController extends BaseController {
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
         if (params.ingredients?.size() > 1 && !(params.ingredients instanceof String)) {
-            def ingredientOptions = (params.ingredients as String).split(',')
-            ingredientOptions.each { def opt -> // "Tequila : 1.0 : OZ"
-                def options = (opt as String).split(':')
-                ingredientNames.add((options[0] as String).trim().replace('[',''))
-                ingredientAmounts.add(Double.parseDouble(options[1]))
-                ingredientUnits.add(Unit.valueOf((options[2] as String).trim().replace(']','')))
+            Ingredient foundI
+            params.ingredients.each { String id ->
+                foundI = Ingredient.findById ( id as Long )
+                if (foundI?.id) ingredients << foundI
             }
+            return ingredients
         } else {
             def options = (params.ingredients as String)?.split(':')
             if (options) {
@@ -521,6 +506,22 @@ class DrinkController extends BaseController {
             response.getWriter().flush()
             response.setStatus(HttpServletResponse.SC_OK) // 200
         }
+    }
+
+    def saveValidIngredients(user) {
+        if (!validIngredients) {
+            validIngredients = createNewIngredientsFromParams(params)
+        }
+        def validIngredientIds = []
+        validIngredients.eachWithIndex{ Ingredient i, int idx ->
+            logger.info("Ingredient ${idx+1} being saved...")
+            ingredientService.save(i, user, true)
+            def result = user.ingredients.contains( i )
+            validIngredientIds << i.id
+            logger.info("Ingredient saved to user:: $result")
+        }
+        validIngredients.clear()
+        validIngredientIds
     }
 
     // TODO: move into its own service

@@ -10,6 +10,7 @@ import javax.imageio.ImageIO
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
+import static org.springframework.http.HttpStatus.*
 
 class UserController extends BaseController {
 

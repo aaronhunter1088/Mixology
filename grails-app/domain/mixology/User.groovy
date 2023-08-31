@@ -27,9 +27,9 @@ class User implements Serializable {
     transient springSecurityService
 
     static hasMany = [
-        drinks:Drink,
-        ingredients:Ingredient,
-        roles:UserRole
+        drinks:Drink, // tbl: user_drinks
+        ingredients:Ingredient, // tbl: user_ingredients
+        roles:UserRole // tbl: user_role
     ]
 
     static constraints = {
@@ -45,11 +45,10 @@ class User implements Serializable {
     static mapping = {
         password column: '`password`'
         autowire true
-        //drinks joinTable:
-        //    [
-        //    name: 'user_drinks', // table name
-        //    column: ['user_id', 'drink_id'] // column names
-        //]
+        drinks joinTable:[
+            name: 'user_drinks', // table name
+            column: ['user_id', 'drink_id'] // column names
+        ]
     }
 
     @Override
