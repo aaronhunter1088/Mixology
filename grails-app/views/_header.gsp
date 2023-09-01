@@ -84,7 +84,6 @@
                             <sec:ifAnyGranted roles="ROLE_USER">
                                 <li class="dropdown-item"><g:link controller="ingredient" action="customIndex">Show Your Ingredients</g:link></li>
                             </sec:ifAnyGranted>
-                            <li class="dropdown-item"><g:link controller="secure" action="index">Secure</g:link></li>
                             <!-- Something is causing the Login and Logout Controllers to repeat twice. But just them. manually adding for now -->
 %{--                            <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">--}%
 %{--                                <g:if test="${c.name != 'Search'}"> <!-- Skip Search-->--}%

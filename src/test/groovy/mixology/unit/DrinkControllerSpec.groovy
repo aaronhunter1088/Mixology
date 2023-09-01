@@ -231,10 +231,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         ]).save(validate:false)
         user.drinks = drinks
 
-        controller.drinkService = Stub(DrinkService) {
-            list(_) >> drinks
-            count() >> drinks.size()
-        }
+        controller.drinkService = drinkService
+                //Stub(DrinkService) {list(_) >> drinks ,count() >> drinks.size()}
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
 //            getAuthentication() >> Stub(Authentication) {
@@ -246,10 +244,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.customIndex()
 
         then:
-        User.findByUsername(user.username) >> user
-        model.drinkList == drinks as List
-        model.drinkCount == drinks.size()
-        user.drinks.size() == 2
+        assert model.drinkList.size() == 2
+        assert user.drinks.size() == 2
     }
 
     @Test

@@ -142,7 +142,7 @@ class IngredientController extends BaseController {
                     }
                     redirect(controller:'ingredient',view:'show')
                 }
-                '*' { respond ingredients.get(0), view:'show', [status: CREATED] }
+                '*' { respond ingredients.get(0), view:'show', status:CREATED }
             }
         }
         else {
