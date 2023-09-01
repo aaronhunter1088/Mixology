@@ -410,10 +410,10 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
         when:
         request.method = 'POST'
-        controller.params.drinkName = 'drinkNameTest'
-        controller.params.drinkNumber = '1'
+        controller.params.name = 'drinkNameTest'
+        controller.params.number = '1'
         controller.params.alcoholType = 'VODKA'
-        controller.params.drinkSymbol = 'TD'
+        controller.params.symbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
         //controller.params.ingredients = "100 Proof Vodka : 1.5 : OZ"
@@ -425,7 +425,6 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 201
     }
 
@@ -449,10 +448,10 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
         when:
         request.method = 'POST'
-        controller.params.drinkName = 'vodkaOrangeJuice'
-        controller.params.drinkNumber = '1'
+        controller.params.name = 'vodkaOrangeJuice'
+        controller.params.number = '1'
         controller.params.alcoholType = 'VODKA'
-        controller.params.drinkSymbol = 'TD'
+        controller.params.symbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
         controller.params.ingredients = ["1", "2"] // Long IDs of ingredients

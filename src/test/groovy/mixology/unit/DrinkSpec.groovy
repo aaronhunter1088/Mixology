@@ -55,8 +55,8 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
         domain.name = value
 
         then:
-        expected == domain.validate(['drinkName'])
-        domain.errors['drinkName']?.code == expectedErrorCode
+        expected == domain.validate(['name'])
+        domain.errors['name']?.code == expectedErrorCode
 
         where:
         value   | expected | expectedErrorCode
@@ -73,8 +73,8 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
         domain.symbol = value
 
         then:
-        expected == domain.validate(['drinkSymbol'])
-        domain.errors['drinkSymbol']?.code == expectedErrorCode
+        expected == domain.validate(['symbol'])
+        domain.errors['symbol']?.code == expectedErrorCode
 
         where:
         value   | expected | expectedErrorCode
@@ -84,15 +84,15 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
         'Li'    | true     | null
     }
 
-    @Unroll('Drink.validate() with drinkNumber: #value should have returned #expected with errorCode: #expectedErrorCode')
+    @Unroll('Drink.validate() with number: #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
-    void "test drink fails validation because drinkNumber is too low"() {
+    void "test drink fails validation because number is too low"() {
         when:
         domain.number = value
 
         then:
-        expected == domain.validate(['drinkNumber'])
-        domain.errors['drinkNumber']?.code == expectedErrorCode
+        expected == domain.validate(['number'])
+        domain.errors['number']?.code == expectedErrorCode
 
         where:
         value   | expected | expectedErrorCode

@@ -49,14 +49,9 @@ class DrinkService {
      * @param validate
      * @return
      */
-    @Transactional
     Drink save(Drink drink, boolean validate = false) {
         if (validate) { if (drink.validate()) { drink.save(flush:true, failOnError:true) } }
         else drink.save(validate:false, flush:true, failOnError:false)
-        def ingredients = drink.ingredients
-        ingredients.each {
-            it.addToDrinks(drink)
-        }
         drink
     }
 
@@ -84,7 +79,7 @@ class DrinkService {
                         user.save(flush:true, failOnError:false, validate:false)
                     }
                 } catch (Exception e) {
-                    logger.error("Could not save drink")
+                    logger.error("Could not save drink", e)
                     return null
                 }
             }
@@ -97,7 +92,7 @@ class DrinkService {
                     user.save(flush:true, failOnError:false, validate:false)
                 }
             } catch (Exception e) {
-                logger.error("Could not save drink")
+                logger.error("Could not save drink:: $drink")
                 return null
             }
         }

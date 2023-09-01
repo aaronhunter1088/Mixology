@@ -39,10 +39,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             if (!regularUser) {
                 regularUser = new User([
                         username: "testRegularUser@gmail.com",
+                        password: "testMe123\$",
+                        email: "testRegularUser@gmail.com",
                         firstName: "regular",
                         lastName: "user"
                 ])
-                regularUser = userService.saveIngredientToUser(regularUser, false)
+                regularUser = userService.saveUser(regularUser, false)
                 Role regularRole = new Role(authority: enums.Role.USER.name)
                 UserRole.create(regularUser, regularRole)
                 regularUser
@@ -54,10 +56,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             if (!adminUser) {
                 adminUser = new User([
                         username: "testAdminUser@gmail.com",
+                        email: "testAdminUser@gmail.com",
+                        password: "testMe123\$",
                         firstName: "admin",
                         lastName: "user"
                 ])
-                adminUser = userService.saveIngredientToUser(adminUser, false)
+                adminUser = userService.saveUser(adminUser, false)
                 Role adminRole = new Role(authority: enums.Role.ADMIN.name)
                 UserRole.create(adminUser, adminRole)
                 adminUser
@@ -69,6 +73,8 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             if (!unsavedUser) {
                 unsavedUser = new User([
                         username: "testUnsavedUser@gmail.com",
+                        email: "testUnsavedUser@gmail.com",
+                        password: "testMe123\$",
                         firstName: "unsavedRegular",
                         lastName: "user"
                 ])
@@ -235,7 +241,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             controller.params.email = unsavedUser.username
             controller.params.cellphone = '1234560789'
             controller.roleService = Stub(RoleService) {findByAuthority(enums.Role.USER.name) >> userRole }
-            controller.userService = Stub(UserService) {saveIngredientToUser(_,_) >> regularUser }
+            controller.userService = Stub(UserService) {saveUser(_,_) >> regularUser }
         when:
             controller.save(unsavedUser)
         then:
@@ -298,7 +304,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     @Test
     void "test updating succeeds"() {
         given:
-            request.method = 'PUT'
             Drink drink = new Drink([
                 name: 'Drink1',
                 number: 1,
@@ -313,6 +318,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             regularUser.drinks = [drink]
             controller.params.id = regularUser.id
         when:
+            request.method = 'PUT'
             controller.update()
         then:
             response.status == 302

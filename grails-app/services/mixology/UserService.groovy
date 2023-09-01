@@ -3,6 +3,7 @@ package mixology
 import grails.gorm.services.Service
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.springframework.security.core.parameters.P
 
 import javax.transaction.Transactional
 import java.beans.Transient
@@ -29,24 +30,25 @@ class UserService {
 
     }
 
-    // TODO: Rename to Save User
-    @Transactional
-    User saveIngredientToUser(User user, boolean validate = false) {
-        user.save(validate:validate, flush:true, failOnError:true)
-        user
-    }
-
-    @Transactional
-    User saveIngredientToUser(User user, Ingredient ingredient) {
-        try {
-            User.withTransaction {
-                user.addToIngredients(ingredient)
-                user.save(flush:true, validate:false)
+    User saveUser(User user, boolean validate = false) {
+        if (!user) return null
+        if (validate) {
+            if (user.validate()) {
+                User.withNewTransaction {
+                    try {
+                        user.save(flush:true, failOnError:true)
+                    } catch (Exception e) {
+                        logger.error("Failed to save user:: $user", e)
+                    }
+                }
             }
-            logger.info ("User updated to have ingredient")
-        }
-        catch (Exception e) {
-            logger.error ("Could not update user with ingredient")
+            else return null
+        } else {
+            try {
+                user.save(flush:true, failOnError:false)
+            } catch (Exception e) {
+                logger.error("Failed to save user:: $user", e)
+            }
         }
         user
     }

@@ -69,7 +69,7 @@ class UserController extends BaseController {
             user = createUserFromParams(user, params, file)
             user.validate()
             if (!user.errors.hasErrors()) {
-                user = userService.saveIngredientToUser(user, true)
+                user = userService.saveUser(user, true)
                 userRoleService.save(user, userRole, true)
                 request.withFormat {
                     form multipartForm {
@@ -135,10 +135,8 @@ class UserController extends BaseController {
         }
         // update photo if photo was cleared. photo may not exist anymore
         // and so user photo may be set to empty string
-        user.org_grails_datastore_gorm_GormValidateable__errors = null
-        User.withTransaction {
-            userService.saveIngredientToUser(user, false)
-        }
+        user.clearErrors()
+        userService.saveUser(user, false)
         logger.info("user saved!")
         request.withFormat {
             form multipartForm {
