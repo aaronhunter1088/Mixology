@@ -64,7 +64,8 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
-        render view:'customDrinks'
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        render view:'customDrinks', model:[drinks:user.drinks]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -114,7 +115,7 @@ class DrinkController extends BaseController {
         } else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
                     redirect drink
                 }
                 '*' { respond drink, [status: CREATED] }
@@ -160,10 +161,10 @@ class DrinkController extends BaseController {
             drink.clearErrors()
             // if not a custom drink and user has adminRole
             if (!drink.isCustom() && adminRole) {
-                drink.drinkName = params?.drinkName ?: drink.drinkName
-                drink.drinkNumber = params?.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.drinkNumber
+                drink.name = params?.drinkName ?: drink.name
+                drink.number = params?.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.number
                 drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drink.alcoholType
-                drink.drinkSymbol = params?.drinkSymbol ?: drink.drinkSymbol
+                drink.symbol = params?.drinkSymbol ?: drink.symbol
                 drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
                 drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
                 drink.version = (params?.version as Long) ?: drink.version
@@ -181,7 +182,7 @@ class DrinkController extends BaseController {
                 logger.info("${associatedIngredientIds}")
                 for(Long id : associatedIngredientIds) {
                     if ( !(id in drink.ingredients*.id)) {
-                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.drinkName}")
+                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.name}")
                         Ingredient i = Ingredient.findById(id)
                         i.removeFromDrinks(drink)
                     }
@@ -191,10 +192,10 @@ class DrinkController extends BaseController {
             }
             // if is a custom drink and user has either role
             else if (drink.isCustom() && (!adminRole || !userRole)) {
-                drink.drinkName = params?.drinkName ?: drink.drinkName
-                drink.drinkNumber = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.drinkNumber
+                drink.name = params?.drinkName ?: drink.name
+                drink.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.number
                 drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drink.alcoholType
-                drink.drinkSymbol = params?.drinkSymbol ?: drink.drinkSymbol
+                drink.symbol = params?.drinkSymbol ?: drink.symbol
                 drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
                 drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
                 drink.version = (params?.version as Long) ?: drink.version
@@ -210,7 +211,7 @@ class DrinkController extends BaseController {
                 logger.info("${associatedIngredientIds}")
                 for(Long id : associatedIngredientIds) {
                     if ( !(id in drink.ingredients*.id)) {
-                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.drinkName}")
+                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.name}")
                         Ingredient i = Ingredient.findById(id)
                         i.removeFromDrinks(drink as Drink)
                     }
@@ -219,7 +220,7 @@ class DrinkController extends BaseController {
                 logger.info("custom drink saved!")
             }
             else {
-                drink.errors.reject('default.updated.error.message', [drink.drinkName] as Object[], '')
+                drink.errors.reject('default.updated.error.message', [drink.name] as Object[], '')
             }
             validIngredients.clear()
         } catch (ValidationException e) {
@@ -240,7 +241,7 @@ class DrinkController extends BaseController {
         } else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
                     respond drink, view:'show'
                 }
                 '*'{ respond drink, view:'show', status: OK }
@@ -262,9 +263,9 @@ class DrinkController extends BaseController {
         if (user) {
             logger.info("we have a user logged in ${user.firstName} ${user.lastName}")
             Drink copied = new Drink([
-                    drinkName : drink.drinkName,
-                    drinkSymbol : drink.drinkSymbol,
-                    drinkNumber : drink.drinkNumber,
+                    name : drink.name,
+                    symbol : drink.symbol,
+                    number : drink.number,
                     alcoholType : drink.alcoholType,
                     ingredients : Ingredient.copyAll(drink.ingredients),
                     mixingInstructions : drink.mixingInstructions,
@@ -279,7 +280,7 @@ class DrinkController extends BaseController {
             logger.info("drink has been saved")
             user.clearErrors()
             if (!user.hasErrors()) {
-                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName, user], default: "Copied $copied to $user. You can edit your version as you see fit.") as Object
+                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name, user], default: "Copied $copied to $user. You can edit your version as you see fit.") as Object
                 request.withFormat {
                     form multipartForm {
                         respond drink, view:'show'
@@ -311,12 +312,12 @@ class DrinkController extends BaseController {
                 drinkService.delete(id)
             } catch (Exception e) {
                 drink.errors.reject('default.deleted.error2.message',
-                    [drink.drinkName] as Object[],
+                    [drink.name] as Object[],
                     "There was an exception deleting the drink: ${e.message}"
                 )
             }
         } else {
-            drink.errors.reject('default.deleted.error.message', [drink.drinkName] as Object[], '')
+            drink.errors.reject('default.deleted.error.message', [drink.name] as Object[], '')
         }
 
         if (drink.errors.hasErrors()) {
@@ -330,7 +331,7 @@ class DrinkController extends BaseController {
         else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.drinkName])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
                     redirect action:"index", method:"GET"
                 }
                 '*'{ render status: NO_CONTENT }
@@ -368,10 +369,10 @@ class DrinkController extends BaseController {
             }
         }
         Drink drink = new Drink([
-                drinkName: params.drinkName,
-                drinkNumber: params.drinkNumber as Integer,
+                name: params.name,
+                number: params.number as Integer,
                 alcoholType: Alcohol.valueOf(params.alcoholType as String),
-                drinkSymbol: params.drinkSymbol,
+                symbol: params.symbol,
                 suggestedGlass: GlassType.valueOf(params.glass as String),
                 mixingInstructions: params.instructions,
                 ingredients: validIngredients

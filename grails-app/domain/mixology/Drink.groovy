@@ -7,19 +7,19 @@ import groovy.transform.ToString
 @ToString
 class Drink implements Serializable{
 
-    String drinkName
-    int drinkNumber
+    String name
+    int number
     String mixingInstructions
     GlassType suggestedGlass
     Alcohol alcoholType
-    String drinkSymbol
+    String symbol
     boolean canBeDeleted = true
     boolean custom = true
 
     static constraints = {
-        drinkName(size:3..30, blank:false, nullable:false)
-        drinkSymbol(size:2..2, blank:false, nullable:false)
-        drinkNumber(min:1, nullable:false)
+        name(size:3..30, blank:false, nullable:false)
+        symbol(size:2..2, blank:false, nullable:false)
+        number(min:1, nullable:false)
         alcoholType(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
         ingredients(minSize:0, nullable:true)
         mixingInstructions(blank:false, nullable:false)
@@ -42,7 +42,7 @@ class Drink implements Serializable{
 
     @Override
     String toString() {
-        drinkName + " ($drinkSymbol)" + " ($drinkNumber)"
+        name + " ($symbol)" + " ($number)"
     }
 
     String getGlassImage() {
@@ -161,12 +161,12 @@ class Drink implements Serializable{
 
     static Drink createFillerDrink(alcoholType) {
         return new Drink([
-                drinkName: 'FillerDrink',
-                drinkNumber: 0,
+                name: 'FillerDrink',
+                number: 0,
                 mixingInstructions: 'Filler instructions',
                 suggestedGlass: GlassType.BRANDY,
                 alcoholType: alcoholType,
-                drinkSymbol: 'Fd',
+                symbol: 'Fd',
                 ingredients: Ingredient.createFillerIngredients(3),
                 canBeDeleted: true,
                 custom: true

@@ -94,13 +94,13 @@
                                 <div class="formfield" id="name">
                                     <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkName" value="${drink.drinkName}" required="" id="drinkName" />
+                                        <input type="text" name="drinkName" value="${drink.name}" required="" id="drinkName" />
                                     </div>
                                 </div>
                                 <div class="formfield" id="number">
                                     <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkNumber" value="${drink.drinkNumber}" required="" id="drinkNumber" />
+                                        <input type="text" name="drinkNumber" value="${drink.number}" required="" id="drinkNumber" />
                                     </div>
                                 </div>
                                 <div class="formfield" id="alcohol">
@@ -122,7 +122,7 @@
                                 <div class="formfield" id="symbol">
                                     <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkSymbol" value="${drink.drinkSymbol}" required="" id="drinkSymbol" />
+                                        <input type="text" name="drinkSymbol" value="${drink.symbol}" required="" id="drinkSymbol" />
                                     </div>
                                 </div>
                                 <div class="formfield" id="glass">

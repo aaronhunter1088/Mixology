@@ -129,23 +129,23 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         mockDomain Ingredient
         mockDomain User
         drink1 = new Drink([
-                drinkName: 'Drink1',
-                drinkNumber: 1,
+                name: 'Drink1',
+                number: 1,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.HURRICANE,
                 alcoholType: Alcohol.TEQUILA,
-                drinkSymbol: 'D1',
+                symbol: 'D1',
                 ingredients: createIngredientsWithAAndBAndC(),
                 canBeDeleted: true,
                 custom: true
         ])
         drink2 = new Drink([
-                drinkName: 'Drink2',
-                drinkNumber: 2,
+                name: 'Drink2',
+                number: 2,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.SHOT,
                 alcoholType: Alcohol.TEQUILA,
-                drinkSymbol: 'D2',
+                symbol: 'D2',
                 ingredients: createIngredientsWithVodkaAndDAndE(),
                 canBeDeleted: true,
                 custom: true
@@ -267,6 +267,16 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
     @Test
     void "test showCustomDrinks action"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
         when:
         controller.showCustomDrinks()
 
@@ -549,7 +559,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.update(drink1 as Drink)
 
         then:
-        drink1.drinkName == 'updatedName'
+        drink1.name == 'updatedName'
         response.status == 200
     }
 
@@ -591,10 +601,10 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.update(drink1 as Drink)
 
         then:
-        drink1.drinkName == 'updatedName'
-        drink1.drinkNumber == 11
+        drink1.name == 'updatedName'
+        drink1.number == 11
         drink1.alcoholType == Alcohol.VODKA
-        drink1.drinkSymbol == 'TD'
+        drink1.symbol == 'TD'
         drink1.mixingInstructions == 'Test instructions'
         drink1.suggestedGlass == GlassType.HIGHBALL
         drink1.ingredients.size() == 5
@@ -626,10 +636,10 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         then:
         user.drinks.size() == 1
         def copied = user.drinks[0]
-        copied.drinkName == drink1.drinkName
-        copied.drinkNumber == drink1.drinkNumber
+        copied.name == drink1.name
+        copied.number == drink1.number
         copied.alcoholType == drink1.alcoholType
-        copied.drinkSymbol == drink1.drinkSymbol
+        copied.symbol == drink1.symbol
         copied.mixingInstructions == drink1.mixingInstructions
         copied.suggestedGlass == drink1.suggestedGlass
         copied.id != drink1.id

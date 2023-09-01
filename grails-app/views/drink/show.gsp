@@ -91,20 +91,20 @@
                         <div style="display:block;">
                             <fieldset style="border:thick solid #000080;" class="no-before">
                                 <legend style="margin-left:25px;padding-left:10px;width:auto;">
-                                    ${drink.drinkName} &emsp14;
+                                    ${drink.name} &emsp14;
                                     <hr style="height:1px;background-color:#000080">
                                 </legend>
                                 <div id="drink" style="width:100%;float:left;">
                                     <div class="formfield" id="name">
                                         <label for='drinkName'>Drink Name</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkName" value="${drink.drinkName}" required="" id="drinkName" />
+                                            <input type="text" disabled name="drinkName" value="${drink.name}" required="" id="drinkName" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="number">
                                         <label for='drinkNumber'>Drink Number</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkNumber" value="${drink.drinkNumber}" required="" id="drinkNumber" />
+                                            <input type="text" disabled name="drinkNumber" value="${drink.number}" required="" id="drinkNumber" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="alcohol">
@@ -116,7 +116,7 @@
                                     <div class="formfield" id="symbol">
                                         <label for='drinkSymbol'>Drink Symbol</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkSymbol" value="${drink.drinkSymbol}" required="" id="drinkSymbol" />
+                                            <input type="text" disabled name="drinkSymbol" value="${drink.symbol}" required="" id="drinkSymbol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="glass">

@@ -300,12 +300,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         given:
             request.method = 'PUT'
             Drink drink = new Drink([
-                drinkName: 'Drink1',
-                drinkNumber: 1,
+                name: 'Drink1',
+                number: 1,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.HURRICANE,
                 alcoholType: Alcohol.TEQUILA,
-                drinkSymbol: 'D1',
+                symbol: 'D1',
                 ingredients: null,
                 canBeDeleted: true,
                 custom: true

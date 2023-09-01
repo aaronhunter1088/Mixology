@@ -24,12 +24,12 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
     @Test
     void "test creating a valid drink"() {
         Drink drink = new Drink([
-                drinkName: 'Long Island Iced Tea',
-                drinkNumber: 34,
+                name: 'Long Island Iced Tea',
+                number: 34,
                 mixingInstructions: 'Pour ingredients over crushed ice in highball glass. Add cola for color and garnish with lemon',
                 suggestedGlass: GlassType.HIGHBALL,
                 alcoholType: Alcohol.VODKA,
-                drinkSymbol: 'Li',
+                symbol: 'Li',
                 ingredients: Ingredient.createFillerIngredients(3)
         ]).save(failOnError:true)
 
@@ -52,7 +52,7 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
     @Test
     void "test drink fails validation because name falls out of range"() {
         when:
-        domain.drinkName = value
+        domain.name = value
 
         then:
         expected == domain.validate(['drinkName'])
@@ -70,7 +70,7 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
     @Test
     void "test drink fails validation because symbol falls out of range"() {
         when:
-        domain.drinkSymbol = value
+        domain.symbol = value
 
         then:
         expected == domain.validate(['drinkSymbol'])
@@ -88,7 +88,7 @@ class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
     @Test
     void "test drink fails validation because drinkNumber is too low"() {
         when:
-        domain.drinkNumber = value
+        domain.number = value
 
         then:
         expected == domain.validate(['drinkNumber'])

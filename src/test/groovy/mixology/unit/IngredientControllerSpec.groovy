@@ -158,23 +158,23 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         mockDomain Ingredient
         mockDomain User
         drink1 = new Drink([
-                drinkName: 'Drink1',
-                drinkNumber: 1,
+                name: 'Drink1',
+                number: 1,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.HURRICANE,
                 alcoholType: Alcohol.TEQUILA,
-                drinkSymbol: 'D1',
+                symbol: 'D1',
                 ingredients: createIngredientsWithAAndBAndC(),
                 canBeDeleted: true,
                 custom: true
         ])
         drink2 = new Drink([
-                drinkName: 'Drink2',
-                drinkNumber: 2,
+                name: 'Drink2',
+                number: 2,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.SHOT,
                 alcoholType: Alcohol.TEQUILA,
-                drinkSymbol: 'D2',
+                symbol: 'D2',
                 ingredients: createIngredientsWithVodkaAndDAndE(),
                 canBeDeleted: true,
                 custom: true

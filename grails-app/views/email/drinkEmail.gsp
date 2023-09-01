@@ -10,7 +10,7 @@
 Hi ${user.firstName} ${user.lastName},
 <br/><br/>
 This is a test email which will soon be built
-out to share this drink, ${drink.drinkName}.
+out to share this drink, ${drink.name}.
 <br/><br/>
 Stay tuned!
 </body>

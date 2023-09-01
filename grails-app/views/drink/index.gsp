@@ -56,9 +56,9 @@
                                         <tr>
                                             <td>${idx}</td>
                                             <td>${drink.id}</td>
-                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.drinkName}</g:link> </td>
-                                            <td>${drink.drinkSymbol}</td>
-                                            <td>${drink.drinkNumber}</td>
+                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
+                                            <td>${drink.symbol}</td>
+                                            <td>${drink.number}</td>
                                             <td>${drink.alcoholType}</td>
                                             <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
                                             <td>${drink.suggestedGlass}</td>
