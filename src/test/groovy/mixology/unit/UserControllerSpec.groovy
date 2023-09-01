@@ -2,7 +2,6 @@ package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import mixology.Drink
@@ -17,6 +16,9 @@ import mixology.UserController
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
+import static org.springframework.http.HttpStatus.*
+
+import java.awt.image.BufferedImage
 
 @ContextConfiguration
 class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest {
@@ -40,7 +42,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "regular",
                         lastName: "user"
                 ])
-                regularUser = userService.save(regularUser, false)
+                regularUser = userService.saveIngredientToUser(regularUser, false)
                 Role regularRole = new Role(authority: enums.Role.USER.name)
                 UserRole.create(regularUser, regularRole)
                 regularUser
@@ -55,7 +57,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "admin",
                         lastName: "user"
                 ])
-                adminUser = userService.save(adminUser, false)
+                adminUser = userService.saveIngredientToUser(adminUser, false)
                 Role adminRole = new Role(authority: enums.Role.ADMIN.name)
                 UserRole.create(adminUser, adminRole)
                 adminUser
@@ -233,7 +235,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             controller.params.email = unsavedUser.username
             controller.params.cellphone = '1234560789'
             controller.roleService = Stub(RoleService) {findByAuthority(enums.Role.USER.name) >> userRole }
-            controller.userService = Stub(UserService) {save(_,_) >> regularUser }
+            controller.userService = Stub(UserService) {saveIngredientToUser(_,_) >> regularUser }
         when:
             controller.save(unsavedUser)
         then:
@@ -254,8 +256,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is GET"() {
         given:
             request.method = 'GET'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
@@ -264,8 +267,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is POST"() {
         given:
             request.method = 'POST'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
@@ -274,17 +278,19 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     void "test updating fails because method is DELETE"() {
         given:
             request.method = 'DELETE'
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 405
     }
 
     @Test
     void "test updating fails because no user"() {
-        when:
+        given:
             request.method = 'PUT'
-            controller.update(null)
+        when:
+            controller.update()
         then:
             response.status == 400
     }
@@ -305,9 +311,34 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                 custom: true
             ])
             regularUser.drinks = [drink]
+            controller.params.id = regularUser.id
         when:
-            controller.update(regularUser)
+            controller.update()
         then:
             response.status == 302
+    }
+
+    @Test
+    void "test reduce image size"() {
+        given:
+            BufferedImage bufImg = new BufferedImage(5,5,1)
+            Expando file = new Expando()
+            file.filename = 'Test File'
+            file.metaClass.getBytes = {-> new byte[1]}
+            controller.metaClass.scaleImage = {one, two -> bufImg}
+        when:
+            controller.reduceImageSize(file)
+        then:
+            response.status == 200
+    }
+
+    @Test
+    void "test scale image"() {
+        given:
+            BufferedImage mockedBufImg = new BufferedImage(500,500,1)
+        when:
+            controller.scaleImage(mockedBufImg, 200)
+        then:
+            response.status == 200
     }
 }

@@ -9,6 +9,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -18,15 +19,8 @@
     <body>
     <div id="content">
         <div class="container">
-            <section class="row">
-                <a href="#list-ingredient" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                <div class="nav" role="navigation">
-                    <ul>
-                        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
-                        <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
-                    </ul>
-                </div>
+            <section class="row" id="navigation">
+                <g:render template="ingredientNav"/>
             </section>
             <section class="row">
                 <div id="list-ingredient" class="col-12 content scaffold-list" role="main">
@@ -34,11 +28,47 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <f:table collection="${ingredientList}" />
-
-                    <g:if test="${ingredientCount > params.int('max')}">
+                    <g:if test="${ingredientCount <= 0}">
+                        <p>No custom ingredients found!</p>
+                    </g:if><g:else>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Count</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Amount</th>
+                                    <th>Drinks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% int index = 1; %>
+                                <g:each in="${ingredientList}" var="ingredient">
+                                <g:if test="${params.offset && (params.offset as int) != 0}">
+                                    <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                </g:if><g:else>
+                                <g:set var="idx" value="${index}"/>
+                            </g:else>
+                                <tr>
+                                    <td>${idx}</td>
+                                    <td>${ingredient.id}</td>
+                                    <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${ingredient.name}</g:link> </td>
+                                    <td>${ingredient.unit}</td>
+                                    <td>${ingredient.amount}</td>
+                                    <td>${ingredient.drinks}</td>
+                                </tr>
+                                <% index++; %>
+                            </g:each>
+                            </tbody>
+                        </table>
+                    </g:else>
+                    <g:if test="${ingredientCount > max}">
                     <div class="pagination">
-                        <g:paginate total="${ingredientCount ?: 0}" />
+                        <g:paginate total="${ingredientCount}"
+                                    controller="ingredient"
+                                    action="${params.action}"
+                                    max="${params.max ?: 10}" />
                     </div>
                     </g:if>
                 </div>

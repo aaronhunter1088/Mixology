@@ -10,6 +10,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -87,13 +88,7 @@
         <div id="content" role="main">
             <div class="container">
                 <section class="row" id="navigation">
-                    <a href="#create-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-                        </ul>
-                    </div>
+                    <g:render template="drinkNav"/>
                 </section>
                 <div id="errorMessages" class="col-12 content scaffold-create" role="main">
                     <g:if test="${flash.message}">
@@ -163,13 +158,13 @@
                             <div class="formfield">
                                 <label><span class='required-indicator'>*</span> Ingredients</label><br>
                                 <div style="margin-top:-25px;height:200px;overflow-y:auto;">
-                                    <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
+                                    <g:each in="${user.ingredients.sort{-it.id}}" var="ingredient" status="i"> <!-- sort{'negative'...} returns list in reverse sort -->
                                         <div style="display:block;">
                                             <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
                                                 <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
                                                 <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
                                                 <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
-                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient}"/> ${ingredient} &emsp14;
+                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient} &emsp14;
                                             </div>
                                         </div>
                                     </g:each>
@@ -192,9 +187,9 @@
                                     <div id="ingredientTableDiv" class="tableFixHead" style="">
                                         <table id="ingredientTable" style="width:100%;">
                                             <thead>
-                                                <th style="width:144px;"><span class='required-indicator'>*</span>Name</th>
-                                                <th style="width:175px;"><span class='required-indicator'>*</span>Unit</th>
-                                                <th style="width:100px;"><span class='required-indicator'>*</span>Amount</th>
+                                                <th style="width:144px;">Name</th>
+                                                <th style="width:175px;">Unit</th>
+                                                <th style="width:100px;">Amount</th>
                                                 <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
                                             </thead>
                                             <script>
@@ -370,8 +365,10 @@
                                 //let response = JSON.parse(JSON.stringify(data['responseJSON']))
                                 //let response = JSON.parse(JSON.stringify(data))
                                 let message;
+                                let addedHeight = 50;
                                 if (failCount === 1) {
                                     message = response.message;
+                                    addedHeight = 75;
                                 } else {
                                     message = "Some ingredients have already been created!";
                                 }
@@ -382,8 +379,11 @@
                                 errorMessage.html(message);
                                 let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                 tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
-                                let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + 50;
+                                let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + addedHeight;
                                 document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
+                            },
+                            403: function(data) {
+                                console.log(JSON.stringify(data));
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));

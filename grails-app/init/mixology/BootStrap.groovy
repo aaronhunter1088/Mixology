@@ -13,6 +13,42 @@ class BootStrap {
         //def adminRole = new Role(authority: enums.Role.ADMIN.name).save()
         //addTestUser()
         //addMBallUser()
+        //updateAllTestUserIngredients()
+    }
+
+    def destroy = {
+    }
+
+    @Transactional
+    void updateAllTestUserIngredients() {
+        User user = User.findById(2)
+        user.ingredients = []
+        // Get all drinks that belong to the user
+        def user2Drinks = user.drinks
+        def user2Ingredients = []
+        user.drinks.eachWithIndex {drink, idx ->
+            println "${idx+1}: $drink"
+            println "# of ingredients for drink${idx+1}: ${drink.ingredients.size()}"
+            drink.ingredients.each {
+                if (it.custom) {
+                    println "Adding $it to user[${user.firstName} ${user.lastName}]"
+                    user.addToIngredients(it as Ingredient)
+                } else {
+                    it.custom = true
+                    it.canBeDeleted = true
+                    it.save(flush:true, validate:false)
+                    println "Adding $it to user[${user.firstName} ${user.lastName}]"
+                    user.addToIngredients(it as Ingredient)
+                }
+            }
+            user.save(deepValidate:false, failOnError:false, validate:false, flush:true)
+            println "User saved!"
+        }
+        //user2Ingredients =
+//        user2Ingredients.eachWithIndex { ingredient, idx ->
+//            println "${idx+1}: $ingredient"
+//        }
+        println "Ending for now..."
     }
 
 //    @Transactional
@@ -48,7 +84,4 @@ class BootStrap {
 //        //assert Role.count() == 1
 //        //assert UserRole.count() == 1
 //    }
-
-    def destroy = {
-    }
 }

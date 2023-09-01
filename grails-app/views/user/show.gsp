@@ -93,9 +93,16 @@
                     <div class="nav" role="navigation">
                         <ul>
                             <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="list" controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
-                            <li><g:link class="list" action="index">User List</g:link></li>
-                            <li><g:link class="create" action="create">New User</g:link></li>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <li><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
+                                <li><g:link controller="drink" action="customIndex">Custom Drinks</g:link></li>
+                                <li><g:link class="list" action="index">User List</g:link></li>
+                                <li><g:link class="create" action="create">New User</g:link></li>
+                            </sec:ifAnyGranted>
+                            <sec:ifAnyGranted roles="ROLE_USER">
+                                <li><g:link controller="drink" action="customIndex">Custom Drinks</g:link></li>
+                                <li><g:link controller="ingredient" action="customIndex">Custom Ingredients</g:link></li>
+                            </sec:ifAnyGranted>
                         </ul>
                     </div>
                 </section>

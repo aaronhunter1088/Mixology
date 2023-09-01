@@ -1,13 +1,3 @@
-
-//grails {
-//	host = "sandbox.smtp.mailtrap.io"
-//	port = 2525
-//	ssl = no
-//	tls = yes
-//	user = "12e26122e12ed7"
-//	password = "3b4a64f536617e"
-//}
-
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'mixology.User'
@@ -43,26 +33,39 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 		/* Drink Controller */
 	[pattern: '/drink/index',	 access: ['ROLE_ADMIN']],
 	[pattern: '/drink/customIndex',access: ['permitAll']],
-	[pattern: '/drink/show/**',  access: ['permitAll']],
+	[pattern: '/drink/show',     access: ['permitAll','IS_AUTHENTICATED_FULLY']],
 	[pattern: '/drink/save',     access: ['permitAll']],
 	[pattern: '/drink/edit',     access: ['permitAll']],
 	[pattern: '/drink/copy',     access: ['permitAll']],
 	[pattern: '/drink/update',   access: ['permitAll']],
 	[pattern: '/drink/sendADrinkEmail', access: ['permitAll']],
+	[pattern: '/drink/validateIngredients', access: ['permitAll']],
+	[pattern: '/drink/delete',   access: ['permitAll']],
 		/* Ingredient Controller */
-	[pattern: '/ingredient/index',access: ['ROLE_ADMIN']],
+	[pattern: '/ingredient/index',	  access: ['ROLE_ADMIN']],
 	[pattern: '/ingredient/customIndex',access: ['ROLE_ADMIN','ROLE_USER']],
-	[pattern: '/ingredient/show/**',     access: ['permitAll']],
+	[pattern: '/ingredient/show',     access: ['permitAll']],
+	[pattern: '/ingredient/save',     access: ['permitAll']],
 	[pattern: '/ingredient/edit',     access: ['permitAll']],
-	[pattern: '/ingredient/update',access: ['permitAll']],
+	[pattern: '/ingredient/update',	  access: ['permitAll']],
+	[pattern: '/ingredient/delete',   access: ['permitAll']],
 		/* User Controller */
-	[pattern: '/user/index',	 access: ['ROLE_ADMIN']],
-	[pattern: '/user/show',      access: ['permitAll']],
-	[pattern: '/user/create',    access: ['permitAll']],
-	[pattern: '/user/save',      access: ['permitAll']],
-	[pattern: '/user/edit',      access: ['ROLE_ADMIN']],
-	[pattern: '/index.gsp',      access: ['permitAll']],
+	[pattern: '/user/index',	 	  access: ['ROLE_ADMIN']],
+	[pattern: '/user/show',      	  access: ['permitAll']],
+	[pattern: '/user/create',    	  access: ['permitAll']],
+	[pattern: '/user/save',      	  access: ['permitAll']],
+	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN']],
+	//[pattern: '/index.gsp',           access: ['permitAll']],
+	[pattern: '/user/delete',         access: ['permitAll']],
 		/* More ... */
+
+
+]
+
+grails.plugins.springsecurity.interceptUrlMap = [
+	/* Resources */
+	/* Drink Resource */
+	[pattern: '/v1/**',		  		  access: ['IS_AUTHENTICATED_ANONYMOUSLY']]
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
@@ -73,4 +76,3 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**/favicon.ico', filters: 'none'],
 	[pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
-

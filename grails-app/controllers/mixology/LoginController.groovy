@@ -13,12 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 class LoginController extends grails.plugin.springsecurity.LoginController implements GrailsConfigurationAware {
 
-    //List<String> coordinatePositions
-
-    /**
-     * Dependency injection for the authenticationTrustResolver.
-     */
-    //def authenticationTrustResolver
     def springSecurityService
 
     def index = {
@@ -45,7 +39,6 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
 
         String postUrl = request.contextPath + conf.apf.filterProcessesUrl
         println "postUrl: ${postUrl}"
-        // view:'auth'
         render view: 'auth', model: [postUrl: postUrl,
                                      rememberMeParameter: conf.rememberMe.parameter,
                                      usernameParameter: conf.apf.usernameParameter,
@@ -59,7 +52,7 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
      */
     def denied = {
         if (springSecurityService.isLoggedIn()) {//&&
-                //authenticationTrustResolver.isRememberMe(SCH.context?.authentication)) {
+            //authenticationTrustResolver.isRememberMe(SCH.context?.authentication)) {
             // have cookie but the page is guarded with IS_AUTHENTICATED_FULLY
             redirect action: 'full', params: params
         }
@@ -97,9 +90,6 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
             else if (exception instanceof CredentialExpiredException) {
                 msg = g.message(code: "springSecurity.errors.login.passwordExpired")
             }
-//            else if (exception instanceof DisabledException) {
-//                msg = g.message(code: "springSecurity.errors.login.disabled")
-//            }
             else if (exception instanceof LockedException) {
                 msg = g.message(code: "springSecurity.errors.login.locked")
             }

@@ -9,12 +9,13 @@ class UrlMappings {
             }
         }
 
-        //"/login/$action?"(controller: "login")
-        //"/logout/$action?"(controller: "logout")
-
         "/mixology/drink/save" {
             controller = "drink"
             action = "save"
+        }
+        "/mixology/drink/delete/$id" {
+            controller = "drink"
+            action = "delete"
         }
         "/mixology/drink/update" {
             controller = "drink"
@@ -24,9 +25,17 @@ class UrlMappings {
             controller = "ingredient"
             action = "save"
         }
+        "/mixology/ingredient/delete/$id" {
+            controller = "ingredient"
+            action = "delete"
+        }
         "/mixology/validate" {
             controller = "ingredient"
             action = "validate"
+        }
+        "/mixology/drink/validateIngredients" {
+            controller = "drink"
+            action = "validateIngredients"
         }
 
         "/mixology/search" {

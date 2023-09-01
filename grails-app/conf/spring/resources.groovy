@@ -1,7 +1,7 @@
 import mixology.UserPasswordEncoderListener
 import mixology.AuthenticationProvider
 import mixology.CustomUserDetailsService
-// Place your Spring DSL code here
+// Place your Spring DSL code here. Equivalent to the root <beans> element in Spring XML.
 beans = {
     userPasswordEncoderListener(UserPasswordEncoderListener)
     userDetailsService(CustomUserDetailsService)

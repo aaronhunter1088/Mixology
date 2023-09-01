@@ -66,7 +66,6 @@
                                     </g:each>
                                     <li role="separator" class="dropdown-divider"></li>
                                     <li class="dropdown-header">Search</li>
-                                    <li class="dropdown-item"><g:link controller="search" action="index">Search Page</g:link></li>
                                     <li role="separator" class="dropdown-divider"></li>
                                     <li class="dropdown-header">Custom Drinks</li>
                                     <li class="dropdown-item"><g:link controller="drink" action="showCustomDrinks">Custom Drinks</g:link></li>
@@ -154,7 +153,7 @@
                     },
                     async: false,
                     type: "GET",
-                    url: "${createLink(controller:'search', action:'search')}",
+                    url: "", <!--"$ { createLink(controller:'search', action:'search') } ", -->
                     data: {
                         searchingFor: searchingFor
                     },

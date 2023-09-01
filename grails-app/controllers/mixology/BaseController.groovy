@@ -1,5 +1,19 @@
 package mixology
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST
+import static org.springframework.http.HttpStatus.BAD_REQUEST
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.FORBIDDEN
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.NO_CONTENT
+import static org.springframework.http.HttpStatus.NO_CONTENT
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
+
 abstract class BaseController implements IController {
 
 
@@ -7,13 +21,78 @@ abstract class BaseController implements IController {
 
 interface IController {
 
-    void okRequest(def method, def message)         // 200, ok
-    void createdRequest(def method, def message)    // 201, created
-    void noContentRequest(def method, def message)  // 204, no content
+    default void okRequest(def method, def message) {// 200, ok
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    } // 200, ok
+    default void createdRequest(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: CREATED
+            }
+            '*'{ render status: CREATED }
+        }
+    } // 201, created
+    default void noContentRequest(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No content'
+                redirect action: "index", method: method ?: "create", status: NO_CONTENT
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    } // 204, no content
 
-    void badRequest(def method, def message)        // 400
-    void unauthorized(def method, def message)      // 401
-    void notFound(def method, def message)          // 404
-    void methodNotAllowed(def method, def message)  // 405
+    default void badRequest(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'No request parameters found!'
+                redirect action: "index", method: method ?: "create", status: BAD_REQUEST
+            }
+            '*'{ render status: BAD_REQUEST }
+        }
+    } // 400, bad request
+    default void unauthorized(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'You are not authorized to view this content'
+                redirect action: "index", status: UNAUTHORIZED
+            }
+            '*'{ render status: UNAUTHORIZED }
+        }
+    } // 401, unauthorized to view content
+    default void forbidden(def method, def message) { // 403
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'You do not have permission to view this content'
+                redirect controller:'drink', action: 'index', status: FORBIDDEN
+            }
+            '*'{ render status: FORBIDDEN }
+        }
+    }
+    default void notFound(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
+                redirect action: "index", method: method ?: "GET", status: NOT_FOUND
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    } // 404
+    default void methodNotAllowed(def method, def message) {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message ?: 'Check your request method!'
+                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+            }
+            '*'{ render status: METHOD_NOT_ALLOWED }
+        }
+    } // 405
 
 }

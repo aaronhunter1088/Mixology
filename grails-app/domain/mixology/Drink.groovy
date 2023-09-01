@@ -15,7 +15,6 @@ class Drink implements Serializable{
     String drinkSymbol
     boolean canBeDeleted = true
     boolean custom = true
-    //User user
 
     static constraints = {
         drinkName(size:3..30, blank:false, nullable:false)
@@ -29,10 +28,16 @@ class Drink implements Serializable{
         custom(default:true)
     }
 
-    static mapping = {}
+    static mapping = {
+    }
 
-    static belongsTo = Ingredient // ,User
-    static hasMany = [ingredients:Ingredient] //,user:User
+    /*
+    Drink belongs to a User
+    There will be a foreign key in the User table referencing the Drink primary key
+     */
+    static hasMany = [
+            ingredients:Ingredient // tbl: drink_ingredients
+    ]
     static transients = ['glassImage']
 
     @Override

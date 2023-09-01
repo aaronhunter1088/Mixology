@@ -9,6 +9,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -18,15 +19,8 @@
     <body>
         <div id="content">
             <div class="container">
-                <section class="row">
-                    <a href="#list-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                            <li><g:link class="create" controller="drink"      action="create"><g:message code="default.new.label" args="[drink]" /></g:link></li>
-                            <li><g:link class="create" controller="ingredient" action="create"><g:message code="default.new.label" args="[ingredient]" /></g:link></li>
-                        </ul>
-                    </div>
+                <section class="row" id="navigation">
+                    <g:render template="drinkNav"/>
                 </section>
                 <section class="row">
                     <div id="list-drink" class="col-12 content scaffold-list">
@@ -34,11 +28,53 @@
                         <g:if test="${flash.message}">
                             <div class="message" role="status">${flash.message}</div>
                         </g:if>
-                        <f:table collection="${drinkList}" />
-
-                        <g:if test="${drinkCount > params.int('max')}">
+                        <g:if test="${drinkCount <= 0}">
+                            <p>No custom drinks found!</p>
+                        </g:if><g:else>
+                            <table>
+                                <thead>
+                            <tr>
+                                <th>Count</th>
+                                <th>ID</th>
+                                <th>Drink Name</th>
+                                <th>Drink Symbol</th>
+                                <th>Drink Number</th>
+                                <th>Alcohol Type</th>
+                                <th>Ingredients</th>
+                                <th>Suggested Glass</th>
+                            </tr>
+                            </thead>
+                                <tbody>
+                                <g:if test="${drinkList.size() > 0}">
+                                    <% int index = 1; %>
+                                    <g:each in="${drinkList}" var="drink">
+                                        <g:if test="${params.offset && (params.offset as int) != 0}">
+                                            <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                        </g:if><g:else>
+                                        <g:set var="idx" value="${index}"/>
+                                    </g:else>
+                                        <tr>
+                                            <td>${idx}</td>
+                                            <td>${drink.id}</td>
+                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.drinkName}</g:link> </td>
+                                            <td>${drink.drinkSymbol}</td>
+                                            <td>${drink.drinkNumber}</td>
+                                            <td>${drink.alcoholType}</td>
+                                            <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
+                                            <td>${drink.suggestedGlass}</td>
+                                        </tr>
+                                        <% index++; %>
+                                    </g:each>
+                                </g:if>
+                                </tbody>
+                            </table>
+                        </g:else>
+                        <g:if test="${drinkCount > max}">
                         <div class="pagination">
-                            <g:paginate total="${drinkCount ?: 0}" />
+                            <g:paginate total="${drinkCount}"
+                                        controller="drink"
+                                        action="${params.action}"
+                                        max="${params.max ?: 10}" />
                         </div>
                         </g:if>
                     </div>

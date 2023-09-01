@@ -16,12 +16,17 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         name(nullable:false, blank:false, size:3..30)
         unit(nullable:false, blank:false, validator: { if (!(it in Unit.values())) return ['invalid.unit'] })
         amount(nullable:false, blank:false)
-        canBeDeleted(nullable:true, default:true)
-        custom(nullable:true, default:true)
+        canBeDeleted(nullable:false, default:true)
+        custom(nullable:false, default:true)
+    }
+
+    static mapping = {
     }
 
     static belongsTo = Drink
-    static hasMany = [drinks:Drink]
+    static hasMany = [
+            drinks:Drink // tbl: ingredient_drinks
+    ]
 
     @Override
     String toString() {
@@ -36,9 +41,28 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         }
     }
 
+    String prettyNameWithoutName() {
+        if (amount % 1 == 0) {
+            (int)amount + ' ' + unit.getValue().toUpperCase() + ' of '
+        } else {
+            amount + ' ' + unit.getValue().toUpperCase() + ' of '
+        }
+    }
+
+    /**
+     * Compare. If 0, same, 1, different
+     * @param i the object to be compared.
+     * @return
+     */
     @Override
     int compareTo(Ingredient i) {
-        if (this.name == i.name && this.unit.value == i.unit.value && this.amount == i.amount) return 0
+        if (
+             // if the name, unit, and amount are the same
+             (this.name == i.name && this.unit.value == i.unit.value && this.amount == i.amount)
+             // or, if both present, the ids are the same
+             || (this.id && i.id && this.id == i.id)
+            )
+            return 0
         else return 1
     }
 
@@ -62,16 +86,22 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         return fillerIngredients
     }
 
-    static Set<Ingredient> copyAll(Set<Ingredient> ingredients) {
-        Set<Ingredient> copySet = []
-        for (ingredient in ingredients) {
+    //static Set<Ingredient> copyAll(Set<Ingredient> ingredients) {
+    static def copyAll ( def ingredients ) {
+        //Set<Ingredient> copySet = []
+        def copySet = []
+        //for (ingredient in ingredients) {
+        ingredients.each { ingredient ->
             Ingredient newIngredient = new Ingredient([
                 name:ingredient.name,
                 unit:ingredient.unit,
                 amount:ingredient.amount
+                //,canBeDeleted:true
+                //,custom:true
             ])
             copySet << newIngredient
         }
-        return copySet
+        //return copySet
+        copySet
     }
 }

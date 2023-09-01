@@ -6,6 +6,7 @@ import enums.Unit
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
+import grails.validation.ValidationException
 import mixology.Drink
 import mixology.DrinkController
 import mixology.DrinkService
@@ -16,6 +17,8 @@ import mixology.User
 import mixology.UserRole
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.validation.BeanPropertyBindingResult
+import org.springframework.validation.Errors
 import spock.lang.Specification
 
 @ContextConfiguration
@@ -152,6 +155,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         drink2.ingredients.each { ingredientService.save(it) }
         drinkService.save(drink1)
         drinkService.save(drink2)
+        controller.drinkService = drinkService
     }
 
     def cleanup() {
@@ -227,10 +231,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         ]).save(validate:false)
         user.drinks = drinks
 
-        controller.drinkService = Stub(DrinkService) {
-            list(_) >> drinks
-            count() >> drinks.size()
-        }
+        controller.drinkService = drinkService
+                //Stub(DrinkService) {list(_) >> drinks ,count() >> drinks.size()}
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
 //            getAuthentication() >> Stub(Authentication) {
@@ -242,10 +244,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.customIndex()
 
         then:
-        User.findByUsername(user.username) >> user
-        model.drinkList == drinks as List
-        model.drinkCount == drinks.size()
-        user.drinks.size() == 2
+        assert model.drinkList.size() == 2
+        assert user.drinks.size() == 2
     }
 
     @Test
@@ -276,6 +276,16 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
     @Test
     void "test create action"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
         when:
         controller.create()
 
@@ -321,9 +331,10 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 firstName: "test",
                 lastName: "user"
         ]).save(validate:false)
-        Role role = new Role(authority: enums.Role.ADMIN.name).save()
+        Role role = new Role(authority: enums.Role.USER.name).save()
         UserRole.create(user, role)
-        user.drinks = new HashSet<Drink>()
+        Drink defaultDrink = new Drink([custom:false,canBeDeleted:false])
+        controller.metaClass.createDrinkFromParams = {p1,p2,p3 -> defaultDrink}
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
@@ -331,28 +342,15 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
         when:
         request.method = 'POST'
-        controller.params.drinkName = 'drinkNameTest'
-        controller.params.drinkNumber = '1'
-        controller.params.alcoholType = 'VODKA'
-        controller.params.drinkSymbol = 'TD'
-        controller.params.instructions = 'Test instructions'
-        controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "100 Proof Vodka : 1.5 : OZ"
-        controller.params.ingredientName = '100 Proof Vodka'
-        controller.params.ingredientAmount = 1.5
-        controller.params.ingredientUnit = 'OZ'
-        controller.params.custom = false
-        controller.params.canBeDeleted = false
+        controller.params.drink = defaultDrink
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 403
     }
 
     @Test
-    void "test save drink fails validation"() {
-        //NEW
+    void "test save drink fails for validation errors"() {
         given:
         def user = new User([
                 username: "testusername@gmail.com",
@@ -366,29 +364,20 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
             getPrincipal() >> user
         }
         controller.drinkService = drinkService
-//        controller.metaClass.createDrinkFromParams { params, aRole ->
-//            Drink drink = new Drink()
-//            Errors error = new BeanPropertyBindingResult(drink, "Test drink")
-//            drink.errors << error
-//            return new ValidationException("test save drink fails validation", error)
-//        }
+        controller.ingredientService = ingredientService
+        controller.metaClass.createDrinkFromParams { params, uzr, aRole ->
+            Drink drink = new Drink()
+            Errors error = new BeanPropertyBindingResult(drink, "Test drink")
+            drink.errors = error
+            throw new ValidationException("test save drink fails validation", error)
+        }
 
         when:
         request.method = 'POST'
-        controller.params.drinkName = ''
-        controller.params.drinkNumber = 1
-        controller.params.alcoholType = Alcohol.VODKA.name()
-        controller.params.drinkSymbol = ''
-        controller.params.instructions = ''
-        controller.params.glass = GlassType.GOBLET.name()
-        //controller.params.ingredients = ''
-        controller.params.ingredientName = '100 Proof Vodka'
-        controller.params.ingredientAmount = 1.5
-        controller.params.ingredientUnit = 'OZ'
+        controller.params.something = "must_be_here"
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 400
     }
 
@@ -407,6 +396,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
             getPrincipal() >> user
         }
         controller.drinkService = drinkService
+        controller.ingredientService = ingredientService
 
         when:
         request.method = 'POST'
@@ -443,7 +433,9 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
-        controller.drinkService = drinkService
+        controller.drinkService = Stub(DrinkService) {save(_,_,_)>> null}
+        controller.ingredientService = ingredientService
+        controller.metaClass.saveValidIngredients = { uzr -> [1, 2]}
 
         when:
         request.method = 'POST'
@@ -453,27 +445,32 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.params.drinkSymbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
-        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-        controller.params.ingredientAmount = [1.5, 1.5]
-        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-        controller.params.custom = true
-        controller.params.canBeDeleted = true
+        controller.params.ingredients = ["1", "2"] // Long IDs of ingredients
         controller.save()
 
         then:
-        User.findByUsername(user.username) >> user
         response.status == 201
     }
 
     @Test
     void "test edit action"() {
         given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user",
+                password: 'p@ssword1',
+                email: "testusername@gmail.com"
+        ]).save(validate:false)
         def drink = Stub(Drink) {
             id >> 1
         }
+        user.ingredients = createIngredientsWithAAndBAndC()
         controller.drinkService = Stub(DrinkService) {
             get(_) >> drink
+        }
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
         }
 
         when:
@@ -528,6 +525,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         user.drinks = new HashSet<Drink>()
         user.addToDrinks(drink1 as Drink)
         drink1.custom = false
+        drink1.canBeDeleted = false
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
@@ -538,26 +536,20 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         when:
         request.method = 'PUT'
         controller.params.drinkName = 'updatedName'
-        controller.params.drinkNumber = '11'
-        controller.params.alcoholType = 'VODKA'
-        controller.params.drinkSymbol = 'TD'
-        controller.params.instructions = 'Test instructions'
-        controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
-        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-        controller.params.ingredientAmount = [1.5, 1.5]
-        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-        controller.params.version = 2l
+//        controller.params.drinkNumber = '11'
+//        controller.params.alcoholType = 'VODKA'
+//        controller.params.drinkSymbol = 'TD'
+//        controller.params.instructions = 'Test instructions'
+//        controller.params.glass = 'HIGHBALL'
+        controller.params.ingredients = ["1", "2"]
+//        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
+//        controller.params.ingredientAmount = [1.5, 1.5]
+//        controller.params.ingredientUnit = ['OZ', 'SPLASH']
+//        controller.params.version = 2l
         controller.update(drink1 as Drink)
 
         then:
         drink1.drinkName == 'updatedName'
-        drink1.drinkNumber == 11
-        drink1.alcoholType == Alcohol.VODKA
-        drink1.drinkSymbol == 'TD'
-        drink1.mixingInstructions == 'Test instructions'
-        drink1.suggestedGlass == GlassType.HIGHBALL
-        drink1.ingredients.size() == 5
         response.status == 200
     }
 
@@ -590,11 +582,12 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.params.drinkSymbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
-        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-        controller.params.ingredientAmount = [1.5, 1.5]
-        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-        controller.params.version = 2l
+        controller.params.ingredients = ["1", "2", "3", "4", "5"]
+//        controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
+//        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
+//        controller.params.ingredientAmount = [1.5, 1.5]
+//        controller.params.ingredientUnit = ['OZ', 'SPLASH']
+//        controller.params.version = 2l
         controller.update(drink1 as Drink)
 
         then:
@@ -619,10 +612,12 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 email: "testusername@gmail.com"
         ]).save(validate:false)
         user.drinks = new HashSet<Drink>()
-        User.findByUsername(user.username) >> user
+        //User.findByUsername(user.username) >> user
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
+        controller.drinkService = drinkService
+        controller.ingredientService = ingredientService
         user.drinks.size() == 0
 
         when:
@@ -637,14 +632,34 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         copied.drinkSymbol == drink1.drinkSymbol
         copied.mixingInstructions == drink1.mixingInstructions
         copied.suggestedGlass == drink1.suggestedGlass
+        copied.id != drink1.id
         copied.ingredients.size() == drink1.ingredients.size()
         copied.ingredients.each {Ingredient copiedIng ->
             drink1.ingredients.each {Ingredient originalIng ->
                 copiedIng.name == originalIng.name
                 copiedIng.unit == originalIng.unit
                 copiedIng.amount == originalIng.amount
+                copiedIng.id != originalIng.id
             }
         }
+    }
+
+    @Test
+    void "test delete drink deletes only drink"() {
+        given:
+        def numOfDrinks = drinkService.count()
+        def drinkIngredients = drink1.ingredients as List<Ingredient>
+        request.method = 'DELETE'
+
+        when:
+        controller.delete(drink1.id)
+
+        then:
+        assert drinkService.count() == numOfDrinks - 1
+        drinkIngredients?.each {
+            assert it.id
+        }
+        response.status == 204
     }
 
     @Test

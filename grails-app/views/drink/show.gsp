@@ -11,7 +11,7 @@
         <asset:javascript src="application.js"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <g:set var="drink" scope="request" value="${message(code: 'drink.label', default: 'Drink')}" />
@@ -73,7 +73,6 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <a href="#show-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                     <g:render template="drinkNav"/>
                 </section>
                 <div id="show-drink" class="col-12 scaffold-show">
@@ -97,50 +96,49 @@
                                 </legend>
                                 <div id="drink" style="width:100%;float:left;">
                                     <div class="formfield" id="name">
-                                        <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
+                                        <label for='drinkName'>Drink Name</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkName" value="${drink.drinkName}" required="" id="drinkName" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="number">
-                                        <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
+                                        <label for='drinkNumber'>Drink Number</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkNumber" value="${drink.drinkNumber}" required="" id="drinkNumber" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="alcohol">
-                                        <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
+                                        <label for='alcoholType'>Drink Type</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="alcoholType" value="${drink.alcoholType}" required="" id="alcoholType" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="symbol">
-                                        <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
+                                        <label for='drinkSymbol'>Drink Symbol</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkSymbol" value="${drink.drinkSymbol}" required="" id="drinkSymbol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="glass">
-                                        <label for="glassType"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                        <label for="glassType">Suggested Glass</label>
                                         <div class="input-wrapper">
                                             <input type="text" disabled name="drinkSymbol" value="${drink.suggestedGlass}" required="" id="glassType" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="instructions">
-                                        <label for='instructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
+                                        <label for='instructions'>Mixing Instructions</label>
                                         <div class="input-wrapper">
                                             <textarea disabled readonly name="instructions" rows="5" cols="40">${drink.mixingInstructions}</textarea>
                                         </div>
                                     </div>
                                     <div class="formfield" id="ingredients">
-                                        <label><span class='required-indicator'>*</span> Ingredients</label><br/>
+                                        <label>Ingredients</label><br/>
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;">
-                                            <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
-                                                <g:if test="${drink.ingredients.contains(ingredient)}">
-                                                    <div style="display:block;">
-                                                        <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/> ${ingredient} &emsp14;
-                                                    </div>
-                                                </g:if>
+                                            <g:each in="${drink.ingredients.sort{ it.id } }" var="ingredient" status="i">
+                                                <div style="display:block;">
+                                                    <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
+                                                    <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link> : ${ingredient.id}
+                                                </div>
                                             </g:each>
                                         </div>
                                     </div>
@@ -149,11 +147,13 @@
                             <g:form resource="${this.drink}" method="DELETE">
                                 <fieldset class="buttons">
                                     <sec:ifLoggedIn>
-                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                         <g:if test="${drink.custom}">
-                                            <g:link class="edit" action="edit" resource="${this.drink}"><g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}"><g:message code="default.email.share" default="Share"/></g:link>
-                                            <input class="delete" type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                            <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
+                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>
+                                            <i class="fa-solid fa-trash-can">
+                                            <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                            </i>
                                         </g:if>
                                     </sec:ifLoggedIn>
                                     </fieldset>

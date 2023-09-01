@@ -8,10 +8,10 @@ import java.security.SecureRandom
 enum Unit {
 
     OZ("oz"),
-    FLUID_OZ("fluid oz"),
+    FLUID_OZ("fluid_oz"),
     SPLASH("splash"),
     DASH("dash"),
-    SODA_CAN("soda can"),
+    SODA_CAN("soda_can"),
     TABLESPOON("tablespoon"),
     TEASPOON("teaspoon"),
     //LEMON_WEDGE("lemon wedge"),
