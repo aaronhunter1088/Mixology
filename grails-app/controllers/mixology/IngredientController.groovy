@@ -1,12 +1,12 @@
 package mixology
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import enums.Unit
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import static org.springframework.http.HttpStatus.*
-
 import javax.servlet.http.HttpServletResponse
 
 class IngredientController extends BaseController {
@@ -19,24 +19,25 @@ class IngredientController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
-        respond ingredientService.list(params), model:[ingredientCount: ingredientService.count()]
+        withFormat {
+            html {
+                respond ingredientService.list(params), model:[ingredientCount: ingredientService.count()]
+            }
+            json { ingredientService.list(params) as JSON }
+        }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def customIndex(Integer max) {
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_ANONYMOUSLY'])
+    def customIndex() {
         if (!params.max) params.max = 10
         if (!params.offset) params.offset = 0
         if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         def customIngredients = user.ingredients
         def maxSize = customIngredients.size()
-        //user.drinks*.ingredients.each { Set s -> s.collect().each { def it -> customIngredients << (it as Ingredient)} }
-        //customIngredients = customIngredients.sort { it.id }
         // TODO: work out logic better
         customIngredients = customIngredients.findAll{ it.custom }.sort{it.id }
         if (params.max && !params.offset) {
@@ -61,23 +62,29 @@ class IngredientController extends BaseController {
                ]
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         respond ingredientService.get(id)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomIngredients() {
-          customIndex(null )
+          customIndex()
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         Ingredient ingredient = new Ingredient(params)
-        respond ingredient
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        render view:'create',
+                model:[user:user,
+                       ingredient:ingredient
+                ]
+        //respond ingredient
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def save() { //(Ingredient ingredient) {
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def save() {
         if (!params) {
             notFound('','')
             return
@@ -156,17 +163,17 @@ class IngredientController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         render view:'edit', model:[ingredient:ingredientService.get(id), user:user]
         //respond ingredientService.get(id)
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def update(Ingredient ingredient) {
         if (!ingredient) {
-            badRequest('show', 'No ingredient was sent in to update')
+            badRequest(flash, request, 'show', 'No ingredient was sent in to update')
             return
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
@@ -208,7 +215,7 @@ class IngredientController extends BaseController {
     /**
      * TODO: Update copy doc
      */
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def copy(Ingredient ingredient) {
         if (!ingredient) {
             notFound('','')
@@ -244,10 +251,10 @@ class IngredientController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def delete(Long id) {
         if (!id) {
-            badRequest('show', 'No ingredient ID was sent in to delete')
+            badRequest(flash, request, 'show', 'No ingredient ID was sent in to delete')
             return
         }
         Ingredient ingredient = ingredientService.get(id)
@@ -338,14 +345,13 @@ class IngredientController extends BaseController {
         return exists
     }
 
-    //TODO: Rename to validateIngredient(s)
     /**
      * Called from the UI which validates an
      * ingredient, created while creating a new ingredient
      * @param params
      * @return
      */
-    def validate(params) {
+    def validateIngredient(params) {
         println "Ingredients: API call # ${params.apiCallCount}"
         Ingredient ingredient = createIngredientsFromParams(params, null).get(0)
         boolean result = alreadyExists(ingredient)

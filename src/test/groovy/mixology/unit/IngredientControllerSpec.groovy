@@ -4,10 +4,8 @@ import enums.Alcohol
 import enums.GlassType
 import enums.Unit
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.validation.ValidationException
 import mixology.Role
 import mixology.UserRole
-import org.junit.validator.TestClassValidator
 import org.springframework.test.context.ContextConfiguration
 
 import grails.testing.web.controllers.ControllerUnitTest
@@ -18,14 +16,9 @@ import mixology.IngredientService
 import mixology.DrinkService
 import mixology.User
 import org.junit.Test
-import org.springframework.validation.BeanPropertyBindingResult
-import org.springframework.validation.Errors
 import spock.lang.Specification
 import grails.testing.gorm.DataTest
 
-import static org.mockito.Mockito.*
-import static enums.Alcohol.*
-import static enums.GlassType.*
 import static enums.Unit.*
 
 @ContextConfiguration
@@ -274,6 +267,16 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
 
     @Test
     void "test create action"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
         when:
         controller.create()
 
@@ -725,7 +728,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
             return [ingredientA]
         }
         when:
-        controller.validate(params)
+        controller.validateIngredient(params)
 
         then:
         response.status == 400
@@ -738,7 +741,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         controller.params.ingredientUnit = 'WEDGE'
         controller.params.ingredientAmount = 2.5
         when:
-        controller.validate(params)
+        controller.validateIngredient(params)
 
         then:
         response.status == 200

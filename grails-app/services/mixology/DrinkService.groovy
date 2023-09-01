@@ -112,7 +112,6 @@ class DrinkService {
      * This method does not return anything.
      * @param id
      */
-    @Transactional
     void delete(Long id) {
         Drink drink = get(id)
         List<Ingredient> ingredients = drink.ingredients as List<Ingredient>
@@ -120,6 +119,8 @@ class DrinkService {
             drink.removeFromIngredients(ingredient)
             ingredient.removeFromDrinks(drink)
         }
-        drink.delete(flush:true)
+        Drink.withNewTransaction {
+            drink.delete(flush: true)
+        }
     }
 }

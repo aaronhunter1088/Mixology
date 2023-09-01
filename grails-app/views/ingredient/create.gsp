@@ -206,7 +206,7 @@
                     },
                     async: false,
                     type: "GET",
-                    url: "${createLink(controller:'ingredient', action:'validate')}",
+                    url: "${createLink(controller:'ingredient', action:'validateIngredient')}",
                     data: {
                         ingredientName: cellValue1,
                         ingredientUnit: cellValue2,

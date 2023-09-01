@@ -5,8 +5,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
-import static org.springframework.http.HttpStatus.*
-
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
 import javax.mail.Session
@@ -15,6 +13,7 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import static org.springframework.http.HttpStatus.*
 import javax.servlet.http.HttpServletResponse
 
 class DrinkController extends BaseController {
@@ -42,12 +41,14 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
+        if (!params.max) params.max = 10
+        if (!params.offset) params.offset = 0
+        if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         def customDrinks = user.drinks
-        // TODO: Does not take into account offset. Need to rework
-//        if (params.max as String) {
-//            customDrinks = customDrinks.stream().limit(params.max as int).collect()
-//        }
+        def maxSize = customDrinks.size()
+        // TODO: rework how params comes into picture
+        // Look at Ingredient.customIndex
         render view:'index',
                model:[drinkList:customDrinks,
                       drinkCount:customDrinks.size(),
@@ -63,15 +64,17 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
-        render(view:'customDrinks')
+        render view:'customDrinks'
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         Drink drink = new Drink(params)
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        render view:'create', model:[user:user, drink:drink]
-        //respond drink
+        render view:'create',
+               model:[user:user,
+                      drink:drink
+               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -154,8 +157,7 @@ class DrinkController extends BaseController {
         UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
         UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
         try {
-            // TODO: update logic
-            drink.org_grails_datastore_gorm_GormValidateable__errors = null
+            drink.clearErrors()
             // if not a custom drink and user has adminRole
             if (!drink.isCustom() && adminRole) {
                 drink.drinkName = params?.drinkName ?: drink.drinkName
@@ -196,19 +198,13 @@ class DrinkController extends BaseController {
                 drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
                 drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
                 drink.version = (params?.version as Long) ?: drink.version
-                //TODO: wrong approach. no need to create ingredients here. grab using id
-                //First get current ingredients
-                // REWORK
-                //validIngredients = drink.ingredients
                 validIngredients = obtainFromParams(params)
-//                validIngredients = //createNewIngredientsFromParams(params)
                 validIngredients.each{
                     drink.ingredients.add(it as Ingredient)
                 }
                 drink.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
                     if (!i.drinks.contains(drink)) i.addToDrinks(drink)
-                    //i.save()
                 }
                 List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
                 logger.info("${associatedIngredientIds}")
@@ -254,9 +250,6 @@ class DrinkController extends BaseController {
 
     /**
      * By default, a drink will be copied with all ingredients
-     * By clicking on the action button which states that you
-     * don't want the ingredient's copied, then the drink will
-     * not contain the given ingredients, or instructions.
      * @param drink
      */
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -299,7 +292,6 @@ class DrinkController extends BaseController {
                 request.withFormat {
                     form multipartForm {
                         respond drink.errors, view:'show'
-                        //redirect(action:'show', params:[id:drink.id])
                     }
                     '*' { respond drink.errors, view:'show' }
                 }
@@ -315,11 +307,8 @@ class DrinkController extends BaseController {
         }
         Drink drink = drinkService.get(id)
         if (drink.canBeDeleted) {
-            // do not remove ingredient here
-            // ingredient removed when it is called to be
-            // we are deleting drink, not ingredient
             try {
-                Drink.withNewTransaction { drinkService.delete(id) }
+                drinkService.delete(id)
             } catch (Exception e) {
                 drink.errors.reject('default.deleted.error2.message',
                     [drink.drinkName] as Object[],
@@ -350,9 +339,6 @@ class DrinkController extends BaseController {
     }
 
     def obtainFromParams(params) throws Exception {
-        // get list of ids or single id
-        // find ingredient from id
-        // return list of ingredients found
         def listOfIngredients = []
         def allIds = (params.ingredients as String[]).each{ it.trim()}
         allIds.each {
@@ -369,13 +355,11 @@ class DrinkController extends BaseController {
      * @return
      */
     def createDrinkFromParams(params, user, role) throws ValidationException {
-        // Save validIngredients. Save id's to params.ingredients
         def validIds = saveValidIngredients(user)
         def validStringIds = validIds.collect { it as String }
         params?.ingredients?.each { String id ->
             validStringIds.add(id)
         }
-
         validStringIds.each { String id ->
             Ingredient ingredient = Ingredient.findById(id as Long)
             if (alreadyExists(ingredient)) {
@@ -495,7 +479,6 @@ class DrinkController extends BaseController {
         Ingredient ingredient = createNewIngredientsFromParams(params).get(0)
         boolean result = false
         if (alreadyExists(ingredient)) { result = true }
-        //response.setContentType("text/plain")
         response.setContentType("text/json")
         if (result) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient: "+ingredient+" has already been created")

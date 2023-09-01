@@ -1,17 +1,11 @@
 package mixology
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
-import static org.springframework.http.HttpStatus.BAD_REQUEST
-import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
-import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
-import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.NO_CONTENT
-import static org.springframework.http.HttpStatus.UNAUTHORIZED
 import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 abstract class BaseController implements IController {
@@ -49,7 +43,7 @@ interface IController {
         }
     } // 204, no content
 
-    default void badRequest(def method, def message) {
+    default void badRequest(def flash, def request, def method, def message) {
         request.withFormat {
             form multipartForm {
                 flash.message = message ?: 'No request parameters found!'

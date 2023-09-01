@@ -1,5 +1,6 @@
 package mixology
 
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.LogManager
@@ -22,34 +23,31 @@ class UserController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def index(Integer max) {
         params.max = Math.min(max ?: 5, 100)
-        respond userService.list(params), model:[userCount: userService.count()]
+        withFormat {
+            html { respond userService.list(params), model:[userCount: userService.count()] }
+            json { userService.list(params) as JSON }
+        }
     }
 
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         def user = userService.get(id)
         respond user
     }
 
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         User user = new User(params)
         respond user
     }
 
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-    def edit(Long id) {
-        User user = userService.get(id)
-        respond user
-    }
-
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save(User user) {
         if (!user) {
-            badRequest('','')
+            badRequest(flash, request, '','')
             return
         }
         if (request.method != 'POST') {
@@ -62,7 +60,7 @@ class UserController extends BaseController {
                     [params.password, params.passwordConfirm] as Object[],
                     '[Password and PasswordConfirm do not match]')
             println "Password and PasswordConfirm do not match"
-            badRequest('create', 'Passwords do not match')
+            badRequest(flash, request,'create', 'Passwords do not match')
             return
         } else {
             MultipartRequest multipartRequest = request as MultipartRequest
@@ -88,6 +86,66 @@ class UserController extends BaseController {
                     '*'{ respond user.errors, [status:BAD_REQUEST] }
                 }
             }
+        }
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def edit(Long id) {
+        User user = userService.get(id)
+        respond user
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def update() {
+        User user
+        if (!params) {
+            badRequest(flash, request, null, 'No user passed in')
+            return
+        } else {
+            user = userService.get(params?.id as Long)
+        }
+        if (!user) {
+            badRequest(flash, request, '','')
+            return
+        }
+        MultipartRequest multipartRequest =  request as MultipartRequest
+        MultipartFile file = multipartRequest.getFile('photo')
+        String reduced
+        // if file is present and they cleared the current image
+        // only encode if file is present. will set to empty string
+        // if photo was cleared.
+        if (file) {
+            reduced = reduceImageSize(file)
+            user.photo = reduced
+        } else if  (Boolean.valueOf(params.clearedImage as String)){
+            user.photo = ''
+        }
+
+        user.firstName = params?.firstName ?: user.firstName
+        user.lastName = params?.lastName ?: user.lastName
+        user.email = params?.email ?: user.email
+        params?.drinks?.each {
+            Drink drink = Drink.read(it as Long)
+            user.drinks.add(drink)
+        }
+        // only update password if both values are set
+        if (params?.passwordConfirm && params?.password == params?.passwordConfirm) {
+            user.password = params.password
+            user.passwordConfirm = params.passwordConfirm
+        }
+        // update photo if photo was cleared. photo may not exist anymore
+        // and so user photo may be set to empty string
+        user.org_grails_datastore_gorm_GormValidateable__errors = null
+        User.withTransaction {
+            userService.saveIngredientToUser(user, false)
+        }
+        logger.info("user saved!")
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
+                redirect (id:user.id, action:'show', status:OK)
+            }
+            '*'{ redirect (id:user.id, action:'show', status:OK) }
         }
     }
 
@@ -125,7 +183,6 @@ class UserController extends BaseController {
         encodedString
     }
 
-    //protected static BufferedImage scaleImage(BufferedImage bufferedImage, int size) {
     def scaleImage(bufferedImage, size) {
         double boundSize = size
         int origWidth = bufferedImage.getWidth()
@@ -146,63 +203,6 @@ class UserController extends BaseController {
         g.drawImage(scaledImage, 0, 0, null)
         g.dispose()
         return (scaledBI)
-    }
-
-
-    @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-    def update() { // User user
-        User user
-        if (!params) {
-            badRequest(null, 'No user passed in')
-            return
-        } else {
-            user = userService.get(params.id as Long)
-        }
-        if (!user) {
-            badRequest('','')
-            return
-        }
-        MultipartRequest multipartRequest =  request as MultipartRequest
-        MultipartFile file = multipartRequest.getFile('photo')
-        //String encodedString = null
-        String reduced
-        // if file is present and they cleared the current image
-        // only encode if file is present. will set to empty string
-        // if photo was cleared.
-        if (file) {
-            //encodedString = Base64.getEncoder().encodeToString(file.getBytes())
-            reduced = reduceImageSize(file)
-            user.photo = reduced
-        } else if  (Boolean.valueOf(params.clearedImage as String)){
-            user.photo = ''
-        }
-
-        user.firstName = params?.firstName ?: user.firstName
-        user.lastName = params?.lastName ?: user.lastName
-        user.email = params?.email ?: user.email
-        params?.drinks?.each {
-            Drink drink = Drink.read(it as Long)
-            user.drinks.add(drink)
-        }
-        // only update password if both values are set
-        if (params?.passwordConfirm && params?.password == params?.passwordConfirm) {
-            user.password = params.password
-            user.passwordConfirm = params.passwordConfirm
-        }
-        // update photo if photo was cleared. photo may not exist anymore
-        // and so user photo may be set to empty string
-        user.org_grails_datastore_gorm_GormValidateable__errors = null
-        User.withTransaction {
-            userService.saveIngredientToUser(user, false)
-        }
-        logger.info("user saved!")
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                redirect (id:user.id, action:'show', status:OK)
-            }
-            '*'{ redirect (id:user.id, action:'show', status:OK) }
-        }
     }
 
 }
