@@ -17,7 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
     <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -109,11 +109,22 @@
     <div id="content" role="main">
         <div class="container">
             <section class="row" id="navigation">
-                <a href="#create-drink" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                 <div class="nav" role="navigation">
                     <ul>
-                        <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+                        <li><a class="fa fa-home" href="${createLink(uri: '/')}">&nbsp;<g:message code="default.home.label"/></a></li>
+                        <li><g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Custom Home</g:link></li>
+                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                            <li><g:link class="fa-solid fa-list" controller="drink" action="index">&nbsp;Drinks</g:link></li>
+                            <li><g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;Your Drinks</g:link></li>
+                            <li><g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;Ingredients</g:link></li>
+                            <li><g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;Your Ingredients</g:link> </li>
+                        </sec:ifAnyGranted>
+                        <sec:ifAnyGranted roles="ROLE_USER">
+                            <li><g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;Your Drinks</g:link></li>
+                            <li><g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;Your Ingredients</g:link> </li>
+                        </sec:ifAnyGranted>
+                        <li><g:link class="fa-solid fa-martini-glass-empty" controller="drink" action="create">&nbsp;New Drink</g:link></li>
+                        <li><g:link class="fa-solid fa-jar-wheat" controller="ingredient" action="create">&nbsp;New Ingredient</g:link></li>
                     </ul>
                 </div>
             </section>
@@ -129,75 +140,73 @@
                     </ul>
                 </g:hasErrors>
             </div>
-            <section class="row">
-                <div id="edit-user" class="col-12 scaffold-show" role="main">
-                    <h1>Create User</h1>
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
-                    <div style="display:flex;justify-content:center;">
-                        <fieldset style="border:thick solid #007bff;">
-                            <legend style="margin-left:25px;width:auto;">
-                                &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
-                                <hr style="height:1px;background-color:#007bff">
-                            </legend>
-                            <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data" onsubmit="return isValid();">
-                                <g:hiddenField id="passwordsMatch" name="passwordsMatch" value="false" />
-                                <div id="create-user" style="text-align:left;float:left;">
-                                    <div class="formfield" style="">
-                                        <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="firstName" value="" required="" id="firstName" />
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="lastName" value="" required="" id="lastName" />
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='email'><span class='required-indicator'>*</span> Email</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="email" value="" required="" id="email" />
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="cellphone" value="" required="" id="cellphone" />
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='password'><span class='required-indicator'>*</span> Password</label>
-                                        <div class="input-wrapper">
-                                            <input type="password" name="password" value="" required="" id="password" />
-                                            <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
-                                        <div class="input-wrapper">
-                                            <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
-                                            <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
-                                        </div>
-                                    </div>
-                                    <div class="formfield">
-                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
-                                        <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
-                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
-                                            <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
-                                        </div>
-                                    </div>
-                                    <div class="formfield" style="margin-top:25px;padding-left:50%;">
-                                        <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
+            <div id="edit-user" class="col-12 scaffold-show" role="main">
+                <h1>Create User</h1>
+                <g:if test="${flash.message}">
+                    <div class="message" role="status">${flash.message}</div>
+                </g:if>
+                <div style="display:flex;justify-content:center;">
+                    <fieldset style="border:thick solid #007bff;">
+                        <legend style="margin-left:25px;width:auto;">
+                            &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
+                            <hr style="height:1px;background-color:#007bff">
+                        </legend>
+                        <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data" onsubmit="return isValid();">
+                            <g:hiddenField id="passwordsMatch" name="passwordsMatch" value="false" />
+                            <div id="create-user" style="text-align:left;float:left;">
+                                <div class="formfield" style="">
+                                    <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="firstName" value="" required="" id="firstName" />
                                     </div>
                                 </div>
-                            </g:form>
-                        </fieldset>
-                    </div>
+                                <div class="formfield">
+                                    <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="lastName" value="" required="" id="lastName" />
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='email'><span class='required-indicator'>*</span> Email</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="email" value="" required="" id="email" />
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="cellphone" value="" required="" id="cellphone" />
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='password'><span class='required-indicator'>*</span> Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="password" name="password" value="" required="" id="password" />
+                                        <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
+                                        <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
+                                    <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
+                                        <span id="uploadSpan" style="margin-top:5px;">Upload</span>
+                                        <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
+                                    </div>
+                                </div>
+                                <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                                    <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
+                                </div>
+                            </div>
+                        </g:form>
+                    </fieldset>
                 </div>
-            </section>
+            </div>
         </div>
     </div>
 

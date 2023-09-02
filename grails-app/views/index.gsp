@@ -65,7 +65,7 @@
         }
     </style>
     <body style="overflow-x:scroll;padding:0;margin:0;">
-        <g:render template="header"/>
+        <g:render template="navigation"/>
         <div style="display:inline-flex">
             <div id="messages"></div>
             <div id="search"></div>
@@ -83,12 +83,12 @@
                                 Drink drink2 = (Drink) tequilaDrinks.get(i+1)
                         %>
                         <div style="display:inline-flex;">
-                        <g:link controller="drink" action="show" params="[id:drink1.id]">
-                            <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
-                        </g:link>
-                        <g:link controller="drink" action="show" params="[id:drink2.id]">
-                            <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e']"/>
-                        </g:link>
+                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
+                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e']"/>
+%{--                        <g:link controller="drink" action="show" params="[id:drink1.id]">--}%
+%{--                        </g:link>--}%
+%{--                        <g:link controller="drink" action="show" params="[id:drink2.id]">--}%
+%{--                        </g:link>--}%
                         </div>
                         <% } // end for loop %>
                     </div>
