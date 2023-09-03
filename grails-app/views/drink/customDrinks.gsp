@@ -21,46 +21,46 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
         <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    </head>
-    <style>
-        .arrow-right:after {
-            content: "";
-            display: inline-block !important;
-            width: 0;
-            height: 0;
-            border-left: 8px solid red;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            vertical-align: middle;
-        }
-        .arrow-right:before {
-            width: 75px;
-            height: 2px;
-            background: red;
-            content: "";
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .arrow-left:before {
-            content: "";
-            display: inline-block !important;
-            width: 0px;
-            height: 0px;
-            border-left: 8px solid red;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            vertical-align: middle;
-            transform: rotate(-180deg);
-        }
-        .arrow-left:after {
-            width: 75px;
-            height: 2px;
-            background: red;
-            content: "";
-            display: inline-block;
-            vertical-align: middle;
-        }
+        <style>
+            .arrow-right:after {
+                content: "";
+                display: inline-block !important;
+                width: 0;
+                height: 0;
+                border-left: 8px solid red;
+                border-top: 8px solid transparent;
+                border-bottom: 8px solid transparent;
+                vertical-align: middle;
+            }
+            .arrow-right:before {
+                width: 75px;
+                height: 2px;
+                background: red;
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+            }
+            .arrow-left:before {
+                content: "";
+                display: inline-block !important;
+                width: 0;
+                height: 0;
+                border-left: 8px solid red;
+                border-top: 8px solid transparent;
+                border-bottom: 8px solid transparent;
+                vertical-align: middle;
+                transform: rotate(-180deg);
+            }
+            .arrow-left:after {
+                width: 75px;
+                height: 2px;
+                background: red;
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+            }
         </style>
+    </head>
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <g:render template="../navigation"/>
@@ -107,7 +107,7 @@
                 </div>
                 <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
                 <div id="key" style="text-align:center;padding:0;">
-                    <g:render template="../drinkKey"/>
+                    <g:render template="../periodicTableKey"/>
                 </div>
             </div>
             <div id="column2" style="margin:0;padding:0;width:2100px;">

@@ -38,7 +38,7 @@ class Drink implements Serializable{
     static hasMany = [
             ingredients:Ingredient // tbl: drink_ingredients
     ]
-    static transients = ['glassImage']
+    static transients = ['glassImage','fillerDrink']
 
     @Override
     String toString() {
@@ -170,8 +170,13 @@ class Drink implements Serializable{
                 ingredients: Ingredient.createFillerIngredients(3),
                 canBeDeleted: true,
                 custom: true
+                ,fillerDrink: true
         ])
     }
+
+    transient boolean fillerDrink
+    boolean getFillerDrink() { return fillerDrink }
+    void setFillerDrink(boolean fillerDrink) { this.fillerDrink = fillerDrink }
 
 }
 

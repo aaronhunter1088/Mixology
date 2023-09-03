@@ -14,15 +14,29 @@
                     </b>
                 </p>
                 <div style="overflow-y:auto;height:80px;">
-                    <g:each in="${drink.ingredients.sort{it.id}}" var="ingredient">
-                        <g:if test="${opacity == 0.5}">
-                            <p style="margin:0;color:black;">${ingredient}</p>
-                        </g:if><g:else>
+                    <g:if test="${drink.fillerDrink}">
+                        <g:each in="${ drink.ingredients.sort{it.givenId} }" var="ingredient">
+                            <g:if test="${opacity == 0.5}">
+                                <p style="margin:0;color:black;">${ingredient}</p>
+                            </g:if><g:else>
                             <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
                                 <p style="margin:0;color:black;">${ingredient.prettyName()}</p>
                             </g:link>
                         </g:else>
-                    </g:each>
+                        </g:each>
+                    </g:if>
+                    <g:else>
+                        <g:each in="${ drink.ingredients.sort{it.id} }" var="ingredient">
+                            <g:if test="${opacity == 0.5}">
+                                <p style="margin:0;color:black;">${ingredient}</p>
+                            </g:if><g:else>
+                            <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
+                                <p style="margin:0;color:black;">${ingredient.prettyName()}</p>
+                            </g:link>
+                        </g:else>
+                        </g:each>
+                    </g:else>
+
                 </div>
             </div>
         </div>

@@ -3,6 +3,8 @@ package mixology
 import enums.Unit
 import groovy.transform.ToString
 
+import javax.persistence.Transient
+
 @ToString
 class Ingredient implements Comparable<Ingredient>, Serializable {
 
@@ -19,14 +21,12 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         canBeDeleted(nullable:false, default:true)
         custom(nullable:false, default:true)
     }
-
-    static mapping = {
-    }
-
+    static mapping = {}
     static belongsTo = Drink
     static hasMany = [
             drinks:Drink // tbl: ingredient_drinks
     ]
+    static transients = ['fillerIngredient','givenId']
 
     @Override
     String toString() {
@@ -74,16 +74,17 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         List<Ingredient> fillerIngredients = new ArrayList<>()
         for (i in 1..count) {
             List<Unit> allUnits = Collections.unmodifiableList(Arrays.asList(Unit.values()))
-            int size = allUnits.size()
             Random random = new Random()
-            def randomUnit = allUnits.get(random.nextInt(size))
-            fillerIngredients.add(new Ingredient([
+            def randomUnit = allUnits.get(random.nextInt(allUnits.size()))
+            Ingredient filler = new Ingredient([
                     name: "Ingredient${i}",
                     unit: randomUnit,
                     amount: 1
-            ]))
+                    ,givenId: "${i}" as Long
+            ])
+            fillerIngredients.add(filler)
         }
-        return fillerIngredients
+        return fillerIngredients.sort{a,b -> a.givenId <=> b.givenId}
     }
 
     //static Set<Ingredient> copyAll(Set<Ingredient> ingredients) {
@@ -104,4 +105,8 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         //return copySet
         copySet
     }
+
+    transient Long givenId
+    Long getGivenId() { return givenId }
+    void setGivenId(Long givenId) { this.givenId = givenId }
 }
