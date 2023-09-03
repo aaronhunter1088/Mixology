@@ -16,7 +16,6 @@ import mixology.UserController
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
-import static org.springframework.http.HttpStatus.*
 
 import java.awt.image.BufferedImage
 
@@ -44,7 +43,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "regular",
                         lastName: "user"
                 ])
-                regularUser = userService.saveUser(regularUser, false)
+                regularUser = userService.save(regularUser, false)
                 Role regularRole = new Role(authority: enums.Role.USER.name)
                 UserRole.create(regularUser, regularRole)
                 regularUser
@@ -61,7 +60,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         firstName: "admin",
                         lastName: "user"
                 ])
-                adminUser = userService.saveUser(adminUser, false)
+                adminUser = userService.save(adminUser, false)
                 Role adminRole = new Role(authority: enums.Role.ADMIN.name)
                 UserRole.create(adminUser, adminRole)
                 adminUser
@@ -241,7 +240,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
             controller.params.email = unsavedUser.username
             controller.params.cellphone = '1234560789'
             controller.roleService = Stub(RoleService) {findByAuthority(enums.Role.USER.name) >> userRole }
-            controller.userService = Stub(UserService) {saveUser(_,_) >> regularUser }
+            controller.userService = Stub(UserService) {save(_,_) >> regularUser }
         when:
             controller.save(unsavedUser)
         then:

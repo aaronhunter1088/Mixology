@@ -69,7 +69,7 @@ class UserController extends BaseController {
             user = createUserFromParams(user, params, file)
             user.validate()
             if (!user.errors.hasErrors()) {
-                user = userService.saveUser(user, true)
+                user = userService.save(user, true)
                 userRoleService.save(user, userRole, true)
                 request.withFormat {
                     form multipartForm {
@@ -136,7 +136,7 @@ class UserController extends BaseController {
         // update photo if photo was cleared. photo may not exist anymore
         // and so user photo may be set to empty string
         user.clearErrors()
-        userService.saveUser(user, false)
+        userService.save(user, false)
         logger.info("user saved!")
         request.withFormat {
             form multipartForm {

@@ -10,6 +10,7 @@ import javax.transaction.Transactional
 class IngredientService {
 
     private static Logger logger = LogManager.getLogger(IngredientService.class)
+    def springSecurityService
 
     /**
      * This method takes in an ID of type Long
@@ -49,8 +50,11 @@ class IngredientService {
      * @return
      */
     Ingredient save(Ingredient ingredient, boolean validate = false) {
-        if (validate) { if (ingredient.validate()) { ingredient.save(flush:true) } }
-        else ingredient.save(flush:true)
+        try {
+            ingredient.save(validate: validate, flush: true, failOnError: validate)
+        } catch (Exception e) {
+            logger.error("Could not save ingredient:: $ingredient", e)
+        }
         ingredient
     }
 
@@ -68,23 +72,18 @@ class IngredientService {
      * @return
      */
     Ingredient save(Ingredient ingredient, User user, boolean validate = false) {
-        if (!ingredient || !user) return null
-        if (validate) {
-            if (ingredient.validate()) {
-                try {
-                    Ingredient.withTransaction {
-                        ingredient.save(flush:true)
-                        user.addToIngredients(ingredient)
-                        user.save(flush:true)
-                    }
-                } catch (Exception e) {
-                    logger.error("Could not save ingredient:: $ingredient", e)
-                    return null
-                }
+        if (!ingredient || !user) null
+        try {
+            Ingredient.withTransaction {
+                ingredient.save(validate:validate, flush:true, failOnError:validate)
+                user.addToIngredients(ingredient)
+                user.save(flush: true, failOnError: false, validate: false)// user is not validated here. we are saving drink (mainly)
             }
-            else return null
-        } else ingredient.save(flush:true)
-        ingredient
+            ingredient
+        } catch (Exception e) {
+            logger.error("Could not save ingredient:: $ingredient", e)
+            null
+        }
     }
 
     /**
@@ -98,11 +97,37 @@ class IngredientService {
      */
     void delete(Long id) {
         Ingredient ingredient = get(id)
-        def drinks = ingredient.drinks
-        drinks.each { drink ->
-            drink.removeFromIngredients(ingredient)
-            ingredient.removeFromDrinks(drink)
+        if (!ingredient) {
+            logger.error("Could not delete ingredient:: $ingredient")
         }
-        Ingredient.withNewTransaction {ingredient.delete(flush:true)}
+        else {
+            def iDrinks = ingredient.drinks as List<Drink>
+            def user = getCurrentUser()
+            if (!user?.ingredients?.contains(ingredient)) {
+                logger.warn("A user, id:: ${user.id} is deleting an ingredient they did not create.")
+                logger.warn("Ingredient belongs to user, id:: ${ingredient?.user?.id}")
+            }
+            try {
+                iDrinks.each { drink ->
+                    drink.removeFromIngredients(ingredient)
+                    ingredient.removeFromDrinks(drink)
+                }
+                if (iDrinks.size() > 0) {
+                    iDrinks.eachWithIndex { Drink drink, int i ->
+                        logger.warn("Deleting this ingredient will affect this drink, id:: ${drink.id}")
+                    }
+                }
+                Ingredient.withNewTransaction {
+                    ingredient.delete(flush: true)
+                }
+                logger.info("Ingredient '${ingredient.name}' deleted!")
+            } catch (Exception e) {
+                logger.error("Could not delete drink:: $ingredient", e)
+            }
+        }
+    }
+
+    private User getCurrentUser() {
+        User.findByUsername(springSecurityService.getPrincipal().username as String)
     }
 }

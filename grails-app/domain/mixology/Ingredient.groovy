@@ -18,11 +18,13 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         name(nullable:false, blank:false, size:3..30)
         unit(nullable:false, blank:false, validator: { if (!(it in Unit.values())) return ['invalid.unit'] })
         amount(nullable:false, blank:false)
+        drink(nullable:true)
+        user(nullable:true)
         canBeDeleted(nullable:false, default:true)
         custom(nullable:false, default:true)
     }
     static mapping = {}
-    static belongsTo = Drink
+    static belongsTo = [drink:Drink, user:User]
     static hasMany = [
             drinks:Drink // tbl: ingredient_drinks
     ]

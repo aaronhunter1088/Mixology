@@ -10,6 +10,7 @@ import javax.transaction.Transactional
 class DrinkService {
 
     private static Logger logger = LogManager.getLogger(DrinkService.class)
+    def springSecurityService
 
     /**
      * This method takes in an ID of type Long
@@ -44,57 +45,44 @@ class DrinkService {
     /**
      * This save method is used for testing method purposes only!
      * It will save the Drink and then attach each ingredient
-     * to the drink. It returns the Drink
+     * to the drink. It returns the Drink regardless of exceptions
      * @param drink
      * @param validate
      * @return
      */
     Drink save(Drink drink, boolean validate = false) {
-        if (validate) { if (drink.validate()) { drink.save(flush:true, failOnError:true) } }
-        else drink.save(validate:false, flush:true, failOnError:false)
+        try {
+            drink.save(validate:validate, flush:true, failOnError:validate)
+        } catch (Exception e) {
+            logger.error("Could not save drink:: $drink", e)
+        }
         drink
     }
 
     /**
      * This save method is used for saving a real Drink.
-     * This saves the Drink onto the User first, then saves
-     * the user. Then it saves the Drink itself. It returns
+     * This saves the Drink itself. Then it adds the Drink
+     * to the Users drinks, then saves the user.It returns
      * the drink.
      * A drink, other than a default drink, will always belong
-     * to a user, of type Role Admin or Role User. Therefore,
-     * a user is required when saving a Drink.
+     * to a user.
+     * Therefore, a user is required when saving a Drink.
      * @param drink
      * @param user
      * @param validate
      * @return
      */
     Drink save(Drink drink, User user, boolean validate = false) {
-        if (!drink || !user) return null
-        if (validate) {
-            if (drink.validate()) {
-                try {
-                    Drink.withTransaction {
-                        drink.save(flush:true)
-                        user.addToDrinks(drink)
-                        user.save(flush:true, failOnError:false, validate:false)
-                    }
-                } catch (Exception e) {
-                    logger.error("Could not save drink", e)
-                    return null
-                }
+        if (!drink || !user) null
+        try {
+            Drink.withTransaction {
+                drink.save(flush:true, failOnError:validate)
+                user.addToDrinks(drink)
+                user.save(flush:true, failOnError:false, validate:false) // user is not validated here. we are saving drink (mainly)
             }
-            else return null
-        } else {
-            try {
-                Drink.withTransaction {
-                    drink.save(flush:true)
-                    user.addToDrinks(drink)
-                    user.save(flush:true, failOnError:false, validate:false)
-                }
-            } catch (Exception e) {
-                logger.error("Could not save drink:: $drink")
-                return null
-            }
+        } catch (Exception e) {
+            logger.error("Could not save drink:: $drink", e)
+            null
         }
         drink
     }
@@ -109,13 +97,37 @@ class DrinkService {
      */
     void delete(Long id) {
         Drink drink = get(id)
-        List<Ingredient> ingredients = drink.ingredients as List<Ingredient>
-        ingredients.each { ingredient ->
-            drink.removeFromIngredients(ingredient)
-            ingredient.removeFromDrinks(drink)
+        if (!drink) {
+            logger.error("Could not delete drink:: $drink")
         }
-        Drink.withNewTransaction {
-            drink.delete(flush: true)
+        else {
+            def user = getCurrentUser()
+            if (!user?.drinks?.contains(drink)) {
+                logger.warn("A user, id:: ${user.id} is deleting a drink they did not create.")
+                logger.warn("Drink belongs to user, id:: ${drink?.user?.id}")
+            }
+            try {
+                def dIngredients = drink.ingredients as List<Ingredient>
+                dIngredients.each { ingredient ->
+                    drink.removeFromIngredients(ingredient)
+                    ingredient.removeFromDrinks(drink)
+                }
+                if (dIngredients.size() > 0) {
+                    dIngredients.eachWithIndex{ Ingredient ingredient, int i ->
+                        logger.warn("Deleting this drink will affect this ingredient, id:: ${ingredient.id}")
+                    }
+                }
+                Drink.withNewTransaction {
+                    drink.delete(flush: true)
+                }
+                logger.info("Drink '${drink.name}' deleted!")
+            } catch (Exception e) {
+                logger.error("Could not delete drink:: $drink", e)
+            }
         }
+    }
+
+    private User getCurrentUser() {
+        User.findByUsername(springSecurityService.getPrincipal().username as String)
     }
 }

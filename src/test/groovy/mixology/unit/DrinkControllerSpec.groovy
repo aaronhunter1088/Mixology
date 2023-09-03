@@ -184,13 +184,23 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         given:"Two drinks exist"
             println "# of drinks: ${drinkService.count()}"
             drinkService.count() == 2
+            def user = new User([
+                    username: "testusername@gmail.com",
+                    firstName: "test",
+                    lastName: "user"
+            ]).save(validate:false)
+            def drink1User = new User([
+                    username: "drink1User@gmail.com",
+                    firstName: "drink1",
+                    lastName: "user"
+            ]).save(validate:false)
+            drink1.user = drink1User
+            controller.drinkService.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> user}
+
         when:
             request.method = 'DELETE'
             controller.delete(drink1.id)
         then:"A single drink should still exist"
-//            controller.drinkService = Stub(DrinkService) {
-//                delete(_) >> drink1.delete(flush:true)
-//            }
             println "# of drinks: ${drinkService.count()}"
             drinkService.count() == 1
         and:"Drink1 no longer exists"
@@ -233,12 +243,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
         controller.drinkService = drinkService
                 //Stub(DrinkService) {list(_) >> drinks ,count() >> drinks.size()}
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-//            getAuthentication() >> Stub(Authentication) {
-//
-//            }
-        }
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> user}
 
         when: 'call controller.index'
         controller.customIndex()
@@ -658,9 +663,17 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         given:
         def numOfDrinks = drinkService.count()
         def drinkIngredients = drink1.ingredients as List<Ingredient>
-        request.method = 'DELETE'
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        controller.drinkService.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
 
         when:
+        request.method = 'DELETE'
         controller.delete(drink1.id)
 
         then:

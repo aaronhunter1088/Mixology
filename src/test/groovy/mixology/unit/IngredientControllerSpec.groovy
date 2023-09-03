@@ -348,7 +348,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
             controller.save()
 
         then:
-            Role.findByAuthority('ROLE_ADMIN') >> role
             response.status == 400
     }
 
@@ -707,10 +706,10 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         ]).save(validate:false)
         Role userRole = new Role(authority: enums.Role.ADMIN.name)
         UserRole.create(user, userRole)
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-        }
         controller.ingredientService = ingredientService
+        controller.ingredientService.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> user}
+        controller.springSecurityService =
+                Stub(SpringSecurityService) {getPrincipal() >> user}
 
         when:
         request.method = 'DELETE'

@@ -26,6 +26,7 @@ class Drink implements Serializable{
         suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
         canBeDeleted(default:true)
         custom(default:true)
+        user(nullable:true)
     }
 
     static mapping = {
@@ -35,6 +36,8 @@ class Drink implements Serializable{
     Drink belongs to a User
     There will be a foreign key in the User table referencing the Drink primary key
      */
+    static belongsTo = [user:User]
+
     static hasMany = [
             ingredients:Ingredient // tbl: drink_ingredients
     ]

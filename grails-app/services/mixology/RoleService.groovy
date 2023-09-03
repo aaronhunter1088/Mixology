@@ -1,17 +1,20 @@
 package mixology
 
 import grails.gorm.services.Service
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+
 import javax.transaction.Transactional
 
 @Service(Role)
 class RoleService {
 
+    private static Logger logger = LogManager.getLogger(UserService.class)
+
     @Transactional
     Role save(String authority, boolean validate = false) {
-        if (validate) {
-            new Role(authority:authority).save(validate:validate, flush:true)
-        }
-        else new Role(authority:authority).save(validate:false, flush:true)
+        logger.info("authority:: $authority\tvalidate:: $validate")
+        new Role(authority:authority).save(validate:validate, flush:true)
     }
 
     Role findByAuthority(String authority) {

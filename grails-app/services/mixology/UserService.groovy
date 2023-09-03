@@ -12,6 +12,7 @@ import java.beans.Transient
 class UserService {
 
     private static Logger logger = LogManager.getLogger(UserService.class)
+    def springSecurityService
 
     User get(Long id) {
         User user = User.findById(id as Long)
@@ -26,37 +27,29 @@ class UserService {
         User.all.size()
     }
 
-    boolean update(User user) {
-
-    }
-
-    User saveUser(User user, boolean validate = false) {
+    User save(User user, boolean validate = false) {
         if (!user) return null
-        if (validate) {
-            if (user.validate()) {
-                User.withNewTransaction {
-                    try {
-                        user.save(flush:true, failOnError:true)
-                    } catch (Exception e) {
-                        logger.error("Failed to save user:: $user", e)
-                    }
-                }
+        try {
+            User.withNewTransaction {
+                user.save(validate:validate, flush:true, failOnError:true)
             }
-            else return null
-        } else {
-            try {
-                user.save(flush:true, failOnError:false)
-            } catch (Exception e) {
-                logger.error("Failed to save user:: $user", e)
-            }
+        } catch (Exception e) {
+            logger.error("Failed to save user:: $user", e)
         }
         user
     }
 
     @Transactional
     void delete(Long id) {
-        Ingredient ingredient = Ingredient.findById(id)
-        if (ingredient) ingredient.delete(flush:true)
+        User user = User.findById(id)
+        if (!user) {
+            logger.error("Could not delete user:: $user")
+        } else {
+            User.withTransaction {
+                user.delete(flush:true)
+            }
+            logger.info("User '${user.name}' deleted!")
+        }
     }
 
 }

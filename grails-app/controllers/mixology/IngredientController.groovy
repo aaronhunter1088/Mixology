@@ -108,7 +108,7 @@ class IngredientController extends BaseController {
                      // if ingredient is default and adminRole is present
                      ( !(ingredient.isCustom()) && adminRole )
                      || ( ingredient.isCustom() && (adminRole || userRole) )
-                     // if ingredient is custom and either role is present
+                     // OR if ingredient is custom and either role is present
                 ) {
                     if (!alreadyExists(ingredient)) {
                         saved = ingredientService.save(ingredient, user, true)
@@ -262,7 +262,7 @@ class IngredientController extends BaseController {
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         if ( (!ingredient.canBeDeleted && adminRole) ||
              (ingredient.canBeDeleted) ){
-            Ingredient.withNewTransaction { ingredientService.delete(id) }
+            ingredientService.delete(id)
         } else {
             ingredient.errors.reject('default.deleted.error.message', [ingredient.name] as Object[], '')
         }
