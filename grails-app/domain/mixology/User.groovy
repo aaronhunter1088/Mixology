@@ -49,6 +49,14 @@ class User implements Serializable {
             name: 'user_drinks', // table name
             column: ['user_id', 'drink_id'] // column names
         ]
+        ingredients joinTable: [
+            name: 'user_ingredients', // table name
+            column: ['user_id', 'ingredient_id'] // column names
+        ]
+        roles joinTable: [
+            name: 'user_roles', // table name
+            column: ['user_id', 'role_id']
+        ]
     }
 
     @Override

@@ -28,20 +28,26 @@ class Drink implements Serializable{
         custom(default:true)
         user(nullable:true)
     }
-
-    static mapping = {
-    }
-
     /*
     Drink belongs to a User
     There will be a foreign key in the User table referencing the Drink primary key
      */
-    static belongsTo = [user:User]
+    static hasOne = [user:User]
+    static transients = ['glassImage','fillerDrink']
 
     static hasMany = [
             ingredients:Ingredient // tbl: drink_ingredients
     ]
-    static transients = ['glassImage','fillerDrink']
+    static mapping = {
+        // define the table name
+        table 'drinks'
+        name column: 'name', sqlType:'text', length:255
+        ingredients joinTable: [
+            name: 'drink_ingredients', // table name
+            column: ['drink_id', 'ingredient_id'] // column names
+        ]
+    }
+
 
     @Override
     String toString() {

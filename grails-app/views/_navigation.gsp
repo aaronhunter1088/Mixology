@@ -57,7 +57,7 @@
                         <ul class="nav navbar-nav ml-auto">
                             <div tag="nav" style="display:inline-flex;">
                                 <!-- Default homepage or custom homepage -->
-                                <g:if test="${params.action == 'showCustomDrinks' && user.drinks}">
+                                <g:if test="${params.action == 'showCustomDrinks'}">
                                     <g:link class="dropdown-btn dropdown" url="${createLink(uri: '/')}">Default Drinks</g:link>
                                 </g:if><g:else>
                                     <g:link class="dropdown-btn dropdown" controller="drink" action="showCustomDrinks">Your Drinks</g:link>

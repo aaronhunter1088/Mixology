@@ -23,11 +23,23 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         canBeDeleted(nullable:false, default:true)
         custom(nullable:false, default:true)
     }
-    static mapping = {}
-    static belongsTo = [drink:Drink, user:User]
+    /*
+    Ingredient belongs to a User
+    There will be a foreign key in the User table referencing the Ingredient primary key
+     */
+    static hasOne = [user:User]
     static hasMany = [
             drinks:Drink // tbl: ingredient_drinks
     ]
+    static mapping = {
+        table 'ingredients'
+        drinks joinTable: [
+                name: 'ingredient_drinks', // table name
+                column: ['ingredient_id', 'drink_id'] // column names
+        ]
+    }
+
+
     static transients = ['fillerIngredient','givenId']
 
     @Override

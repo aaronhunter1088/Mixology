@@ -64,6 +64,11 @@
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <g:render template="../navigation"/>
+        <div style="display:inline-flex">
+            <div id="messages"></div>
+            <div id="search"></div>
+        </div>
+
         <% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>
         <g:set var="user" value="${User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)}"/>
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">

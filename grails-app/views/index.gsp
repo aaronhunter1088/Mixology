@@ -1,17 +1,9 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: michaelball
-  Date: 3/9/23
-  Time: 9:43 PM
---%>
-
-<%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
+<%@ page import="enums.*; mixology.Drink;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title>Mixology</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
@@ -66,7 +58,7 @@
     </head>
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
-        <g:render template="navigation"/>
+        <g:render template="/navigation"/>
         <div style="display:inline-flex">
             <div id="messages"></div>
             <div id="search"></div>
@@ -78,36 +70,36 @@
                     <div class="card" style="">
                         <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
                         <%
-                            List tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).stream().limit(12).collect()
+                            def tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).take(12)
                             for (int i=0; i<tequilaDrinks.size(); i+=2) {
                                 Drink drink1 = (Drink) tequilaDrinks.get(i)
                                 Drink drink2 = (Drink) tequilaDrinks.get(i+1)
                         %>
                         <div style="display:inline-flex;">
-                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
-                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e']"/>
-%{--                        <g:link controller="drink" action="show" params="[id:drink1.id]">--}%
-%{--                        </g:link>--}%
-%{--                        <g:link controller="drink" action="show" params="[id:drink2.id]">--}%
-%{--                        </g:link>--}%
+                            <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
+                            <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e']"/>
+    %{--                        <g:link controller="drink" action="show" params="[id:drink1.id]">--}%
+    %{--                        </g:link>--}%
+    %{--                        <g:link controller="drink" action="show" params="[id:drink2.id]">--}%
+    %{--                        </g:link>--}%
+                            </div>
+                            <% } // end for loop %>
                         </div>
-                        <% } // end for loop %>
+                    </div>
+                    <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
+                    <div id="key" style="text-align:center;padding:0;">
+                        <g:render template="/periodicTableKey"/>
                     </div>
                 </div>
-                <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
-                <div id="key" style="text-align:center;padding:0;">
-                    <g:render template="/periodicTableKey"/>
-                </div>
-            </div>
             <div id="column2" style="margin:0;padding:0;width:2100px;">
                 <div id="title" style="width:1200px;height:600px;">
                     <h1 id="chartTitle" style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                     <div id="reference" style="display:inline-flex;">
                         <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
-                            <g:render template="referenceChart"/>
+                            <g:render template="/referenceChart"/>
                         </div>
                         <div id="measurements" style="margin-left:50px;margin-right:50px;">
-                            <g:render template="measurementsCard"/>
+                            <g:render template="/measurementsCard"/>
                         </div>
                         <div id="glasses" style="text-align:center;">
                             <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger();" width="450px" height="300px" style="mix-blend-mode:initial;" src="${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}" alt="All Cocktails"/>
@@ -214,6 +206,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="column3" style="margin:0;padding:0;width:600px;">
                 <div id="frozenDrinks" style="">
                     <div class="card">
@@ -223,7 +216,7 @@
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <%
-                                List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).stream().collect()
+                                List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).collect()
                                 frozenDrinks.stream().limit(1).collect()
                                 Drink drink1 = (Drink) frozenDrinks.get(0)
                             %>
@@ -238,10 +231,10 @@
                                 Drink drink2 = (Drink) frozenDrinks.get(i+1)
                         %>
                         <div style="display:inline-flex;">
-                            <g:link controller="drink" action="show" params="[id:drink1.id]">
+                            <g:link controller="drink" action="show" params="[id:drink1?.id]">
                                 <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen']"/>
                             </g:link>
-                            <g:link controller="drink" action="show" params="[id:drink2.id]">
+                            <g:link controller="drink" action="show" params="[id:drink2?.id]">
                                 <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumseagreen']"/>
                             </g:link>
                         </div>
@@ -262,5 +255,6 @@
                 newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
             }
         </script>
+
     </body>
 </html>

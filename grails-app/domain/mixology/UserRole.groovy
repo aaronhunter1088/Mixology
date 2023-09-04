@@ -6,7 +6,6 @@ import groovy.transform.ToString
 import org.codehaus.groovy.util.HashCodeHelper
 import grails.compiler.GrailsCompileStatic
 
-//@GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable {
 
@@ -15,11 +14,30 @@ class UserRole implements Serializable {
 	User user
 	Role role
 
+	static constraints = {
+		user nullable: false
+		role nullable: false, validator: { Role r, UserRole ur ->
+			if (ur.user?.id) {
+				if (UserRole.exists(ur.user.id, r.id)) {
+					return ['userRole.exists', ur.user, r]
+				}
+			}
+		}
+	}
+
+	static mapping = {
+		table 'user_role'
+		id composite: ['user', 'role']
+		version false
+	}
+
 	@Override
 	boolean equals(other) {
-		if (other instanceof UserRole) {
-			other.userId == user?.id && other.roleId == role?.id
-		}
+		other instanceof UserRole
+		&&
+		other.userId == user?.id
+		&&
+		other.roleId == role?.id
 	}
 
     @Override
@@ -43,7 +61,7 @@ class UserRole implements Serializable {
 	}
 
 	private static DetachedCriteria criteriaFor(long userId, long roleId) {
-		UserRole.where {
+		where {
 			user == User.load(userId) &&
 			role == Role.load(roleId)
 		}
@@ -63,7 +81,7 @@ class UserRole implements Serializable {
 	 */
 	static boolean remove(User u, Role r) {
 		if (u != null && r != null) {
-			def ur = UserRole.withCriteria {
+			def ur = withCriteria {
 				eq('user', u)
 				eq('role', r)
 			} as List<UserRole>
@@ -80,20 +98,4 @@ class UserRole implements Serializable {
 //	static int removeAll(Role r) {
 //		r == null ? 0 : UserRole.where { role == r }.deleteAll() as int
 //	}
-
-	static constraints = {
-	    user nullable: false
-		role nullable: false, validator: { Role r, UserRole ur ->
-			if (ur.user?.id) {
-				if (UserRole.exists(ur.user.id, r.id)) {
-				    return ['userRole.exists']
-				}
-			}
-		}
-	}
-
-	static mapping = {
-		id composite: ['user', 'role']
-		version false
-	}
 }

@@ -14,7 +14,7 @@
                     </b>
                 </p>
                 <div style="overflow-y:auto;height:80px;">
-                    <g:if test="${drink.fillerDrink}">
+                    <g:if test="${drink?.fillerDrink}">
                         <g:each in="${ drink.ingredients.sort{it.givenId} }" var="ingredient">
                             <g:if test="${opacity == 0.5}">
                                 <p style="margin:0;color:black;">${ingredient}</p>
