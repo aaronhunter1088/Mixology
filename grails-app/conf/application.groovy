@@ -22,8 +22,6 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],
 	[pattern: '/error',          access: ['permitAll']],
 	[pattern: '/index',          access: ['permitAll']],
-		/* TODO: delete secure */
-	[pattern: '/secure/index',   access: ['ROLE_ADMIN']],
 	[pattern: '/shutdown',       access: ['permitAll']],
 	[pattern: '/assets/**',      access: ['permitAll']],
 	[pattern: '/**/js/**',       access: ['permitAll']],
@@ -51,12 +49,11 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/ingredient/delete',   access: ['permitAll']],
 		/* User Controller */
 	[pattern: '/user/index',	 	  access: ['ROLE_ADMIN']],
-	[pattern: '/user/show',      	  access: ['permitAll']],
+	[pattern: '/user/show',      	  access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/user/create',    	  access: ['permitAll']],
 	[pattern: '/user/save',      	  access: ['permitAll']],
-	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN']],
-	//[pattern: '/index.gsp',           access: ['permitAll']],
-	[pattern: '/user/delete',         access: ['permitAll']],
+	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN','ROLE_USER']],
+	[pattern: '/user/delete',         access: ['ROLE_ADMIN']],
 		/* More ... */
 
 
@@ -65,7 +62,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 grails.plugins.springsecurity.interceptUrlMap = [
 	/* Resources */
 	/* Drink Resource */
-	[pattern: '/v1/**',		  		  access: ['IS_AUTHENTICATED_ANONYMOUSLY']]
+	[pattern: '/v1/**',		  		  access: ['permitAll']]
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [

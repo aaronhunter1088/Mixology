@@ -38,13 +38,13 @@ class UserController extends BaseController {
         respond user
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         User user = new User(params)
         respond user
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save(User user) {
         if (!user) {
             badRequest(flash, request, '','')
