@@ -5,6 +5,8 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
+import org.hibernate.collection.internal.PersistentSet
+
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
 import javax.mail.Session
@@ -59,7 +61,8 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
-        respond drinkService.get(id)
+        Drink drink = drinkService.get(id)
+        respond drink
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -262,25 +265,34 @@ class DrinkController extends BaseController {
         def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
         if (user) {
             logger.info("we have a user logged in ${user.firstName} ${user.lastName}")
-            Drink copied = new Drink([
+            def copiedIngredients = Ingredient.copyAll(drink.ingredients) as List<Ingredient>
+            copiedIngredients.each {ingredient ->
+                ingredient = ingredientService.save(ingredient, user, true)
+                logger.info("$ingredient saved:: ${ingredient.id}")
+            }
+            Drink copiedDrink = new Drink([
                     name : drink.name,
                     symbol : drink.symbol,
                     number : drink.number,
                     alcoholType : drink.alcoholType,
-                    ingredients : Ingredient.copyAll(drink.ingredients),
+                    ingredients : copiedIngredients,
                     mixingInstructions : drink.mixingInstructions,
-                    suggestedGlass : drink.suggestedGlass,
-                    canBeDeleted : true,
-                    custom : true
+                    suggestedGlass : drink.suggestedGlass
+                    //,canBeDeleted : true
+                    //,custom : true
             ])
             logger.info("drink has been copied")
-            copied.ingredients.each { newIngredient -> ingredientService.save(newIngredient, user, true)
+            copiedDrink = drinkService.save(copiedDrink, user, true)
+            logger.info("drink saved:: ${copiedDrink.id}")
+            copiedIngredients.each {ingredient ->
+                ingredient.addToDrinks(copiedDrink)
+                ingredient = ingredientService.save(ingredient, user, false)
+                copiedDrink.addToIngredients(ingredient)
+                drinkService.save(drink, user, false)
             }
-            copied = drinkService.save(copied, user, true)
-            logger.info("drink has been saved")
             user.clearErrors()
             if (!user.hasErrors()) {
-                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name, user], default: "Copied $copied to $user. You can edit your version as you see fit.") as Object
+                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name, user], default: "Copied $copiedDrink to $user. You can edit your version as you see fit.") as Object
                 request.withFormat {
                     form multipartForm {
                         respond drink, view:'show'

@@ -41,9 +41,9 @@ class Drink implements Serializable{
     static mapping = {
         // define the table name
         table 'drinks'
-        name column: 'name', sqlType:'text', length:255
         ingredients joinTable: [
             name: 'drink_ingredients', // table name
+            key: 'drink_id',
             column: ['drink_id', 'ingredient_id'] // column names
         ]
     }

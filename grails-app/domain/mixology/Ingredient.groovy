@@ -18,7 +18,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         name(nullable:false, blank:false, size:3..30)
         unit(nullable:false, blank:false, validator: { if (!(it in Unit.values())) return ['invalid.unit'] })
         amount(nullable:false, blank:false)
-        drink(nullable:true)
+        drinks(nullable:true)
         user(nullable:true)
         canBeDeleted(nullable:false, default:true)
         custom(nullable:false, default:true)
@@ -34,8 +34,9 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static mapping = {
         table 'ingredients'
         drinks joinTable: [
-                name: 'ingredient_drinks', // table name
-                column: ['ingredient_id', 'drink_id'] // column names
+            name: 'drink_ingredients', // table name
+            key: 'ingredient_id',
+            column: ['drink_id', 'ingredient_id'] // column names
         ]
     }
 

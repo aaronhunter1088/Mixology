@@ -77,7 +77,7 @@
                     <div class="card" style="">
                         <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                         <%
-                            List tequilaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.TEQUILA}
+                            List tequilaDrinks = drinks.findAll { it.alcoholType == Alcohol.TEQUILA}
                                     .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                             for (int i=0; i<12; i+=2) {
                                 Drink drink1 = null

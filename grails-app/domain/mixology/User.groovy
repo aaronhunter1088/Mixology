@@ -45,7 +45,7 @@ class User implements Serializable {
     static mapping = {
         password column: '`password`'
         autowire true
-        drinks joinTable:[
+        drinks joinTable: [
             name: 'user_drinks', // table name
             column: ['user_id', 'drink_id'] // column names
         ]

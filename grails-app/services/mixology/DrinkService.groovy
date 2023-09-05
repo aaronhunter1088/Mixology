@@ -76,15 +76,15 @@ class DrinkService {
         if (!drink || !user) null
         try {
             Drink.withTransaction {
-                drink.save(flush:true, failOnError:validate)
+                drink.save(validate:validate, flush:true, failOnError:validate)
                 user.addToDrinks(drink)
                 user.save(flush:true, failOnError:false, validate:false) // user is not validated here. we are saving drink (mainly)
             }
+            drink
         } catch (Exception e) {
             logger.error("Could not save drink:: $drink", e)
             null
         }
-        drink
     }
 
     /**
