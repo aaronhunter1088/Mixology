@@ -362,10 +362,10 @@
                                 <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                             </div>
                             <%
-                                List frozenDrinks = user.drinks.findAll { it.alcoholType == Alcohol.FROZEN }
-                                        .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
+                                def frozenDrinks = drinks.findAll { it.alcoholType == Alcohol.FROZEN }
+                                        .sort((d1, d2) -> d1.number.compareTo(d2.number)).take(9).collect() as List<Drink>
                                 Drink drink1 = null
-                                try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                             %>
                             <g:if test="${drink1.number != 0}">
@@ -380,12 +380,12 @@
                             for (int i=1; i<9; i+=2) {
                                 drink1 = null
                                 if (i < 9) {
-                                    try { drink1 = (Drink)frozenDrinks.get(i); if (!drink1.custom) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                    try { drink1 = (Drink)frozenDrinks.get(i); if (!drink1) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                     catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 }
                                 Drink drink2 = null
                                 if (i+1 < 9) {
-                                    try { drink2 = (Drink)frozenDrinks.get(i+1); if (!drink2.custom) drink2 = Drink.createFillerDrink(Alcohol.FROZEN); }
+                                    try { drink2 = (Drink)frozenDrinks.get(i+1); if (!drink2) drink2 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                     catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.FROZEN); }
                                 }
                         %>

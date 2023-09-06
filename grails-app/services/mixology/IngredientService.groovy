@@ -50,10 +50,12 @@ class IngredientService {
      * @return
      */
     Ingredient save(Ingredient ingredient, boolean validate = false) {
-        try {
-            ingredient.save(validate: validate, flush: true, failOnError: validate)
-        } catch (Exception e) {
-            logger.error("Could not save ingredient:: $ingredient", e)
+        Ingredient.withNewTransaction {
+            try {
+                ingredient.save(validate: validate, flush: true, failOnError: validate)
+            } catch (Exception e) {
+                logger.error("Could not save ingredient:: $ingredient", e)
+            }
         }
         ingredient
     }
@@ -74,11 +76,12 @@ class IngredientService {
     Ingredient save(Ingredient ingredient, User user, boolean validate = false) {
         if (!ingredient || !user) null
         try {
-            Ingredient.withTransaction {
+            Ingredient.withNewTransaction {
                 ingredient.save(validate:validate, flush:true, failOnError:validate)
-                user.addToIngredients(ingredient)
-                user.save(flush: true, failOnError: false, validate: false)// user is not validated here. we are saving drink (mainly)
+                // user is not validated here. we are saving drink (mainly)
+                user.addToIngredients(ingredient).save(flush: true, failOnError: false, validate: false)
             }
+            logger.info("Ingredient saved!")
             ingredient
         } catch (Exception e) {
             logger.error("Could not save ingredient:: $ingredient", e)

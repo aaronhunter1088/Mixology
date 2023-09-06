@@ -139,7 +139,7 @@
                                                 <div style="display:block;">
                                                     <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>
                                                     <button hidden id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                    <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink}"/> ${drink} &emsp14;
+                                                    <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink.id}"/> ${drink} &emsp14;
                                                 </div>
                                             </g:if>
                                         </g:each>

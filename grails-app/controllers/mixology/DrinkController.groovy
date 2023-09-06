@@ -275,12 +275,15 @@ class DrinkController extends BaseController {
                     symbol : drink.symbol,
                     number : drink.number,
                     alcoholType : drink.alcoholType,
-                    ingredients : copiedIngredients,
+                    //ingredients : copiedIngredients,
                     mixingInstructions : drink.mixingInstructions,
                     suggestedGlass : drink.suggestedGlass
                     //,canBeDeleted : true
                     //,custom : true
             ])
+            copiedIngredients.each{ci ->
+                copiedDrink.addToIngredients(ci)
+            }
             logger.info("drink has been copied")
             copiedDrink = drinkService.save(copiedDrink, user, true)
             logger.info("drink saved:: ${copiedDrink.id}")
@@ -288,8 +291,9 @@ class DrinkController extends BaseController {
                 ingredient.addToDrinks(copiedDrink)
                 ingredient = ingredientService.save(ingredient, user, false)
                 copiedDrink.addToIngredients(ingredient)
-                drinkService.save(drink, user, false)
+                drinkService.save(copiedDrink, user, false)
             }
+            copiedDrink = drinkService.save(copiedDrink, user, true)
             user.clearErrors()
             if (!user.hasErrors()) {
                 flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name, user], default: "Copied $copiedDrink to $user. You can edit your version as you see fit.") as Object

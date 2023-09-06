@@ -206,7 +206,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="column3" style="margin:0;padding:0;width:600px;">
                 <div id="frozenDrinks" style="">
                     <div class="card">

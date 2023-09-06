@@ -3,13 +3,10 @@ package mixology
 import validators.*
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
-import grails.compiler.GrailsCompileStatic
 
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
 class User implements Serializable {
-
-    private static final long serialVersionUID = 1
 
     boolean enabled = true
     boolean accountExpired
@@ -45,18 +42,6 @@ class User implements Serializable {
     static mapping = {
         password column: '`password`'
         autowire true
-        drinks joinTable: [
-            name: 'user_drinks', // table name
-            column: ['user_id', 'drink_id'] // column names
-        ]
-        ingredients joinTable: [
-            name: 'user_ingredients', // table name
-            column: ['user_id', 'ingredient_id'] // column names
-        ]
-        roles joinTable: [
-            name: 'user_roles', // table name
-            column: ['user_id', 'role_id']
-        ]
     }
 
     @Override

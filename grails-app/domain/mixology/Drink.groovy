@@ -26,28 +26,27 @@ class Drink implements Serializable{
         suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
         canBeDeleted(default:true)
         custom(default:true)
-        user(nullable:true)
+        ingredients(nullable:true)
+        user(nullable:true,default:0)
     }
     /*
     Drink belongs to a User
     There will be a foreign key in the User table referencing the Drink primary key
      */
     static hasOne = [user:User]
-    static transients = ['glassImage','fillerDrink']
-
     static hasMany = [
             ingredients:Ingredient // tbl: drink_ingredients
     ]
     static mapping = {
-        // define the table name
         table 'drinks'
-        ingredients joinTable: [
-            name: 'drink_ingredients', // table name
-            key: 'drink_id',
-            column: ['drink_id', 'ingredient_id'] // column names
-        ]
+//        ingredients joinTable: [
+//            name: 'ingredients_drinks', // table name
+//            key: 'drink_id'
+//            ,column: 'drink_id'
+//        ]
     }
 
+    static transients = ['glassImage','fillerDrink']
 
     @Override
     String toString() {

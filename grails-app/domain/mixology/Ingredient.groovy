@@ -18,10 +18,10 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         name(nullable:false, blank:false, size:3..30)
         unit(nullable:false, blank:false, validator: { if (!(it in Unit.values())) return ['invalid.unit'] })
         amount(nullable:false, blank:false)
-        drinks(nullable:true)
-        user(nullable:true)
         canBeDeleted(nullable:false, default:true)
         custom(nullable:false, default:true)
+        drinks(nullable:true)
+        user(nullable:true,default:0)
     }
     /*
     Ingredient belongs to a User
@@ -31,13 +31,14 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static hasMany = [
             drinks:Drink // tbl: ingredient_drinks
     ]
+    static belongsTo = Drink
     static mapping = {
         table 'ingredients'
-        drinks joinTable: [
-            name: 'drink_ingredients', // table name
-            key: 'ingredient_id',
-            column: ['drink_id', 'ingredient_id'] // column names
-        ]
+//        drinks joinTable: [
+//            name: 'ingredients_drinks', // table name
+//            key: 'ingredient_id,drink_id'
+//            ,column: ['ingredient_id','drink_id']
+//        ]
     }
 
 

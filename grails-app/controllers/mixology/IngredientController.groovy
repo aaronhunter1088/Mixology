@@ -14,6 +14,7 @@ class IngredientController extends BaseController {
     private static Logger logger = LogManager.getLogger(IngredientController.class)
 
     IngredientService ingredientService
+    DrinkService drinkService
     UserService userService
     def springSecurityService
 
@@ -171,43 +172,51 @@ class IngredientController extends BaseController {
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
-    def update(Ingredient ingredient) {
-        if (!ingredient) {
-            badRequest(flash, request, 'show', 'No ingredient was sent in to update')
+    def update(Ingredient ingredientToUpdate) {
+        if (!ingredientToUpdate) {
+            badRequest(flash, request, 'show', 'No ingredientToUpdate was sent in to update')
             return
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        ingredient.org_grails_datastore_gorm_GormValidateable__errors = null
-        if ( (!ingredient.isCustom() && adminRole) ||
-                (ingredient.isCustom()) ){
-            Set<Drink> ingredientsDrinks = ingredient?.drinks
-            ingredientsDrinks.each { drink ->
-                drink.addToIngredients(ingredient)
-                drink.save()
+        ingredientToUpdate.clearErrors()
+        if ( (!ingredientToUpdate.isCustom() && adminRole) ||
+                (ingredientToUpdate.isCustom()) ){
+            // Find the drinks from the params, if any
+            if (params.drinks) {
+                params?.drinks?.eachWithIndex{ def id, int idx ->
+                    Drink drink = drinkService.get(id as Long)
+                    if (drink) {
+                        // Add the ingredientToUpdate to the found drink.
+                        drink.addToIngredients(ingredientToUpdate)
+                        drinkService.save(drink, user, true)
+                        // Add the drink to the ingredientToUpdate
+                        ingredientToUpdate.addToDrinks(drink)
+                        ingredientService.save(ingredientToUpdate, user, true)
+                    }
+                }
             }
-            ingredientService.save(ingredient)
         }
         else {
-            ingredient.errors.reject('default.updated.error.message', [ingredient.name] as Object[], '')
+            ingredientToUpdate.errors.reject('default.updated.error.message', [ingredientToUpdate.name] as Object[], '')
         }
 
-        if (ingredient.errors.hasErrors()) {
-            Set<Drink> drinks = Drink.findAllByIngredientsInList(ingredient.drinks as List)
-            ingredient.drinks = drinks
+        if (ingredientToUpdate.errors.hasErrors()) {
+            Set<Drink> drinks = Drink.findAllByIngredientsInList(ingredientToUpdate.drinks as List)
+            ingredientToUpdate.drinks = drinks
             request.withFormat {
                 form multipartForm {
-                    respond ingredient.errors, view:'edit', status:BAD_REQUEST
+                    respond ingredientToUpdate.errors, view:'edit', status:BAD_REQUEST
                 }
-                '*'{ respond ingredient.errors, [status:BAD_REQUEST] }
+                '*'{ respond ingredientToUpdate.errors, [status:BAD_REQUEST] }
             }
         } else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredient'), ingredient.toString()])
-                    redirect ingredient
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredientToUpdate'), ingredientToUpdate.toString()])
+                    redirect ingredientToUpdate
                 }
-                '*'{ respond ingredient, [status: OK] }
+                '*'{ respond ingredientToUpdate, [status: OK] }
             }
         }
     }

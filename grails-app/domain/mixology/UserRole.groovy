@@ -4,12 +4,9 @@ import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
 
 import org.codehaus.groovy.util.HashCodeHelper
-import grails.compiler.GrailsCompileStatic
 
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserRole implements Serializable {
-
-	private static final long serialVersionUID = 1
 
 	User user
 	Role role
@@ -18,7 +15,7 @@ class UserRole implements Serializable {
 		user nullable: false
 		role nullable: false, validator: { Role r, UserRole ur ->
 			if (ur.user?.id) {
-				if (UserRole.exists(ur.user.id, r.id)) {
+				if (exists(ur.user.id, r.id)) {
 					return ['userRole.exists', ur.user, r]
 				}
 			}

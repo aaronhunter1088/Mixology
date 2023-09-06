@@ -632,28 +632,30 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         }
         controller.drinkService = drinkService
         controller.ingredientService = ingredientService
-        user.drinks.size() == 0
+        assert user.drinks.size() == 0
 
         when:
         controller.copy(drink1)
 
         then:
-        user.drinks.size() == 1
+        assert user.drinks.size() == 1
         def copied = user.drinks[0]
-        copied.name == drink1.name
-        copied.number == drink1.number
-        copied.alcoholType == drink1.alcoholType
-        copied.symbol == drink1.symbol
-        copied.mixingInstructions == drink1.mixingInstructions
-        copied.suggestedGlass == drink1.suggestedGlass
-        copied.id != drink1.id
-        copied.ingredients.size() == drink1.ingredients.size()
+        assert copied.name == drink1.name
+        assert copied.number == drink1.number
+        assert copied.alcoholType == drink1.alcoholType
+        assert copied.symbol == drink1.symbol
+        assert copied.mixingInstructions == drink1.mixingInstructions
+        assert copied.suggestedGlass == drink1.suggestedGlass
+        assert copied.id != drink1.id
+        assert copied.ingredients.size() == drink1.ingredients.size()
         copied.ingredients.each {Ingredient copiedIng ->
             drink1.ingredients.each {Ingredient originalIng ->
-                copiedIng.name == originalIng.name
-                copiedIng.unit == originalIng.unit
-                copiedIng.amount == originalIng.amount
-                copiedIng.id != originalIng.id
+                if (copiedIng.name == originalIng.name) {
+                    assert copiedIng.name == originalIng.name
+                    assert copiedIng.unit == originalIng.unit
+                    assert copiedIng.amount == originalIng.amount
+                    assert copiedIng.id != originalIng.id
+                }
             }
         }
     }
