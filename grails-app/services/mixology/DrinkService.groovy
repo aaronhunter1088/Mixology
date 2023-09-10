@@ -20,7 +20,16 @@ class DrinkService {
      * @return
      */
     Drink get(Long id) {
-        Drink drink = Drink.findById(id) ?: null
+        def drink = (Drink.withCriteria {
+            if (id) eq('id', id)
+            else null
+        })[0] as Drink
+        //get
+//        Drink drink = cq
+//            .get {
+//                if (id) eq('id', id)
+//                else null
+//            } as Drink
         drink
     }
 
@@ -80,7 +89,7 @@ class DrinkService {
                 // user is not validated here. we are saving drink (mainly)
                 user.addToDrinks(drink).save(flush:true, failOnError:false, validate:false)
             }
-            logger.info("Drink saved!")
+            logger.info("Drink saved to user (${user.username}) : (${user.id})!")
             drink
         } catch (Exception e) {
             logger.error("Could not save drink:: $drink", e)
@@ -108,15 +117,10 @@ class DrinkService {
                 logger.warn("Drink belongs to user, id:: ${drink?.user?.id}")
             }
             try {
-                def dIngredients = drink.ingredients as List<Ingredient>
-                dIngredients.each { ingredient ->
+                user.removeFromDrinks(drink)
+                drink?.ingredients?.each { ingredient ->
+                    ingredient?.removeFromDrinks(drink)
                     drink.removeFromIngredients(ingredient)
-                    ingredient.removeFromDrinks(drink)
-                }
-                if (dIngredients.size() > 0) {
-                    dIngredients.eachWithIndex{ Ingredient ingredient, int i ->
-                        logger.warn("Deleting this drink will affect this ingredient, id:: ${ingredient.id}")
-                    }
                 }
                 Drink.withNewTransaction {
                     drink.delete(flush: true)

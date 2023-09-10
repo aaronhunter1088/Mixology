@@ -92,18 +92,18 @@
                         <g:form resource="${this.ingredient}" method="put" name="updateIngredient">
                             <input type="text" hidden name="version" value="${ingredient.version}"/>
                             <div id="update-ingredient1" style="width:40%;float:left;">
-                                <div class="formfield" id="name">
-                                    <label for='ingredientName'><span class='required-indicator'>*</span> Ingredient Name</label>
+                                <div class="formfield">
+                                    <label for='name'><span class='required-indicator'>*</span> Ingredient Name</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="ingredientName" value="${ingredient.name}" required="" id="ingredientName" />
+                                        <input type="text" name="name" value="${ingredient.name}" required="" id="name" />
                                     </div>
                                 </div>
-                                <div class="formfield" id="unit">
+                                <div class="formfield">
                                     <label for='unit'><span class='required-indicator'>*</span> Unit</label>
                                     <div class="input-wrapper">
                                         <select name="alcoholType" class="form-control" style="width:94%;">
                                             <option label="Select One" selected disabled>Select One</option>
-                                            <g:each in="${Unit.values()}" var="unit" name="unitType">
+                                            <g:each in="${Unit.values()}" var="unit" name="unit">
                                                 <g:if test="${ingredient.unit == unit}">
                                                     <option value="${unit}" selected>${unit}</option>
                                                 </g:if>
@@ -114,10 +114,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="formfield" id="amount">
+                                <div class="formfield">
                                     <label for='amount'><span class='required-indicator'>*</span> Amount</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="unit" value="${ingredient.amount}" required="" id="ingredientAmount" />
+                                        <input type="text" name="amount" value="${ingredient.amount}" required="" id="amount" />
                                     </div>
                                 </div>
                             </div>
@@ -125,16 +125,16 @@
                                 <div class="formfield">
                                     <label style="text-align:right;padding-right:30px;">Drinks</label><br>
                                     <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                        <g:each in="${user.drinks}" var="drink" status="i">
+                                        <g:each in="${ingredient.drinks}" var="drink" status="i">
                                             <g:if test="${(ingredient as Ingredient).drinks.contains(drink)}">
                                                 <div style="display:block;">
                                                     <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-success btn-xs" onclick="addDrink('${drink.id}');">Added</button>
                                                     <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                    <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink}"/> ${drink} &emsp14;
+                                                    <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/> ${drink} &emsp14;
                                                 </div>
                                             </g:if>
                                         </g:each>
-                                        <g:each in="${user.drinks}" var="drink" status="i">
+                                        <g:each in="${drinks}" var="drink" status="i">
                                             <g:if test="${!(ingredient as Ingredient).drinks.contains(drink)}">
                                                 <div style="display:block;">
                                                     <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>

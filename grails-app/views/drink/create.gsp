@@ -81,11 +81,11 @@
     <body>
         <script type="text/javascript">
             $(document).ready(function() {
-                console.log("page loaded");
+                console.log("create drink page loaded");
             });
             let rowId = 0;
         </script>
-        <div id="content" role="main">
+        <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
                     <g:render template="drinkNav"/>
@@ -110,15 +110,15 @@
                     <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid();">
                         <div id="create-drink" style="width:55%;float:left;">
                             <div class="formfield">
-                                <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
+                                <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                 <div class="input-wrapper">
-                                    <input type="text" name="drinkName" value="" required="" id="drinkName" />
+                                    <input type="text" name="name" required id="name" />
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
+                                <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
                                 <div class="input-wrapper">
-                                    <input type="text" name="drinkNumber" value="" required="" id="drinkNumber" />
+                                    <input type="text" name="number" required id="number" />
                                 </div>
                             </div>
                             <div class="formfield">
@@ -133,52 +133,53 @@
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
+                                <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                 <div class="input-wrapper">
-                                    <input type="text" name="drinkSymbol" value="" required="" id="drinkSymbol" />
+                                    <input type="text" name="symbol" value required id="symbol" />
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for="glassType"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                <label for="suggestedGlass"><span class='required-indicator'>*</span> Suggested Glass</label>
                                 <div class="input-wrapper">
                                     <select name="glass" class="form-control" style="width:37%;">
                                         <option label="Select One" selected disabled>Select One</option>
-                                        <g:each in="${GlassType.values()}" var="glass" name="glassType">
+                                        <g:each in="${GlassType.values()}" var="glass" name="suggestedGlass">
                                             <option value="${glass}">${glass}</option>
                                         </g:each>
                                     </select>
                                 </div>
                             </div>
                             <div class="formfield">
-                                <label for='instructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
+                                <label for='mixingInstructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
                                 <div class="input-wrapper">
-                                    <g:textArea form="newDrink" name="instructions" value="" rows="5" cols="40"/>
+                                    <g:textArea form="newDrink" name="mixingInstructions" value="" rows="5" cols="40"/>
                                 </div>
                             </div>
+                            <g:if test="${user.ingredients}">
                             <div class="formfield">
-                                <label><span class='required-indicator'>*</span> Ingredients</label><br>
-                                <div style="margin-top:-25px;height:200px;overflow-y:auto;">
-                                    <g:each in="${user.ingredients.sort{-it.id}}" var="ingredient" status="i"> <!-- sort{'negative'...} returns list in reverse sort -->
-                                        <div style="display:block;">
-                                            <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
-                                                <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
-                                                <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
-                                                <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
-                                                <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient} &emsp14;
+                                    <label><span class='required-indicator'>*</span> Ingredients</label><br>
+                                    <div style="margin-top:-25px;height:200px;overflow-y:auto;">
+                                        <g:each in="${user.ingredients.sort{-it.id}}" var="ingredient" status="i"> <!-- sort{'negative'...} returns list in reverse sort -->
+                                            <div style="display:block;">
+                                                <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
+                                                    <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('stringOptsBody', 'ingredient', '${ingredient}')">Edit Me</button>
+                                                    <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
+                                                    <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
+                                                    <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient} &emsp14;
+                                                </div>
                                             </div>
-                                        </div>
-                                    </g:each>
+                                        </g:each>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="formfield" style="margin-top:25px;padding-left:50%;">
-                                <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button> %{-- formaction="/mixology/drink/save"--}%
-                            </div>
+                            </g:if>
+                            <!-- Create button -->
                         </div>
                         <div id="create-ingredient" style="width:45%;float:right;">
                             <form id="ingredientForm" name="ingredientForm">
                                 <fieldset id="ingredientFieldSet" style="height:150px;border:thick solid #008011;" class="no-before">
                                     <legend style="margin-left:25px;width:auto;">
                                         &emsp14;Create A New Ingredient&emsp14;
+                                        <a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a>
                                         <hr style="height:1px;background-color:#008011">
                                     </legend>
                                     <div id="ingredientErrorMessagesDiv" class="col-12 content scaffold-create" role="main">
@@ -190,7 +191,7 @@
                                                 <th style="width:144px;">Name</th>
                                                 <th style="width:175px;">Unit</th>
                                                 <th style="width:100px;">Amount</th>
-                                                <th><a style="color:black;" class="btn btn-outline-success" href="javascript:addRow('stringOptsBody', 'ingredient', '')"><b>+</b></a></th>
+                                                <th></th>
                                             </thead>
                                             <script>
                                                 function addRow(tbody, prefix, ingredient) {
@@ -305,6 +306,9 @@
                                 </fieldset>
                             </form>
                         </div>
+                        <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                            <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button>
+                        </div>
                     </g:form>
                 </fieldset>
             </div>
@@ -328,13 +332,12 @@
             }
             function isValid() {
                 let tableRows = $("#ingredientTable > tbody > tr");
-                let row;
                 let numberOfRows = tableRows.length
                 let successCount = 0;
                 let failCount = 0;
                 let ajaxCalls = 0;
                 tableRows.each(function () {
-                    row = $(this);
+                    let row = $(this);
                     let cellValue1 = row.find('td:nth-child(1) > input').val();
                     let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
                     let cellValue3 = row.find('td:nth-child(3) > input').val();
@@ -394,8 +397,9 @@
                         }
                     });
                 });
-                console.log("SuccessCount:"+successCount + "===" + numberOfRows+":NumberOfRows");
-                return successCount === numberOfRows;
+                let result = successCount === numberOfRows
+                console.log("SuccessCount:"+successCount + "===" + numberOfRows+":NumberOfRows ==> " + result);
+                return result;
             }
         </script>
     </body>

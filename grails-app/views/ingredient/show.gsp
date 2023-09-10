@@ -107,7 +107,8 @@
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;">
                                             <g:each in="${ingredient.drinks}" var="drink" status="i">
                                                 <div style="display:block;">
-                                                    <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/> ${drink}
+                                                    <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/>
+                                                    <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link> : ${drink.id}
                                                 </div>
                                             </g:each>
                                         </div>
@@ -118,7 +119,7 @@
                                 <fieldset class="buttons" style="width:100%;">
                                     <sec:ifLoggedIn>
                                         <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
-                                        <g:if test="${ingredient.custom}">
+                                        <g:if test="${ingredient.custom || role}">
                                             <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
                                         %{--<g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>--}%
                                             <i class="fa-solid fa-trash-can">

@@ -148,7 +148,7 @@
                                 <fieldset class="buttons">
                                     <sec:ifLoggedIn>
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
-                                        <g:if test="${drink.custom}">
+                                        <g:if test="${drink.custom || adminIsLoggedIn}">
                                             <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
                                             <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>
                                             <i class="fa-solid fa-trash-can">

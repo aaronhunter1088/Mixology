@@ -65,7 +65,9 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
-        respond ingredientService.get(id)
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def role = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        respond ingredientService.get(id), model:[user:user, role:role]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -167,42 +169,43 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        render view:'edit', model:[ingredient:ingredientService.get(id), user:user]
+        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+
+        def ingredient = ingredientService.get(id)
+        def drinks = adminRole ? Drink.all : user.drinks as List
+        render view:'edit', model:[ingredient:ingredient, user:user, drinks:drinks]
         //respond ingredientService.get(id)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
-    def update(Ingredient ingredientToUpdate) {
-        if (!ingredientToUpdate) {
+    def update() { //(Ingredient ingredientToUpdate) {
+        if (!params) {
             badRequest(flash, request, 'show', 'No ingredientToUpdate was sent in to update')
+            return
+        }
+        if (request.method != 'PUT') {
+            methodNotAllowed('','')
             return
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
+        def drinksBefore = ingredientToUpdate.drinks*.id
         ingredientToUpdate.clearErrors()
         if ( (!ingredientToUpdate.isCustom() && adminRole) ||
                 (ingredientToUpdate.isCustom()) ){
-            // Find the drinks from the params, if any
-            if (params.drinks) {
-                params?.drinks?.eachWithIndex{ def id, int idx ->
-                    Drink drink = drinkService.get(id as Long)
-                    if (drink) {
-                        // Add the ingredientToUpdate to the found drink.
-                        drink.addToIngredients(ingredientToUpdate)
-                        drinkService.save(drink, user, true)
-                        // Add the drink to the ingredientToUpdate
-                        ingredientToUpdate.addToDrinks(drink)
-                        ingredientService.save(ingredientToUpdate, user, true)
-                    }
-                }
-            }
+            ingredientToUpdate.name = params?.name ?: ingredientToUpdate.name
+            ingredientToUpdate.amount = params?.amount ? Double.valueOf(params.amount as double) : ingredientToUpdate.amount
+            ingredientToUpdate.unit = params?.unit ? Unit.valueOf(params.unit as String) : ingredientToUpdate.unit
+            ingredientToUpdate = updateIngredientDrinks(ingredientToUpdate, user, params)
         }
         else {
             ingredientToUpdate.errors.reject('default.updated.error.message', [ingredientToUpdate.name] as Object[], '')
         }
 
         if (ingredientToUpdate.errors.hasErrors()) {
-            Set<Drink> drinks = Drink.findAllByIngredientsInList(ingredientToUpdate.drinks as List)
+            Set<Drink> drinks = Drink.findAllByIdInList(drinksBefore)
             ingredientToUpdate.drinks = drinks
             request.withFormat {
                 form multipartForm {
@@ -372,5 +375,41 @@ class IngredientController extends BaseController {
             response.getWriter().flush();
             response.setStatus(HttpServletResponse.SC_OK) // 200
         }
+    }
+
+    def updateIngredientDrinks(Ingredient ingredientToUpdate, User user, Map params) {
+        def drinksBefore = ingredientToUpdate.drinks*.id
+        def drinksAfter = []
+        params?.drinks?.each{ String id -> drinksAfter << Long.valueOf(id) }
+        def drinksToRemove = drinksBefore - drinksAfter
+        if (drinksToRemove?.size() > 0) {
+            drinksToRemove.each { Long id ->
+                Drink drink = drinkService.get(id)
+                if (drink) {
+                    drink.removeFromIngredients(ingredientToUpdate)
+                    drinkService.save(drink, user, true)
+                    logger.info("Updated ingredient. Removed from drink and vise versa")
+                }
+            }
+        }
+        if (drinksAfter) {
+            drinksAfter.each { Long id ->
+                Drink drink = drinkService.get(id)
+                if (drink) {
+                    if (!drink.ingredients.contains(ingredientToUpdate)) {
+                        drink.addToIngredients(ingredientToUpdate)
+                        drinkService.save(drink, user, true)
+                        logger.info("Updated drink to show ingredient (${ingredientToUpdate.id}) in list")
+                    }
+                    if (!ingredientToUpdate.drinks.contains(drink)) {
+                        ingredientToUpdate.addToDrinks(drink)
+                        ingredientService.save(ingredientToUpdate, user, true)
+                        logger.info("Updated ingredient to show Drink (${drink.id}) in list")
+                    }
+                }
+            }
+        }
+
+        ingredientToUpdate
     }
 }

@@ -160,9 +160,10 @@
                                             <div class="formfield" id="drinks" style="display:block;">
                                                 <label>Users Drinks</label><br>
                                                 <div style="margin-top:-25px;height:100px;overflow-y:auto;">
-                                                    <g:each in="${user.drinks}" var="drink" status="i">
+                                                    <g:each in="${user.drinks.sort{ it.id } }" var="drink" status="i">
                                                         <div style="display:block;">
-                                                            <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                            <input hidden type="checkbox" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                            <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link> : ${drink.id}
                                                         </div>
                                                     </g:each>
                                                 </div>

@@ -91,19 +91,19 @@
                         <g:form resource="${this.drink}" method="put" name="updateDrink">
                             <input type="text" hidden name="version" value="${drink.version}"/>
                             <div id="update-drink1" style="width:50%;float:left;">
-                                <div class="formfield" id="name">
-                                    <label for='drinkName'><span class='required-indicator'>*</span> Drink Name</label>
+                                <div class="formfield">
+                                    <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkName" value="${drink.name}" required="" id="drinkName" />
+                                        <input type="text" name="name" value="${drink.name}" required="" id="name" />
                                     </div>
                                 </div>
-                                <div class="formfield" id="number">
-                                    <label for='drinkNumber'><span class='required-indicator'>*</span> Drink Number</label>
+                                <div class="formfield">
+                                    <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkNumber" value="${drink.number}" required="" id="drinkNumber" />
+                                        <input type="text" name="number" value="${drink.number}" required="" id="number" />
                                     </div>
                                 </div>
-                                <div class="formfield" id="alcohol">
+                                <div class="formfield">
                                     <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
                                     <div class="input-wrapper">
                                         <select name="alcoholType" class="form-control" style="width:42%;">
@@ -119,18 +119,18 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="formfield" id="symbol">
-                                    <label for='drinkSymbol'><span class='required-indicator'>*</span> Drink Symbol</label>
+                                <div class="formfield">
+                                    <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                     <div class="input-wrapper">
-                                        <input type="text" name="drinkSymbol" value="${drink.symbol}" required="" id="drinkSymbol" />
+                                        <input type="text" name="symbol" value="${drink.symbol}" required="" id="symbol" />
                                     </div>
                                 </div>
-                                <div class="formfield" id="glass">
-                                    <label for="glassType"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                <div class="formfield">
+                                    <label for="glass"><span class='required-indicator'>*</span> Suggested Glass</label>
                                     <div class="input-wrapper">
                                         <select name="glass" class="form-control" style="width:42%;">
                                             <option label="Select One" selected disabled>Select One</option>
-                                            <g:each in="${GlassType.values()}" var="glass" name="glassType">
+                                            <g:each in="${GlassType.values()}" var="glass" name="glass">
                                                 <g:if test="${drink.suggestedGlass == glass}">
                                                     <option value="${glass}" selected>${glass}</option>
                                                 </g:if>
@@ -141,10 +141,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="formfield" id="instructions">
-                                    <label for='instructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
+                                <div class="formfield">
+                                    <label for='mixingInstructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
                                     <div class="input-wrapper">
-                                        <g:textArea form="updateDrink" name="instructions" value="${drink.mixingInstructions}" rows="5" cols="40"/>
+                                        <g:textArea form="updateDrink" name="mixingInstructions" value="${drink.mixingInstructions}" rows="5" cols="40"/>
                                     </div>
                                 </div>
                             </div>
@@ -152,7 +152,7 @@
                                 <div class="formfield">
                                     <label style="text-align:right;padding-right:30px;"><span class='required-indicator'>*</span> Ingredients</label><br>
                                     <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                        <g:each in="${Ingredient.list(sort: ['amount':'asc','name':'asc'])}" var="ingredient" status="i">
+                                        <g:each in="${user.ingredients.sort{it.id}}" var="ingredient" status="i">
                                             <g:if test="${drink.ingredients.contains(ingredient)}">
                                                 <div style="display:block;">
                                                     <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-success btn-xs" onclick="addIngredient('${ingredient.id}');">Added</button>

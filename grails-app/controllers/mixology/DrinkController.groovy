@@ -62,7 +62,9 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         Drink drink = drinkService.get(id)
-        respond drink
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def role = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        respond drink, model:[adminIsLoggedIn:(role?true:false)]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -140,6 +142,7 @@ class DrinkController extends BaseController {
             customIngredients = customIngredients.findAll{ it.custom }
         }
         render view:'edit', model:[
+                user:user,
                 drink:drink,
                 drinkIngredients:drinkIngredients,
                 ingredients:customIngredients
@@ -164,12 +167,12 @@ class DrinkController extends BaseController {
             drink.clearErrors()
             // if not a custom drink and user has adminRole
             if (!drink.isCustom() && adminRole) {
-                drink.name = params?.drinkName ?: drink.name
-                drink.number = params?.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.number
+                drink.name = params?.name ?: drink.name
+                drink.number = params?.number ? Integer.valueOf(params.number as String) : drink.number
                 drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drink.alcoholType
-                drink.symbol = params?.drinkSymbol ?: drink.symbol
+                drink.symbol = params?.symbol ?: drink.symbol
                 drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
-                drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
+                drink.mixingInstructions = params?.mixingInstructions ?: drink.mixingInstructions
                 drink.version = (params?.version as Long) ?: drink.version
                 //validIngredients = createNewIngredientsFromParams(params)
                 validIngredients = obtainFromParams(params)
@@ -323,6 +326,8 @@ class DrinkController extends BaseController {
             return
         }
         Drink drink = drinkService.get(id)
+        def userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
         if (drink.canBeDeleted) {
             try {
                 drinkService.delete(id)
@@ -348,7 +353,8 @@ class DrinkController extends BaseController {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
-                    redirect action:"index", method:"GET"
+                    if (adminRole) redirect action:"index", method:"GET"
+                    else redirect action:'customIndex', method:'GET'
                 }
                 '*'{ render status: NO_CONTENT }
             }
@@ -360,7 +366,7 @@ class DrinkController extends BaseController {
         def allIds = (params.ingredients as String[]).each{ it.trim()}
         allIds.each {
             Ingredient found = Ingredient.findById( it as Long )
-            if (found) listOfIngredients << found
+            if (found?.id) listOfIngredients << found
         }
         listOfIngredients
     }
@@ -374,9 +380,18 @@ class DrinkController extends BaseController {
     def createDrinkFromParams(params, user, role) throws ValidationException {
         def validIds = saveValidIngredients(user)
         def validStringIds = validIds.collect { it as String }
-        params?.ingredients?.each { String id ->
-            validStringIds.add(id)
+        /* TODO: If params.ingredients is one ( "435" ),
+            and not like String[2] ["435","436"] then we should not
+            do .each, we should just add that value alone to the validStringIds
+         */
+        if (params?.ingredients instanceof String) {
+            validStringIds.add( params.ingredients as String )
+        } else {
+            params.ingredients?.each { String id ->
+                validStringIds.add(id)
+            }
         }
+
         validStringIds.each { String id ->
             Ingredient ingredient = Ingredient.findById(id as Long)
             if (alreadyExists(ingredient)) {
@@ -390,7 +405,7 @@ class DrinkController extends BaseController {
                 alcoholType: Alcohol.valueOf(params.alcoholType as String),
                 symbol: params.symbol,
                 suggestedGlass: GlassType.valueOf(params.glass as String),
-                mixingInstructions: params.instructions,
+                mixingInstructions: params.mixingInstructions,
                 ingredients: validIngredients
                 //,custom: Boolean.valueOf(params.custom as String)
                 //,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
@@ -417,7 +432,7 @@ class DrinkController extends BaseController {
         List<Unit> ingredientUnits = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
-        if (params.ingredients?.size() > 1 && !(params.ingredients instanceof String)) {
+        if (params.ingredients?.size() > 1 || params.ingredients instanceof String) {
             Ingredient foundI
             params.ingredients.each { String id ->
                 foundI = Ingredient.findById ( id as Long )
@@ -426,7 +441,7 @@ class DrinkController extends BaseController {
             return ingredients
         } else {
             def options = (params.ingredients as String)?.split(':')
-            if (options) {
+            if (options && options.size() > 2) {
                 ingredientNames.add(options[0] as String)
                 ingredientAmounts.add(Double.parseDouble(options[1]))
                 ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
@@ -514,8 +529,8 @@ class DrinkController extends BaseController {
         }
         def validIngredientIds = []
         validIngredients.eachWithIndex{ Ingredient i, int idx ->
-            logger.info("Ingredient ${idx+1} being saved...")
-            ingredientService.save(i, user, true)
+            logger.info("${idx+1}) Ingredient ${i.name} being saved...")
+            i = ingredientService.save(i, user, true)
             def result = user.ingredients.contains( i )
             validIngredientIds << i.id
             logger.info("Ingredient saved to user:: $result")
