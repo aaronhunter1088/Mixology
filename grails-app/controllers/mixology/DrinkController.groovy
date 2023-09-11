@@ -23,9 +23,9 @@ class DrinkController extends BaseController {
     private static Logger logger = LogManager.getLogger(DrinkController.class)
     Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
-    DrinkService drinkService
-    IngredientService ingredientService
-    UserService userService
+    def drinkService
+    def ingredientService
+    def userService
     def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -94,7 +94,7 @@ class DrinkController extends BaseController {
             return
         }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         Drink drink
         try {
             drink = createDrinkFromParams(params, user, ur)
@@ -161,8 +161,8 @@ class DrinkController extends BaseController {
         }
         // Get UR based on current user
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         try {
             drink.clearErrors()
             // if not a custom drink and user has adminRole
@@ -326,15 +326,17 @@ class DrinkController extends BaseController {
             return
         }
         Drink drink = drinkService.get(id)
-        def userRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.USER.name))
-        def adminRole = UserRole.findByUserAndRole(User.findByUsername(springSecurityService.getPrincipal().username as String), Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         if (drink.canBeDeleted) {
             try {
-                drinkService.delete(id)
+                drinkService.delete(id, user, true)
             } catch (Exception e) {
-                drink.errors.reject('default.deleted.error2.message',
+                drink.errors.reject(
+                    'default.deleted.error2.message',
                     [drink.name] as Object[],
-                    "There was an exception deleting the drink: ${e.message}"
+                    "There was an exception deleting the drink:: ${e.message}"
                 )
             }
         } else {

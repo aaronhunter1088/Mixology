@@ -105,34 +105,35 @@ class DrinkService {
      * This method does not return anything.
      * @param id
      */
-    void delete(Long id) {
+    void delete(def id, def user, def flush) {
         Drink drink = get(id)
         if (!drink) {
-            logger.error("Could not delete drink:: $drink")
+            logger.error("Drink not found with id:: $id")
         }
         else {
-            def user = getCurrentUser()
             if (!user?.drinks?.contains(drink)) {
                 logger.warn("A user, id:: ${user.id} is deleting a drink they did not create.")
                 logger.warn("Drink belongs to user, id:: ${drink?.user?.id}")
             }
             try {
                 user.removeFromDrinks(drink)
-                drink?.ingredients?.each { ingredient ->
-                    ingredient?.removeFromDrinks(drink)
+                def ingredients = drink.ingredients.collect{it} ?: []
+                ingredients?.each { ingredient ->
                     drink.removeFromIngredients(ingredient)
+                    ingredient?.removeFromDrinks(drink)
                 }
                 Drink.withNewTransaction {
-                    drink.delete(flush: true)
+                    drink.delete(flush:flush)
                 }
                 logger.info("Drink '${drink.name}' deleted!")
             } catch (Exception e) {
                 logger.error("Could not delete drink:: $drink", e)
+                e
             }
         }
     }
 
-    private User getCurrentUser() {
-        User.findByUsername(springSecurityService.getPrincipal().username as String)
-    }
+//    private User getCurrentUser() {
+//        User.findByUsername(springSecurityService.getPrincipal().username as String)
+//    }
 }

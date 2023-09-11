@@ -251,12 +251,21 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     @Test
     void "test show ingredients"() {
         given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
         def ingredient = Stub(Ingredient) {
             id >> 1
         }
         controller.ingredientService = Stub(IngredientService) {
             get(_) >> ingredient
         }
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+
 
         when:
         controller.show(1)
@@ -565,7 +574,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     void "update ingredient fails when no ingredient"() {
         when:
             request.method = 'PUT'
-            controller.update(null)
+            controller.update()
 
         then:
             response.status == 400
@@ -587,7 +596,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 amount: 1.0,
                 canBeDeleted: false,
                 custom: false
-        ])
+        ]).save(flush:true)
+        controller.ingredientService = ingredientService
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
@@ -595,7 +605,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
 
         when:
             request.method = 'PUT'
-            controller.update(ingredient)
+            controller.params.id = ingredient.id
+            controller.update()
 
         then:
             response.status == 400
@@ -617,7 +628,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 amount: 1.0,
                 canBeDeleted: false,
                 custom: false
-        ])
+        ]).save(flush:true)
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
@@ -626,7 +637,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
 
         when:
         request.method = 'PUT'
-        controller.update(ingredient)
+        controller.params.id = ingredient.id
+        controller.update()
 
         then:
         response.status == 200
@@ -648,16 +660,16 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
                 amount: 1.0,
                 canBeDeleted: true,
                 custom: true
-        ])
+        ]).save(flush:true)
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
         }
         controller.ingredientService = Stub(IngredientService) { save(_) >> ingredient}
-        User.findByUsername(user.username) >> user
 
         when:
         request.method = 'PUT'
-        controller.update(ingredient)
+        controller.params.id = ingredient.id
+        controller.update()
 
         then:
         response.status == 200

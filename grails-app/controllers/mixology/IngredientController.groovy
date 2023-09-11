@@ -191,7 +191,7 @@ class IngredientController extends BaseController {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
-        def drinksBefore = ingredientToUpdate.drinks*.id
+        def drinksBefore = ingredientToUpdate?.drinks*.id ?: []
         ingredientToUpdate.clearErrors()
         if ( (!ingredientToUpdate.isCustom() && adminRole) ||
                 (ingredientToUpdate.isCustom()) ){
@@ -378,7 +378,7 @@ class IngredientController extends BaseController {
     }
 
     def updateIngredientDrinks(Ingredient ingredientToUpdate, User user, Map params) {
-        def drinksBefore = ingredientToUpdate.drinks*.id
+        def drinksBefore = ingredientToUpdate.drinks*.id ?: []
         def drinksAfter = []
         params?.drinks?.each{ String id -> drinksAfter << Long.valueOf(id) }
         def drinksToRemove = drinksBefore - drinksAfter
