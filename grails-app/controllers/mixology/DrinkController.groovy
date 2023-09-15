@@ -31,15 +31,89 @@ class DrinkController extends BaseController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
-    def index(Integer max) {
-        params.max = Math.min(max ?: 5, 100)
+    def index() {
+        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def drinks = null
+        def args = [
+                max: params.max ?: 5,
+                offset: params.offset ?: 0,
+                sort: params.sort ?: 'id',
+                order: params.order ?: 'asc'
+        ]
+        def criteria = Drink.createCriteria()
+        drinks = criteria.list(args, {
+            if (params.id) {
+                eq('id', params.id as Long)
+            } else {
+                if (params.name) eq ('name', params.name as String)
+                if (params.number) eq ( 'number', params.number as int)
+                if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
+                if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
+                if (params.defaultDrink) eq ( 'custom', false)
+                else params.defaultDrink = false
+            }
+        })
+
+        logger.info("drinks size: ${drinks.totalCount}")
+
         withFormat {
             html {
-                respond drinkService.list(params), model:[drinkCount: drinkService.count()]
+                render view:'index',
+                        model: [
+                            drinkList: drinks,
+                            adminIsLoggedIn:(adminRole?true:false),
+                            params:params
+                            //,drinkCount: args.max
+                            //,max:5
+                        ]
             }
             json { drinkService.list(params) as JSON }
         }
     }
+
+//    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
+//    def index() {
+//        def args = [
+//                max: params.max ?: 5,
+//                offset: params.offset ?: 0,
+//                sort: params.sort ?: 'id',
+//                order: params.order ?: 'asc'
+//        ]
+//        def criteria = Drink.createCriteria()
+//        def newAllDrinks = criteria.list(args, {
+//            if (params.id) {
+//                eq('id', params.id as Long)
+//            } else {
+//                if (params.name) eq ('name', params.name as String)
+//                if (params.number) eq ( 'number', params.number as int)
+//                if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
+//                if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
+//                if (params.defaultDrink) eq ( 'custom', false)
+//            }
+//        }) as List
+//
+//        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+//        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+//        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+//
+//        logger.info("drinks size: ${newAllDrinks.size()}")
+//
+//        withFormat {
+//            html {
+//                render view:'index',
+//                        model: [
+//                                drinkList: newAllDrinks,
+//                                adminIsLoggedIn:(adminRole?true:false),
+//                                params:params
+//                                //,drinkCount: drinks.size()
+//                                //,max:2
+//                        ]
+//            }
+//            json { drinkService.list(params) as JSON }
+//        }
+//    }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
@@ -47,13 +121,15 @@ class DrinkController extends BaseController {
         if (!params.offset) params.offset = 0
         if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def customDrinks = user.drinks
+        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def customDrinks = userRole ? user.drinks : user.drinks.findAll{ it.custom }
         def maxSize = customDrinks.size()
-        // TODO: rework how params comes into picture
         // Look at Ingredient.customIndex
         render view:'index',
                model:[drinkList:customDrinks,
                       drinkCount:customDrinks.size(),
+                      adminIsLoggedIn:(adminRole?true:false),
                       params:params,
                       max:10
                ]
@@ -137,7 +213,7 @@ class DrinkController extends BaseController {
         UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
         def drinkIngredients = drink.ingredients
-        def customIngredients = user.ingredients + drinkIngredients
+        def customIngredients = user.ingredients
         if (userRole) {
             customIngredients = customIngredients.findAll{ it.custom }
         }

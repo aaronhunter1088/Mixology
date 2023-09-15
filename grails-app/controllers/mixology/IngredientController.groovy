@@ -239,27 +239,28 @@ class IngredientController extends BaseController {
             Ingredient copied = new Ingredient([
                     name: ingredient.name,
                     unit: ingredient.unit,
-                    amount: ingredient.amount,
-                    canBeDeleted: true,
-                    custom: true
+                    amount: ingredient.amount
+                    //,canBeDeleted: true,
+                    //,custom: true
             ])
-            Ingredient.withSession {
-                Ingredient.withTransaction {
-                    ingredientService.save(copied, user, false)
-                    logger.info("ingredient.id:${copied.id} has been copied")
-                    request.withFormat {
-                        form multipartForm {
-                            if (copied) {
-                                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), copied.id])
-                            } else {
-                                flash.message = ''
-                            }
-                            redirect(controller:"ingredient", action:"show", params:[id:copied.id])
-                        }
-                        '*' { redirect(controller:"ingredient", action:"show", params:[id:copied.id]) }
-                    }
-                }
+            Ingredient.withNewTransaction {
+                ingredientService.save(copied, user, false)
+                logger.info("ingredient.id:${copied.id} has been copied")
             }
+            request.withFormat {
+                html {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), copied.id])
+                    redirect(controller:"ingredient", action:"show", params:[id:copied.id])
+                }
+                '*' { redirect(controller:"ingredient", action:"show", params:[id:copied.id]) }
+            }
+        }
+        request.withFormat {
+            html {
+                flash.message = message(code: 'default.updated.error.message', args: [message(code: 'ingredient.label', default: 'Ingredient')])
+                respond copied.errors, view:'show', status:BAD_REQUEST
+            }
+            '*'{ respond copied.errors, view:'show', status:BAD_REQUEST }
         }
     }
 
@@ -377,7 +378,7 @@ class IngredientController extends BaseController {
         }
     }
 
-    def updateIngredientDrinks(Ingredient ingredientToUpdate, User user, Map params) {
+    def updateIngredientDrinks(def ingredientToUpdate, def user, def params) {
         def drinksBefore = ingredientToUpdate.drinks*.id ?: []
         def drinksAfter = []
         params?.drinks?.each{ String id -> drinksAfter << Long.valueOf(id) }

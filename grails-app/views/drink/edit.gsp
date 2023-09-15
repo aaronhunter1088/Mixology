@@ -152,7 +152,7 @@
                                 <div class="formfield">
                                     <label style="text-align:right;padding-right:30px;"><span class='required-indicator'>*</span> Ingredients</label><br>
                                     <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                        <g:each in="${user.ingredients.sort{it.id}}" var="ingredient" status="i">
+                                        <g:each in="${drink.ingredients.sort{it.id}}" var="ingredient" status="i">
                                             <g:if test="${drink.ingredients.contains(ingredient)}">
                                                 <div style="display:block;">
                                                     <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-success btn-xs" onclick="addIngredient('${ingredient.id}');">Added</button>
