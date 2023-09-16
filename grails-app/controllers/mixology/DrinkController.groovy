@@ -51,87 +51,72 @@ class DrinkController extends BaseController {
                 if (params.number) eq ( 'number', params.number as int)
                 if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
                 if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
-                if (params.defaultDrink) eq ( 'custom', false)
+                if (params.defaultDrink && isOn(params.defaultDrink as String)) eq ( 'custom', false)
                 else params.defaultDrink = false
             }
         })
-
         logger.info("drinks size: ${drinks.totalCount}")
-
         withFormat {
             html {
                 render view:'index',
-                        model: [
-                            drinkList: drinks,
-                            adminIsLoggedIn:(adminRole?true:false),
-                            params:params
-                            //,drinkCount: args.max
-                            //,max:5
-                        ]
+                       model: [drinkList: drinks,
+                               drinkCount: drinks.totalCount,
+                               adminIsLoggedIn:(adminRole?true:false),
+                               customDrinks:false,
+                               params:params
+                       ]
             }
-            json { drinkService.list(params) as JSON }
+            json { drinks as JSON }
         }
     }
 
-//    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
-//    def index() {
-//        def args = [
-//                max: params.max ?: 5,
-//                offset: params.offset ?: 0,
-//                sort: params.sort ?: 'id',
-//                order: params.order ?: 'asc'
-//        ]
-//        def criteria = Drink.createCriteria()
-//        def newAllDrinks = criteria.list(args, {
-//            if (params.id) {
-//                eq('id', params.id as Long)
-//            } else {
-//                if (params.name) eq ('name', params.name as String)
-//                if (params.number) eq ( 'number', params.number as int)
-//                if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
-//                if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
-//                if (params.defaultDrink) eq ( 'custom', false)
-//            }
-//        }) as List
-//
-//        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-//        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-//        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-//
-//        logger.info("drinks size: ${newAllDrinks.size()}")
-//
-//        withFormat {
-//            html {
-//                render view:'index',
-//                        model: [
-//                                drinkList: newAllDrinks,
-//                                adminIsLoggedIn:(adminRole?true:false),
-//                                params:params
-//                                //,drinkCount: drinks.size()
-//                                //,max:2
-//                        ]
-//            }
-//            json { drinkService.list(params) as JSON }
-//        }
-//    }
+    public static boolean isOn(String checkbox) {
+        boolean result = false
+        switch (checkbox.toLowerCase()) {
+            case "on":
+            case "true": {
+                result = true
+                break
+            }
+            default: false
+        }
+        result
+    }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
-        if (!params.max) params.max = 10
-        if (!params.offset) params.offset = 0
-        if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-        def customDrinks = userRole ? user.drinks : user.drinks.findAll{ it.custom }
-        def maxSize = customDrinks.size()
-        // Look at Ingredient.customIndex
+        def drinks = null
+        def args = [
+                max: params.max ?: 5,
+                offset: params.offset ?: 0,
+                sort: params.sort ?: 'id',
+                order: params.order ?: 'asc'
+        ]
+        def criteria = Drink.createCriteria()
+        def userDrinks = criteria.list(args, {
+            'in'('id', user.drinks*.id)
+            and {
+                if (params.id) {
+                    eq('id', params.id as Long)
+                } else {
+                    if (params.name) eq ('name', params.name as String)
+                    if (params.number) eq ( 'number', params.number as int)
+                    if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
+                    if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
+                }
+            }
+        })
+        logger.info("custom drinks size: ${userDrinks.totalCount}")
+
         render view:'index',
-               model:[drinkList:customDrinks,
-                      drinkCount:customDrinks.size(),
+               model:[drinkList:userDrinks,
+                      drinkCount:userDrinks.totalCount,
                       adminIsLoggedIn:(adminRole?true:false),
-                      params:params,
-                      max:10
+                      customDrinks:true,
+                      params:params
                ]
     }
 

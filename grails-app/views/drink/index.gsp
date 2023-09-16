@@ -1,3 +1,4 @@
+<%@ page import="mixology.DrinkController; static mixology.DrinkController.isOn;" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -28,30 +29,39 @@
                         <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                         </g:if>
-                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                        <g:form action="${action}" controller="drink" name="filterDrinks" method="get">
-                            <input type="text" name="id" id="id" placeholder="id" value="" />
-                            <input type="text" name="name" id="name" placeholder="name" value="" />
-                            <input type="text" name="number" id="number" placeholder="number" value="" />
-                            <input type="text" name="alcohol" id="alcohol" placeholder="alcohol" value="" />
-                            <input type="text" name="glass" id="glass" placeholder="glass" value="" />
-                            <label for="defaultDrink">Default Drink? </label>
-                            <g:if test="${params.defaultDrink}">
-                                <input type="checkbox" name="defaultDrink" id="defaultDrink" checked onclick="triggerCustomCheckbox();" />
+
+                        <g:if test="${drinkCount <= 0}">
+                            <g:if test="${customDrinks}">
+                            <p>No custom drinks found!</p>
                             </g:if><g:else>
-                                <input type="checkbox" name="defaultDrink" id="defaultDrink" onclick="triggerCustomCheckbox();" />
+                            <p>No default drinks found!</p>
                             </g:else>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <button style="margin-left:10px;" id="filterDrink" class="btn btn-primary" type="submit" form="filterDrinks">Filter</button>
-                            </sec:ifAnyGranted>
-                            <sec:ifAnyGranted roles="ROLE_USER">
-                                <a style="margin-right:10px;" class="btn btn-primary" id="filter" href="${createLink(action:action, controller:drink)}"><g:message code="default.filter.label" default="Filter"/></a>
-                            </sec:ifAnyGranted>
-                        </g:form>
-                        <g:if test="${drinkList.totalCount <= 0}">
-                        <p>No default drinks found!</p>
                         </g:if><g:else>
-                        <table>
+                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
+                            <div style="text-align:center;">
+                                <g:form action="${action}" controller="drink" name="filterDrinks" method="get">
+                                    <input type="text" name="id" id="id" placeholder="id" value="" />
+                                    <input type="text" name="name" id="name" placeholder="name" value="" />
+                                    <input type="text" name="number" id="number" placeholder="number" value="" />
+                                    <input type="text" name="alcohol" id="alcohol" placeholder="alcohol" value="" />
+                                    <input type="text" name="glass" id="glass" placeholder="glass" value="" />
+                                    <g:if test="${!customDrinks}">
+                                        <label for="defaultDrink">Default Drink? </label>
+                                        <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">
+                                            <input type="checkbox" name="defaultDrink" id="defaultDrink" checked onclick="triggerCustomCheckbox();" />
+                                        </g:if><g:else>
+                                        <input type="checkbox" name="defaultDrink" id="defaultDrink" onclick="triggerCustomCheckbox();" />
+                                    </g:else>
+                                    </g:if>
+                                    <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                        <button style="margin-left:10px;" id="filterDrink" class="btn btn-primary" type="submit" form="filterDrinks">Filter</button>
+                                    </sec:ifAnyGranted>
+                                    <sec:ifAnyGranted roles="ROLE_USER">
+                                        <a style="margin-right:10px;" class="btn btn-primary" id="filter" href="${createLink(action:action, controller:drink)}"><g:message code="default.filter.label" default="Filter"/></a>
+                                    </sec:ifAnyGranted>
+                                </g:form>
+                            </div>
+                            <table>
                             <thead>
                                 <tr>
                                     <th>Count</th>
@@ -88,23 +98,23 @@
                             </g:if>
                             </tbody>
                         </table>
-                        </g:else>
-                        <div class="pagination">
+                            <div class="pagination">
                             <g:paginate controller="drink"
                                         action="${params.action}"
-                                        total="${drinkList.totalCount}"
+                                        total="${drinkCount}"
                                         max="5"
                                         params="${params}"/>
                         </div>
+                        </g:else>
                     </div>
                 </section>
             </div>
         </div>
         <script type="text/javascript">
             function triggerCustomCheckbox() {
-                let checkbox = $('#custom');
+                let checkbox = $('#defaultDrink');
                 let checked = checkbox.attr('checked');
-                checked ? checkbox.attr('checked','checked') : checkbox.attr('checked','');
+                checked ? checkbox.attr('checked','true') : checkbox.removeAttr('checked');
                 console.log("custom checkbox ==> " + checked);
             }
         </script>
