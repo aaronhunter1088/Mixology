@@ -220,10 +220,18 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test index action"() {
         given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
         List<Drink> drinks = [drink1, drink2]
         controller.drinkService = Stub(DrinkService) {
             list(_) >> drinks
             count() >> drinks.size()
+        }
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
         }
 
         when: 'call controller.index'
@@ -237,16 +245,24 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test customIndex action"() {
         given:
-        Set<Drink> drinks = [drink1, drink2]
+        def drinks = [drink1, drink2]
+        drinks.metaClass.totalCount = 2
         def user = new User([
             username: "testusername@gmail.com",
             firstName: "test",
             lastName: "user"
         ]).save(validate:false)
         user.drinks = drinks
+        user.save()
+        def myCriteria = [
+                list : {Map args, Closure  cls -> drinks}
+        ]
+        Drink.metaClass.static.createCriteria = { myCriteria }
 
-        controller.drinkService = drinkService
-                //Stub(DrinkService) {list(_) >> drinks ,count() >> drinks.size()}
+        controller.drinkService = Stub(DrinkService) {
+            list(_) >> drinks
+            count() >> drinks.size()
+        }
         controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> user}
 
         when: 'call controller.index'

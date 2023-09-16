@@ -70,25 +70,11 @@ class DrinkController extends BaseController {
         }
     }
 
-    public static boolean isOn(String checkbox) {
-        boolean result = false
-        switch (checkbox.toLowerCase()) {
-            case "on":
-            case "true": {
-                result = true
-                break
-            }
-            default: false
-        }
-        result
-    }
-
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
         def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
         def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
         def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-        def drinks = null
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -110,14 +96,19 @@ class DrinkController extends BaseController {
             }
         })
         logger.info("custom drinks size: ${userDrinks.totalCount}")
+        withFormat {
+            html {
+                render view:'index',
+                        model:[drinkList:userDrinks,
+                               drinkCount:userDrinks.totalCount,
+                               adminIsLoggedIn:(adminRole?true:false),
+                               customDrinks:true,
+                               params:params
+                        ]
+            }
+            json { userDrinks as JSON }
+        }
 
-        render view:'index',
-               model:[drinkList:userDrinks,
-                      drinkCount:userDrinks.totalCount,
-                      adminIsLoggedIn:(adminRole?true:false),
-                      customDrinks:true,
-                      params:params
-               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -600,6 +591,25 @@ class DrinkController extends BaseController {
         }
         validIngredients.clear()
         validIngredientIds
+    }
+
+    /**
+     * Used to determine if the Show Default checkbox
+     * is checked when admin user is looking at drinks
+     * @param checkbox
+     * @return
+     */
+    public static boolean isOn(String checkbox) {
+        boolean result = false
+        switch (checkbox.toLowerCase()) {
+            case "on":
+            case "true": {
+                result = true
+                break
+            }
+            default: false
+        }
+        result
     }
 
     // TODO: move into its own service
