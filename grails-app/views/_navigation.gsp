@@ -1,10 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: michaelball
-  Date: 3/26/23
-  Time: 9:33 PM
---%>
-<%@ page import="mixology.User; java.time.LocalTime;" %>
+<%@ page import="enums.*; mixology.*; java.time.LocalTime;" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <style>
     .home-bar {
         display:inline-flex;
@@ -23,18 +18,17 @@
         outline: none;
     }
     .home-bar div.dropdown-container {
-        display: inline-flex;
-        background-color: #262626;
-        padding-left: 8px;
-    }
-    </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    display: inline-flex;
+    background-color: #262626;
+    padding-left: 8px;
+}
+</style>
+
 <div class="navbar navbar-expand-lg navbar-dark" style="width:100%;">
     <div style="display:inline-flex;vertical-align:center;horiz-align:center;" class="container-fluid">
         <img style="width:200px;height:200px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
         <sec:ifNotLoggedIn>
             <g:render template="/login/login"/>
-            <g:link controller="user" action="create">Create User</g:link>
         </sec:ifNotLoggedIn>
         <sec:ifLoggedIn>
             <div id="nameAndNavigation" style="display: grid;" class="container-fluid">
@@ -84,7 +78,7 @@
                                         <li class="dropdown-header">Drink Mgmt</li>
                                         <sec:ifLoggedIn>
                                             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                                <li class="dropdown-item"><g:link controller="drink" action="index">Show Default Drinks</g:link></li>
+                                                <li class="dropdown-item"><g:link controller="drink" action="index">Show All Drinks</g:link></li>
                                                 <li class="dropdown-item"><g:link controller="drink" action="customIndex">Show Your Drinks</g:link></li>
                                             </sec:ifAnyGranted>
                                             <sec:ifAnyGranted roles="ROLE_USER">

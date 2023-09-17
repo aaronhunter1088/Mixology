@@ -1,4 +1,5 @@
-<%@ page import="mixology.DrinkController; static mixology.DrinkController.isOn;" %>
+<%@ page import="enums.*; mixology.*; static mixology.DrinkController.isOn;" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,15 +9,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
-        <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <g:include view="base/includeAll.gsp"/>
+        <style>
+            .btn-xs {
+                padding: 1px 5px !important;
+                font-size: 12px !important;
+                line-height: 1.5 !important;
+                border-radius: 3px !important;
+            }
+            #filterDrinksFormDiv input,select {
+                margin: auto 10px;
+            }
+        </style>
     </head>
+    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
+    <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
     <body>
         <div id="content">
             <div class="container">
@@ -38,27 +45,34 @@
                             </g:else>
                         </g:if><g:else>
                         <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                            <div style="text-align:center;">
+                            <div style="text-align:center;width:auto;display:flex;justify-content:center;">
                                 <g:form action="${action}" controller="drink" name="filterDrinks" method="get">
-                                    <input type="text" name="id" id="id" placeholder="id" value="" />
-                                    <input type="text" name="name" id="name" placeholder="name" value="" />
-                                    <input type="text" name="number" id="number" placeholder="number" value="" />
-                                    <input type="text" name="alcohol" id="alcohol" placeholder="alcohol" value="" />
-                                    <input type="text" name="glass" id="glass" placeholder="glass" value="" />
-                                    <g:if test="${!customDrinks}">
-                                        <label for="defaultDrink">Default Drink? </label>
-                                        <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">
-                                            <input type="checkbox" name="defaultDrink" id="defaultDrink" checked onclick="triggerCustomCheckbox();" />
-                                        </g:if><g:else>
-                                        <input type="checkbox" name="defaultDrink" id="defaultDrink" onclick="triggerCustomCheckbox();" />
-                                    </g:else>
-                                    </g:if>
-                                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                        <button style="margin-left:10px;" id="filterDrink" class="btn btn-primary" type="submit" form="filterDrinks">Filter</button>
-                                    </sec:ifAnyGranted>
-                                    <sec:ifAnyGranted roles="ROLE_USER">
-                                        <a style="margin-right:10px;" class="btn btn-primary" id="filter" href="${createLink(action:action, controller:drink)}"><g:message code="default.filter.label" default="Filter"/></a>
-                                    </sec:ifAnyGranted>
+                                    <div id="filterDrinksFormDiv" style="display:flex;">
+                                        <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="margin: auto 10px;width:50px;" class="form-control" />
+                                        <input type="text" name="name" id="name" placeholder="name" value="${params.name}" class="form-control" />
+                                        <input type="text" name="number" id="number" placeholder="number" value="${params.number}" class="form-control" />
+                                        <select name="alcohol" class="form-control">
+                                            <option label="Alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>Alcohols</option>
+                                            <g:each in="${Alcohol.values()}" var="alcohol">
+                                                <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
+                                            </g:each>
+                                        </select>
+%{--                                        <input type="text" name="glass" id="glass" placeholder="glass" value="" class="form-control" />--}%
+                                        <select name="glass" class="form-control">
+                                            <option label="Glasses" selected disabled>Glasses</option>
+                                            <g:each in="${GlassType.values()}" var="glass">
+                                                <option value="${glass}">${glass}</option>
+                                            </g:each>
+                                        </select>
+                                        <g:if test="${!customDrinks}">
+                                            <label for="defaultDrink">Default Drink? </label>
+                                            <input type="checkbox" name="defaultDrink" id="defaultDrink"
+                                                   <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
+                                                   onclick="triggerCustomCheckbox();" />
+                                        </g:if>
+                                        <button style="margin: auto 10px;" id="filterDrink" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
+                                        <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
+                                    </div>
                                 </g:form>
                             </div>
                             <table>
@@ -114,7 +128,9 @@
             function triggerCustomCheckbox() {
                 let checkbox = $('#defaultDrink');
                 let checked = checkbox.attr('checked');
-                checked ? checkbox.attr('checked','true') : checkbox.removeAttr('checked');
+                console.log("checked: " + checked);
+                if (checked === undefined) { checkbox.attr('checked','checked'); checked = true; }
+                else { checkbox.attr('checked',''); checked = false; }
                 console.log("custom checkbox ==> " + checked);
             }
         </script>

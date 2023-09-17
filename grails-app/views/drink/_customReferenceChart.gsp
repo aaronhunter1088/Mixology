@@ -1,10 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: michaelball
-  Date: 3/11/23
-  Time: 7:22 PM
---%>
-<%@ page import="enums.*; mixology.Drink; mixology.DrinkService;" %>
+<%@ page import="enums.*; mixology.*;" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <p style="font-size:35px;margin:0;color:#a60000;"><b>NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART</b></p>
 <div style="display:inline-flex;">
     <div style="display:block;">

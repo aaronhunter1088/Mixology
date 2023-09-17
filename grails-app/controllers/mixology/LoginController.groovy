@@ -3,6 +3,8 @@ package mixology
 import grails.config.Config
 import grails.converters.JSON
 import grails.core.support.GrailsConfigurationAware
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.multiverse.api.exceptions.LockedException
 import grails.plugin.springsecurity.SpringSecurityUtils
 import javax.security.auth.login.AccountExpiredException
@@ -12,6 +14,8 @@ import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 class LoginController extends grails.plugin.springsecurity.LoginController implements GrailsConfigurationAware {
+
+    private static Logger logger = LogManager.getLogger(UserController.class)
 
     def springSecurityService
 
@@ -38,7 +42,7 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
         //String position = coordinatePositions.first()
 
         String postUrl = request.contextPath + conf.apf.filterProcessesUrl
-        println "postUrl: ${postUrl}"
+        logger.info("postUrl: ${postUrl}")
         render view: 'auth', model: [postUrl: postUrl,
                                      rememberMeParameter: conf.rememberMe.parameter,
                                      usernameParameter: conf.apf.usernameParameter,
@@ -63,9 +67,11 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
      */
     def full = {
         def config = SpringSecurityUtils.securityConfig
+        def postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+        logger.info("postUrl: ${postUrl}")
         render view: 'auth', params: params,
                 model: [//hasCookie: authenticationTrustResolver.isRememberMe(SCH.context?.authentication),
-                        postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}"]
+                        postUrl: postUrl]
     }
 
     /**

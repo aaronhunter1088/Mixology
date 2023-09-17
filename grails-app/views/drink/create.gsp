@@ -1,4 +1,5 @@
-<%@ page import="enums.*; mixology.Ingredient" %>
+<%@ page import="enums.*; mixology.*;" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,13 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <g:include view="base/includeAll.gsp"/>
         <style>
             .formfield {
                 display: table;
@@ -33,8 +28,7 @@
             .formfield .input-wrapper .table-form {
                 width: 100%;
             }
-            .btn-xs
-            {
+            .btn-xs {
                 padding: 1px 5px !important;
                 font-size: 12px !important;
                 line-height: 1.5 !important;
@@ -61,7 +55,6 @@
             /* Fix table head */
             .tableFixHead    { overflow: auto; height: 600px; }
             .tableFixHead th { position: sticky; top: 0; }
-
             /* Just common table stuff. */
             table  { border-collapse: collapse; width: 100%; }
             th, td { padding: 8px 16px; text-align: center; }
@@ -78,6 +71,7 @@
             }
         </style>
     </head>
+    <g:set var="entityName" value="${message(code: 'drink.label', default: 'Drink')}" />
     <body>
         <script type="text/javascript">
             $(document).ready(function() {

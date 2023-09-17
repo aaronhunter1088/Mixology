@@ -1,4 +1,4 @@
-<%@ page import="enums.*; mixology.Drink;" %>
+<%@ page import="enums.*; mixology.*;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -8,11 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <g:include view="base/includeAll.gsp"/>
         <style>
             .arrow-right:after {
                 content: "";
@@ -59,11 +55,6 @@
 
     <body style="overflow-x:scroll;padding:0;margin:0;">
         <g:render template="/navigation"/>
-        <div style="display:inline-flex">
-            <div id="messages"></div>
-            <div id="search"></div>
-        </div>
-
         <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
             <div id="column1" style="margin:0;padding:0;width:600px;">
                 <div id="tequilaDrinks" style="margin:0;padding:0;">

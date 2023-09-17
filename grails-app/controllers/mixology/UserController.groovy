@@ -147,6 +147,11 @@ class UserController extends BaseController {
         }
     }
 
+    def forgotPassword = {
+        logger.info("Implement method User.forgotPassword")
+        redirect(uri:'/')
+    }
+
     def createUserFromParams(user, params, file) {
         String reduced = reduceImageSize(file)
         user = new User([

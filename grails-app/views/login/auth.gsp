@@ -1,27 +1,14 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: michaelball
-  Date: 4/1/23
-  Time: 8:34 PM
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
     <head>
-%{--        <meta name="layout" content="${gspLayout ?: 'main'}"/>--}%
-%{--        <title><g:message code='springSecurity.login.title'/></title>--}%
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title>Mixology</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <g:include view="base/includeAll.gsp"/>
         <style>
             #login {
                 margin: 15px 0px;
@@ -124,16 +111,12 @@
                         <input type="password" class="text_" name="${passwordParameter ?: 'password'}" id="password"/>
                     </p>
 
-%{--                    <p>--}%
-%{--                        <label for="coordinateValue">${position}</label>--}%
-%{--                        <input type="hidden" name="coordinatePosition" id="coordinatePosition" value="${position}"/>--}%
-%{--                        <input type="text" class="text_" name="coordinateValue" id="coordinateValue"/>--}%
-%{--                    </p>--}%
-
-                    <p id="remember_me_holder">
-                        <input type="checkbox" class="chk" name="${rememberMeParameter ?: 'remember-me'}" id="remember_me" <g:if test='${hasCookie}'>checked="checked"</g:if>/>
-                        <label for="remember_me"><g:message code='springSecurity.login.remember.me.label'/></label>
-                    </p>
+                    <g:if test="${false}">
+                        <p id="remember_me_holder">
+                            <input type="checkbox" class="chk" name="${rememberMeParameter ?: 'remember-me'}" id="remember_me" <g:if test='${hasCookie}'>checked="checked"</g:if>/>
+                            <label for="remember_me"><g:message code='springSecurity.login.remember.me.label'/></label>
+                        </p>
+                    </g:if>
 
                     <p>
                         <a class="btn btn-secondary btn-xs" id="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>

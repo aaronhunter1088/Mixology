@@ -49,13 +49,15 @@ class DrinkController extends BaseController {
             } else {
                 if (params.name) eq ('name', params.name as String)
                 if (params.number) eq ( 'number', params.number as int)
-                if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf((params.alcohol as String).toUpperCase()))
-                if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf((params.glass as String).toUpperCase()))
+                if (params.alcohol) eq ( 'alcoholType', Alcohol.valueOf(params.alcohol as String))
+                if (params.glass) eq ( 'suggestedGlass', GlassType.valueOf(params.glass as String))
                 if (params.defaultDrink && isOn(params.defaultDrink as String)) eq ( 'custom', false)
                 else params.defaultDrink = false
             }
         })
         logger.info("drinks size: ${drinks.totalCount}")
+        // collect all glass types for all drinks on a user
+        //def userGlassOptions = user.drinks*.suggestedGlass
         withFormat {
             html {
                 render view:'index',
@@ -602,6 +604,7 @@ class DrinkController extends BaseController {
     public static boolean isOn(String checkbox) {
         boolean result = false
         switch (checkbox.toLowerCase()) {
+            case "checked":
             case "on":
             case "true": {
                 result = true
