@@ -28,7 +28,7 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <g:render template="drinkNav"/>
+                    <g:render template="../navigation"/>
                 </section>
                 <section class="row">
                     <div id="list-drink" class="col-12 content scaffold-list">
@@ -44,21 +44,25 @@
                             <p>No default drinks found!</p>
                             </g:else>
                         </g:if><g:else>
-                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                            <div style="text-align:center;width:auto;display:flex;justify-content:center;">
+                            <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
+                            <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
                                 <g:form action="${action}" controller="drink" name="filterDrinks" method="get">
                                     <div id="filterDrinksFormDiv" style="display:flex;">
-                                        <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="margin: auto 10px;width:50px;" class="form-control" />
-                                        <input type="text" name="name" id="name" placeholder="name" value="${params.name}" class="form-control" />
-                                        <input type="text" name="number" id="number" placeholder="number" value="${params.number}" class="form-control" />
-                                        <select name="alcohol" class="form-control">
+                                        <label for="id"></label>
+                                        <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
+                                        <label for="name"></label>
+                                        <input type="text" name="name" id="name" placeholder="name" value="${params.name}" style="text-align:center;" class="form-control" />
+                                        <label for="number"></label>
+                                        <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
+                                        <label for="alcoholSelect"></label>
+                                        <select id="alcoholSelect" name="alcohol" style="width:100px;text-align:center;" class="form-control">
                                             <option label="Alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>Alcohols</option>
                                             <g:each in="${Alcohol.values()}" var="alcohol">
                                                 <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
                                             </g:each>
                                         </select>
-%{--                                        <input type="text" name="glass" id="glass" placeholder="glass" value="" class="form-control" />--}%
-                                        <select name="glass" class="form-control">
+                                        <label for="glassSelect"></label>
+                                        <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
                                             <option label="Glasses" selected disabled>Glasses</option>
                                             <g:each in="${GlassType.values()}" var="glass">
                                                 <option value="${glass}">${glass}</option>
@@ -76,49 +80,49 @@
                                 </g:form>
                             </div>
                             <table>
-                            <thead>
-                                <tr>
-                                    <th>Count</th>
-                                    <th>ID</th>
-                                    <th>Drink Name</th>
-                                    <th>Drink Symbol</th>
-                                    <th>Drink Number</th>
-                                    <th>Alcohol Type</th>
-                                    <th>Ingredients</th>
-                                    <th>Suggested Glass</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <g:if test="${drinkList.size() > 0}">
-                            <% int index = 1; %>
-                            <g:each in="${drinkList}" var="drink">
-                                <g:if test="${params.offset && (params.offset as int) != 0}">
-                                    <g:set var="idx" value="${index + (params.offset as int)}"/>
-                                </g:if><g:else>
-                                <g:set var="idx" value="${index}"/>
-                            </g:else>
-                                <tr>
-                                    <td>${idx}</td>
-                                    <td>${drink.id}</td>
-                                    <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
-                                    <td>${drink.symbol}</td>
-                                    <td>${drink.number}</td>
-                                    <td>${drink.alcoholType}</td>
-                                    <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
-                                    <td>${drink.suggestedGlass}</td>
-                                </tr>
-                                <% index++; %>
-                            </g:each>
-                            </g:if>
-                            </tbody>
-                        </table>
+                                <thead>
+                                    <tr>
+                                        <th>Count</th>
+                                        <th>ID</th>
+                                        <th>Drink Name</th>
+                                        <th>Drink Symbol</th>
+                                        <th>Drink Number</th>
+                                        <th>Alcohol Type</th>
+                                        <th>Ingredients</th>
+                                        <th>Suggested Glass</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <g:if test="${drinkList.size() > 0}">
+                                <% int index = 1 %>
+                                <g:each in="${drinkList}" var="drink">
+                                    <g:if test="${params.offset && (params.offset as int) != 0}">
+                                        <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                    </g:if><g:else>
+                                    <g:set var="idx" value="${index}"/>
+                                </g:else>
+                                    <tr>
+                                        <td>${idx}</td>
+                                        <td>${drink.id}</td>
+                                        <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
+                                        <td>${drink.symbol}</td>
+                                        <td>${drink.number}</td>
+                                        <td>${drink.alcoholType}</td>
+                                        <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
+                                        <td>${drink.suggestedGlass}</td>
+                                    </tr>
+                                    <% index += 1 %>
+                                </g:each>
+                                </g:if>
+                                </tbody>
+                            </table>
                             <div class="pagination">
                             <g:paginate controller="drink"
                                         action="${params.action}"
                                         total="${drinkCount}"
                                         max="5"
-                                        params="${params}"/>
-                        </div>
+                                        params="${params}" />
+                            </div>
                         </g:else>
                     </div>
                 </section>

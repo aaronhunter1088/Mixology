@@ -56,7 +56,7 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <g:render template="ingredientNav"/>
+                    <g:render template="../navigation"/>
                 </section>
                 <div id="show-ingredient" class="col-12 scaffold-show">
                     <h1>Show Ingredient</h1>

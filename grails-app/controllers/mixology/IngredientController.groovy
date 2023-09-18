@@ -1,5 +1,7 @@
 package mixology
 
+import enums.Alcohol
+import enums.GlassType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
@@ -21,13 +23,32 @@ class IngredientController extends BaseController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
-    def index(Integer max) {
-        params.max = Math.min(max ?: 5, 100)
+    def index() {
+        def args = [
+                max: params.max ?: 5,
+                offset: params.offset ?: 0,
+                sort: params.sort ?: 'id',
+                order: params.order ?: 'asc'
+        ]
+        def criteria = Ingredient.createCriteria()
+        def ingredients = criteria.list(args, {
+            if (params.id) {
+                eq('id', params.id as Long)
+            } else {
+                if (params.name) eq ('name', params.name as String)
+                if (params.unit) eq ( 'unit', Unit.valueOf(params.unit as String))
+                if (params.amount) eq ( 'amount', params.alcohol as double)
+            }
+        })
         withFormat {
             html {
-                respond ingredientService.list(params), model:[ingredientCount: ingredientService.count()]
+                render view:'index',
+                       model:[ingredientList:ingredients,
+                              ingredientCount: ingredients.totalCount,
+                              params:params
+                       ]
             }
-            json { ingredientService.list(params) as JSON }
+            json { ingredients as JSON }
         }
     }
 

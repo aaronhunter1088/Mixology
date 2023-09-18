@@ -1,11 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: michaelball
-  Date: 3/31/23
-  Time: 4:24 PM
---%>
+<%@ page import="enums.*; mixology.*;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="mixology.User;" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -14,13 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"/>
-        <link rel="icon" type="image/x-ico" href="${resource(dir:'../assets/images',file:'martiniGlass.png')}" />
-        <g:set var="user" scope="request" value="${message(code: 'user.label', default: 'User')}" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <g:include view="base/includeAll.gsp"/>
         <style>
             .formfield {
                 display: table;
@@ -85,29 +73,12 @@
             }
         </style>
     </head>
-
+    <g:set var="user" scope="request" value="${message(code: 'user.label', default: 'User')}" />
     <body>
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <div class="nav" role="navigation">
-                        <ul>
-                            <li><a class="fa fa-home" href="${createLink(uri: '/')}">&nbsp;<g:message code="default.home.label"/></a></li>
-                            <li><g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Custom Home</g:link></li>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <li><g:link class="fa-solid fa-list" controller="drink" action="index">&nbsp;Drinks</g:link></li>
-                                <li><g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;Your Drinks</g:link></li>
-                                <li><g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;Ingredients</g:link></li>
-                                <li><g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;Your Ingredients</g:link> </li>
-                            </sec:ifAnyGranted>
-                            <sec:ifAnyGranted roles="ROLE_USER">
-                                <li><g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;Your Drinks</g:link></li>
-                                <li><g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;Your Ingredients</g:link> </li>
-                            </sec:ifAnyGranted>
-                            <li><g:link class="fa-solid fa-martini-glass-empty" controller="drink" action="create">&nbsp;New Drink</g:link></li>
-                            <li><g:link class="fa-solid fa-jar-wheat" controller="ingredient" action="create">&nbsp;New Ingredient</g:link></li>
-                        </ul>
-                    </div>
+                    <g:render template="../navigation"/>
                 </section>
                 <div id="show-user" class="col-12 scaffold-show" role="main">
                     <h1>Show User</h1>

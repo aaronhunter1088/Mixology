@@ -54,7 +54,7 @@
         <div id="content" role="main">
             <div class="container">
                 <section class="row" id="navigation">
-                    <g:render template="ingredientNav"/>
+                    <g:render template="../navigation"/>
                 </section>
                 <div id="create-ingredient" class="col-12 content scaffold-create" role="main">
                     <g:if test="${flash.message}">

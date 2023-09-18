@@ -1,5 +1,7 @@
 package mixology
 
+import enums.Alcohol
+import enums.GlassType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.FileUtils
@@ -24,11 +26,37 @@ class UserController extends BaseController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
-    def index(Integer max) {
-        params.max = Math.min(max ?: 5, 100)
+    def index() {
+        def args = [
+                max: params.max ?: 5,
+                offset: params.offset ?: 0,
+                sort: params.sort ?: 'id',
+                order: params.order ?: 'asc'
+        ]
+        def criteria = User.createCriteria()
+        def users = criteria.list(args, {
+            if (params.id) {
+                eq('id', params.id as Long)
+            } else {
+                if (params.name) {
+                    eq ('firstName', params.firstName as String)
+                    or {
+                        eq ( 'lastName', params.lastName as String)
+                    }
+                }
+                if (params.username) eq ( 'username', params.username as String)
+                if (params.email) eq ( 'email', params.email as String)
+            }
+        })
         withFormat {
-            html { respond userService.list(params), model:[userCount: userService.count()] }
-            json { userService.list(params) as JSON }
+            html {
+                render view:'index',
+                       model:[userList:users,
+                              userCount:users.totalCount,
+                              params:params
+                       ]
+            }
+            json { users as JSON }
         }
     }
 
