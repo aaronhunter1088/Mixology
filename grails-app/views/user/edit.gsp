@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <g:include view="base/includeAll.gsp"/>
+        <g:include view="includeAll.gsp"/>
         <style>
             .formfield {
                 display: table;

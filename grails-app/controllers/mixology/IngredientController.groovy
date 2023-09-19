@@ -1,7 +1,5 @@
 package mixology
 
-import enums.Alcohol
-import enums.GlassType
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
@@ -9,21 +7,25 @@ import enums.Unit
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import static org.springframework.http.HttpStatus.*
+import static mixology.DrinkController.isOn
 import javax.servlet.http.HttpServletResponse
 
 class IngredientController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(IngredientController.class)
 
-    IngredientService ingredientService
-    DrinkService drinkService
-    UserService userService
+    def drinkService
+    def ingredientService
+    def userService
+    def userRoleService
     def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index() {
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -38,13 +40,17 @@ class IngredientController extends BaseController {
                 if (params.name) eq ('name', params.name as String)
                 if (params.unit) eq ( 'unit', Unit.valueOf(params.unit as String))
                 if (params.amount) eq ( 'amount', params.alcohol as double)
+                if (params.defaultIngredient && isOn(params.defaultIngredient as String)) eq ( 'custom', false)
+                else params.defaultIngredient = false
             }
         })
+        logger.info("ingredients size: ${ingredients.totalCount}")
         withFormat {
             html {
                 render view:'index',
                        model:[ingredientList:ingredients,
                               ingredientCount: ingredients.totalCount,
+                              adminIsLoggedIn:(adminRole?true:false),
                               params:params
                        ]
             }
@@ -52,42 +58,49 @@ class IngredientController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_ANONYMOUSLY'])
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
-        if (!params.max) params.max = 10
-        if (!params.offset) params.offset = 0
-        if (!params.sort) { params.sort = 'id'; params.order = 'desc' }
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def customIngredients = user.ingredients
-        def maxSize = customIngredients.size()
-        // TODO: work out logic better
-        customIngredients = customIngredients.findAll{ it.custom }.sort{it.id }
-        if (params.max && !params.offset) {
-            customIngredients = customIngredients.take( params.max as int )
-        }
-        if (!params.max || params.offset) {
-            def offsetIngredients = []
-            customIngredients.eachWithIndex { Ingredient i, int idx ->
-                if ( (params.offset as int) > idx ) {
-                    logger.info("Skipping index $idx")
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def args = [
+                max: params.max ?: 5,
+                offset: params.offset ?: 0,
+                sort: params.sort ?: 'id',
+                order: params.order ?: 'asc'
+        ]
+        def criteria = Ingredient.createCriteria()
+        def userIngredients = criteria.list(args, {
+            'in'('id', user.ingredients*.id)
+            and {
+                if (params.id) {
+                    eq('id', params.id as Long)
                 } else {
-                    logger.info("Adding ingredient: [$i]")
-                    offsetIngredients << i
+                    if (params.name) eq ('name', params.name as String)
+                    if (params.unit) eq ( 'unit', Unit.valueOf(params.unit as String))
+                    if (params.amount) eq ( 'amount', params.alcohol as double)
                 }
             }
-            customIngredients = offsetIngredients.take( params.max as int )
+        })
+        logger.info("custom ingredients size: ${userIngredients.totalCount}")
+        withFormat {
+            html {
+                render view:'index',
+                       model:[ingredientList:userIngredients,
+                              ingredientCount: userIngredients.totalCount,
+                              adminIsLoggedIn:(adminRole?true:false),
+                              customIngredients:true,
+                              params:params
+                       ]
+            }
+            json { userIngredients as JSON }
         }
-        render view:'index',
-               model:[ingredientList: customIngredients,
-                      ingredientCount: maxSize,
-                      max:10
-               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def role = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         respond ingredientService.get(id), model:[user:user, role:role]
     }
 
@@ -99,12 +112,11 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         Ingredient ingredient = new Ingredient(params)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         render view:'create',
-                model:[user:user,
-                       ingredient:ingredient
-                ]
-        //respond ingredient
+               model:[user:user,
+                      ingredient:ingredient
+               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -119,9 +131,9 @@ class IngredientController extends BaseController {
         }
         Ingredient errorI = new Ingredient()
         List<Ingredient> ingredientErrors = []
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         List<Ingredient> ingredients
         int savedCount = 0
         try {
@@ -189,18 +201,16 @@ class IngredientController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
-
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def ingredient = ingredientService.get(id)
         def drinks = adminRole ? Drink.all : user.drinks as List
         render view:'edit', model:[ingredient:ingredient, user:user, drinks:drinks]
-        //respond ingredientService.get(id)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
-    def update() { //(Ingredient ingredientToUpdate) {
+    def update() {
         if (!params) {
             badRequest(flash, request, 'show', 'No ingredientToUpdate was sent in to update')
             return
@@ -209,8 +219,8 @@ class IngredientController extends BaseController {
             methodNotAllowed('','')
             return
         }
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
         def drinksBefore = ingredientToUpdate?.drinks*.id ?: []
         ingredientToUpdate.clearErrors()
@@ -254,7 +264,7 @@ class IngredientController extends BaseController {
             notFound('','')
             return
         }
-        def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         if (user) {
             logger.info("we have a user logged in ${user}")
             Ingredient copied = new Ingredient([
@@ -264,10 +274,7 @@ class IngredientController extends BaseController {
                     //,canBeDeleted: true,
                     //,custom: true
             ])
-            Ingredient.withNewTransaction {
-                ingredientService.save(copied, user, false)
-                logger.info("ingredient.id:${copied.id} has been copied")
-            }
+            ingredientService.save(copied, user, false)
             request.withFormat {
                 html {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), copied.id])
@@ -292,8 +299,9 @@ class IngredientController extends BaseController {
             return
         }
         Ingredient ingredient = ingredientService.get(id)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        boolean adminIsLoggedIn = adminRole ? true : false
         if ( (!ingredient.canBeDeleted && adminRole) ||
              (ingredient.canBeDeleted) ){
             ingredientService.delete(id)
@@ -316,7 +324,7 @@ class IngredientController extends BaseController {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient'), id])
-                    redirect action:"index", status:NO_CONTENT
+                    redirect action:adminIsLoggedIn?'index':'customIndex', status:NO_CONTENT
                 }
                 '*'{ render status:NO_CONTENT }
             }

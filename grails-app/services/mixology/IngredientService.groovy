@@ -110,6 +110,8 @@ class IngredientService {
                 logger.warn("A user, id:: ${user.id} is deleting an ingredient they did not create.")
                 logger.warn("Ingredient belongs to user, id:: ${ingredient?.user?.id}")
             }
+            user.removeFromIngredients(ingredient)
+            ingredient.user = null
             try {
                 iDrinks.each { drink ->
                     drink.removeFromIngredients(ingredient)
@@ -125,7 +127,7 @@ class IngredientService {
                 }
                 logger.info("Ingredient '${ingredient.name}' deleted!")
             } catch (Exception e) {
-                logger.error("Could not delete drink:: $ingredient", e)
+                logger.error("Could not delete ingredient:: $ingredient", e)
             }
         }
     }

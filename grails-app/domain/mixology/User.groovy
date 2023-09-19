@@ -17,11 +17,11 @@ class User implements Serializable {
     String username
     String email
     String password
-    transient passwordConfirm
+    transient String passwordConfirm
     String mobileNumber
     String photo
 
-    transient springSecurityService
+    def springSecurityService
 
     static hasMany = [
         drinks:Drink, // tbl: user_drinks
@@ -43,15 +43,18 @@ class User implements Serializable {
         password column: '`password`'
         autowire true
     }
+    static transients = ['springSecurityService','darkMode']
 
     @Override
     String toString() { firstName + ' ' + lastName }
-
-    static transients = ['springSecurityService']
 
     Set<Role> getAuthorities() {
         UserRole.findAllByUser(this)*.role
     }
 
+    transient boolean darkMode = false
+    boolean darkMode() {
+        darkMode
+    }
 }
 

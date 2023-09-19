@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <g:include view="base/includeAll.gsp"/>
+        <g:include view="includeAll.gsp"/>
         <style>
             .arrow-right:before {
                 width: 75px;
@@ -51,27 +51,20 @@
         </style>
     </head>
 
-    <body style="overflow-x:scroll;padding:0;margin:0;">
+    <body style="overflow-x:scroll;padding:50px;margin:0;background-color:white;">
         <div id="content">
             <div class="container">
-                <section class="row" id="navigation">
+                <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="navigation">
                     <g:render template="/topBar"/>
-                </section>
-                <section class="row">
-                    <div style="display:inline-flex">
-                        <div id="messages"></div>
-                        <div id="search"></div>
-                    </div>
-
-                    <% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>
-                    <g:set var="user" value="${User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)}"/>
-                    <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
+                </div>
+                <div style="padding-top:75px;">
+                    <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:2em;margin:0;">
                         <div id="column1" style="margin:0;padding:0;width:600px;">
                             <div id="tequilaDrinks" style="margin:0;padding:0;">
                                 <div class="card" style="">
                                     <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                                     <%
-                                        List tequilaDrinks = drinks.findAll { it.alcoholType == Alcohol.TEQUILA}
+                                        List tequilaDrinks = drinkList.findAll { it.alcoholType == Alcohol.TEQUILA}
                                                 .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                                         for (int i=0; i<12; i+=2) {
                                             Drink drink1 = null
@@ -114,7 +107,7 @@
                                 <h1 id="chartTitle" style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                                 <div id="reference" style="display:inline-flex;">
                                     <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
-                                        <g:render template="customReferenceChart" model="[drinks:drinks]"/>
+                                        <g:render template="customReferenceChart" model="[drinks:drinkList]"/>
                                     </div>
                                     <div id="measurements" style="margin-left:50px;margin-right:50px;">
                                         <g:render template="../measurementsCard"/>
@@ -130,7 +123,7 @@
                                     <div class="card" style="">
                                         <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                                         <%
-                                            List vodkaDrinks = user.drinks.findAll { it.alcoholType == Alcohol.VODKA}
+                                            List vodkaDrinks = drinkList.findAll { it.alcoholType == Alcohol.VODKA}
                                                     .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                                             for (int i=0; i<12; i+=4) {
                                                 Drink drink1 = null
@@ -191,7 +184,7 @@
                                     <div class="card">
                                         <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                                         <%
-                                            List ginDrinks = user.drinks.findAll { it.alcoholType == Alcohol.GIN}
+                                            List ginDrinks = drinkList.findAll { it.alcoholType == Alcohol.GIN}
                                                     .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                                             for (int i=0; i<9; i+=3) {
                                                 Drink drink1 = null
@@ -241,7 +234,7 @@
                                 <div class="card">
                                     <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                                     <%
-                                        List shooterDrinks = user.drinks.findAll { it.alcoholType == Alcohol.SHOOTER }
+                                        List shooterDrinks = drinkList.findAll { it.alcoholType == Alcohol.SHOOTER }
                                                 .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                                         for (int i=0; i<16; i+=8) {
                                             Drink drink1 = null
@@ -356,7 +349,7 @@
                                             <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                                         </div>
                                         <%
-                                            def frozenDrinks = drinks.findAll { it.alcoholType == Alcohol.FROZEN }
+                                            def frozenDrinks = drinkList.findAll { it.alcoholType == Alcohol.FROZEN }
                                                     .sort((d1, d2) -> d1.number.compareTo(d2.number)).take(9).collect() as List<Drink>
                                             Drink drink1 = null
                                             try { drink1 = (Drink)frozenDrinks.get(0); if (!drink1) drink1 = Drink.createFillerDrink(Alcohol.FROZEN); }
@@ -404,7 +397,9 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
+                    %{--<% def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService') %>--}%
+                    %{--<g:set var="user" value="${User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)}"/>--}%
             </div>
         </div>
     </body>

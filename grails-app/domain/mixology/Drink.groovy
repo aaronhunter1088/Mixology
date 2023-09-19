@@ -39,13 +39,7 @@ class Drink implements Serializable{
     ]
     static mapping = {
         table 'drinks'
-//        ingredients joinTable: [
-//            name: 'ingredients_drinks', // table name
-//            key: 'drink_id'
-//            ,column: 'drink_id'
-//        ]
     }
-
     static transients = ['glassImage','fillerDrink']
 
     @Override

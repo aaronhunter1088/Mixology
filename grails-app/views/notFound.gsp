@@ -2,7 +2,10 @@
 <html>
     <head>
         <title>Page Not Found</title>
-        <meta name="layout" content="main">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <asset:stylesheet src="application.css"/>
+        <asset:javascript src="application.js"/>
+        <g:include view="includeAll.gsp"/>
         <g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
     </head>
     <body>

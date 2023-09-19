@@ -34,14 +34,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static belongsTo = Drink
     static mapping = {
         table 'ingredients'
-//        drinks joinTable: [
-//            name: 'ingredients_drinks', // table name
-//            key: 'ingredient_id,drink_id'
-//            ,column: ['ingredient_id','drink_id']
-//        ]
     }
-
-
     static transients = ['fillerIngredient','givenId']
 
     @Override

@@ -1,7 +1,6 @@
 package mixology
 
-import enums.Alcohol
-import enums.GlassType
+
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.FileUtils
@@ -19,9 +18,10 @@ class UserController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(UserController.class)
 
-    RoleService roleService
-    UserService userService
-    UserRoleService userRoleService
+    def roleService
+    def userService
+    def userRoleService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -87,7 +87,7 @@ class UserController extends BaseController {
             user.errors.reject('default.invalid.user.password.instance',
                     [params.password, params.passwordConfirm] as Object[],
                     '[Password and PasswordConfirm do not match]')
-            println "Password and PasswordConfirm do not match"
+            logger.error("Password and PasswordConfirm do not match")
             badRequest(flash, request,'create', 'Passwords do not match')
             return
         } else {
@@ -165,7 +165,6 @@ class UserController extends BaseController {
         // and so user photo may be set to empty string
         user.clearErrors()
         userService.save(user, false)
-        logger.info("user saved!")
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
@@ -178,6 +177,14 @@ class UserController extends BaseController {
     def forgotPassword = {
         logger.info("Implement method User.forgotPassword")
         redirect(uri:'/')
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def darkMode() {
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        user.darkMode = !user.darkMode
+        logger.info("user.enableDarkMode from (${!user.darkMode}) to (${user.darkMode})")
+        redirect (uri:'/')
     }
 
     def createUserFromParams(user, params, file) {

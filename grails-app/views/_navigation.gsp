@@ -13,19 +13,23 @@
 <g:set var="greet" value="${greeting}"/>
 
 <g:set var="user" value="${user}"/>
-<div id="home-bar" class="navbar navbar-expand-sm navbar-dark" style="padding:30px 0;">
+<style>
+    .navbar-default .navbar-nav .open .dropdown-menu>li>a, .navbar-default .navbar-nav .open
+    .dropdown-menu {
+        background-color: ghostwhite;
+        color:#222;
+    }
+</style>                    <!-- navbar-dark -->
+<div id="home-bar" class="navbar navbar-expand-sm navbar-inverse" style="padding:30px 0;text-align:center;">
     <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
-        <ul class="nav navbar-nav ml-auto">
+        <ul class="nav navbar-nav ml-auto navbar-inverse">
             <div style="display:flex;margin: auto 10px;align-content:center;">
                 <!-- Default homepage or custom homepage -->
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#home" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;Home</a>
                     <ul class="dropdown-menu" id="home" style="background-color:#000000;">
-                        <g:if test="${params.action == 'showCustomDrinks'}">
-                            <g:link class="fa fa-home" style="margin:auto;justify-content:center;" url="${createLink(uri: '/')}">&nbsp;Default Drinks</g:link>
-                        </g:if><g:else>
-                            <g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Your Drinks</g:link>
-                        </g:else>
+                        <g:link class="fa fa-home" controller="drink" action="showDrinks">&nbsp;Default Drinks</g:link>
+                        <g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Your Drinks</g:link>
                     </ul>
                 </li> <!-- Home -->
                 <li class="dropdown-btn dropdown">
@@ -37,6 +41,7 @@
                             <g:link class="fa fa-user" controller="user" action="create">&nbsp;New User</g:link>
                         </sec:ifAnyGranted>
                         <g:link class="fa fa-circle-info" controller="user" action="show" params="[id:user.id]">&nbsp;User Details</g:link>
+                        <g:link class="fa fa-circle-info" controller="user" action="darkMode">&nbsp;Enable <g:if test="${user.darkMode}">Light</g:if><g:else>Dark</g:else> Mode</g:link>
                         <g:link class="fa fa-light fa-arrow-right-from-bracket" controller="logout" action="index">&nbsp;Logout</g:link>
                     </ul>
                 </li> <!-- Users -->
@@ -49,7 +54,6 @@
                         </sec:ifAnyGranted>
                         <g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;Your Drinks</g:link>
                         <g:link class="fa-solid fa-martini-glass-empty" controller="drink" action="create">&nbsp;New Drink</g:link>
-                        <g:link class="fa-solid fa-jar-wheat" controller="ingredient" action="create">&nbsp;New Ingredient</g:link>
                     </ul>
                 </li> <!-- Drinks -->
                 <li class="dropdown-btn dropdown">

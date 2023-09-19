@@ -10,6 +10,6 @@ class LogoutController {
     def index = {
         logger.info("${principal.fullname} is now logged out!")
         session.invalidate()
-        redirect uri: '/'
+        redirect(uri:'/')
     }
 }

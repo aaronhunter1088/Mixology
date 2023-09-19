@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <g:include view="base/includeAll.gsp"/>
+        <g:include view="includeAll.gsp"/>
         <style>
             .btn-xs {
                 padding: 1px 5px !important;
@@ -69,21 +69,22 @@
                                             </g:each>
                                         </select>
                                         <g:if test="${!customDrinks}">
-                                            <label for="defaultDrink">Default Drink? </label>
+                                            <label style="margin: auto 10px;" for="defaultDrink">Default Drink? </label>
                                             <input type="checkbox" name="defaultDrink" id="defaultDrink"
                                                    <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
                                                    onclick="triggerCustomCheckbox();" />
                                         </g:if>
-                                        <button style="margin: auto 10px;" id="filterDrink" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
+                                        <button style="margin: auto 10px;" id="filterDrinkBtn" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
                                         <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
                                     </div>
                                 </g:form>
                             </div>
+                            <p></p>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Count</th>
-                                        <th>ID</th>
+%{--                                        <th>ID</th>--}%
                                         <th>Drink Name</th>
                                         <th>Drink Symbol</th>
                                         <th>Drink Number</th>
@@ -103,7 +104,7 @@
                                 </g:else>
                                     <tr>
                                         <td>${idx}</td>
-                                        <td>${drink.id}</td>
+%{--                                        <td>${drink.id}</td>--}%
                                         <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
                                         <td>${drink.symbol}</td>
                                         <td>${drink.number}</td>

@@ -5,7 +5,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
-import org.hibernate.collection.internal.PersistentSet
 
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
@@ -26,15 +25,16 @@ class DrinkController extends BaseController {
     def drinkService
     def ingredientService
     def userService
+    def userRoleService
     def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index() {
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def drinks = null
         def args = [
                 max: params.max ?: 5,
@@ -56,8 +56,6 @@ class DrinkController extends BaseController {
             }
         })
         logger.info("drinks size: ${drinks.totalCount}")
-        // collect all glass types for all drinks on a user
-        //def userGlassOptions = user.drinks*.suggestedGlass
         withFormat {
             html {
                 render view:'index',
@@ -74,9 +72,9 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -116,21 +114,25 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         Drink drink = drinkService.get(id)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def role = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         respond drink, model:[adminIsLoggedIn:(role?true:false)]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    def showDrinks() {
+        redirect(uri:'/')
+    }
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        render view:'customDrinks', model:[drinks:user.drinks,params:params]
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        render view:'customDrinks', model:[drinkList:user.drinks,params:params]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def create() {
         Drink drink = new Drink(params)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         render view:'create',
                model:[user:user,
                       drink:drink
@@ -147,8 +149,8 @@ class DrinkController extends BaseController {
             methodNotAllowed('','')
             return
         }
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def ur = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def ur = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         Drink drink
         try {
             drink = createDrinkFromParams(params, user, ur)
@@ -187,9 +189,9 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         Drink drink = drinkService.get(id)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        UserRole adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        UserRole userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def drinkIngredients = drink.ingredients
         def customIngredients = user.ingredients
         if (userRole) {
@@ -214,9 +216,9 @@ class DrinkController extends BaseController {
             return
         }
         // Get UR based on current user
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         try {
             drink.clearErrors()
             // if not a custom drink and user has adminRole
@@ -319,7 +321,7 @@ class DrinkController extends BaseController {
             notFound('','')
             return
         }
-        def user = User.findByUsername(springSecurityService.getPrincipal()?.username as String)
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         if (user) {
             logger.info("we have a user logged in ${user.firstName} ${user.lastName}")
             def copiedIngredients = Ingredient.copyAll(drink.ingredients) as List<Ingredient>
@@ -380,9 +382,9 @@ class DrinkController extends BaseController {
             return
         }
         Drink drink = drinkService.get(id)
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = UserRole.findByUserAndRole(user, Role.findByAuthority(enums.Role.USER.name))
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         if (drink.canBeDeleted) {
             try {
                 drinkService.delete(id, user, true)
@@ -598,10 +600,11 @@ class DrinkController extends BaseController {
     /**
      * Used to determine if the Show Default checkbox
      * is checked when admin user is looking at drinks
+     * or ingredients
      * @param checkbox
      * @return
      */
-    public static boolean isOn(String checkbox) {
+    static boolean isOn(String checkbox) {
         boolean result = false
         switch (checkbox.toLowerCase()) {
             case "checked":

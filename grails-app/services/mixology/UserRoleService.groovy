@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger
 
 import javax.transaction.Transactional
 
-@Transactional
 @Service(UserRole)
 class UserRoleService {
 
@@ -17,4 +16,7 @@ class UserRoleService {
         UserRole.create(user, roleOfUser, flush)
     }
 
+    UserRole getRoleIfExists(User user, Role role) {
+        UserRole.get(user.id, role.id)
+    }
 }

@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <g:include view="base/includeAll.gsp"/>
+        <g:include view="includeAll.gsp"/>
         <style>
             .arrow-right:after {
                 content: "";
@@ -53,14 +53,14 @@
         </style>
     </head>
 
-    <body style="overflow-x:scroll;padding:0;margin:0;">
+    <body style="overflow-x:scroll;padding:50px;margin:0;background-color:white;">
         <div id="content">
             <div class="container">
-                <section class="row" id="navigation">
+                <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="navigation">
                     <g:render template="/topBar"/>
-                </section>
-                <section class="row">
-                    <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:15em;margin:0;">
+                </div>
+                <div style="padding-top:75px;">
+                    <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:2em;margin:0;">
                         <div id="column1" style="margin:0;padding:0;width:600px;">
                             <div id="tequilaDrinks" style="margin:0;padding:0;">
                                 <div class="card" style="">
@@ -74,12 +74,8 @@
                                     <div style="display:inline-flex;">
                                         <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
                                         <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e']"/>
-                                        %{--                        <g:link controller="drink" action="show" params="[id:drink1.id]">--}%
-                                        %{--                        </g:link>--}%
-                                        %{--                        <g:link controller="drink" action="show" params="[id:drink2.id]">--}%
-                                        %{--                        </g:link>--}%
                                     </div>
-                                    <% } // end for loop %>
+                                    <% } /* end for loop */ %>
                                 </div>
                             </div>
                             <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
@@ -238,7 +234,7 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
         <script type="text/javascript">

@@ -37,17 +37,17 @@
 <g:set var="user" value="${user}"/>
 <g:set var="greet" value="${greeting}"/>
 <!-- class navbar navbar-expand-lg navbar-dark -->
-<div class="container-fluid">
+<div id="topBar" class="container-fluid">
     <sec:ifNotLoggedIn>
-        <div style="display:inline-flex;">
+        <div id="loginDiv" style="display:inline-flex;">
             <img style="width:auto;height:100px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
             <g:render template="/login/login"/>
         </div>
     </sec:ifNotLoggedIn>
     <sec:ifLoggedIn>
-        <div style="display:inline-flex;">
+        <div id="loggedInDiv" style="display:inline-flex;">
             <img style="width:100px;height:100px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-            <div style="display:inline-block;width:auto;">
+            <div id="nameAndNav" style="display:inline-block;width:auto;">
                 <h1>${greet} ${user}</h1>
                 <g:render template="/navigation" />
             </div>

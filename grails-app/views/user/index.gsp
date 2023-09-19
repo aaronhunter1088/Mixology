@@ -8,7 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
-        <g:include view="base/includeAll.gsp"/>
+        <g:include view="includeAll.gsp"/>
         <style>
             .btn-xs {
                 padding: 1px 5px !important;
@@ -45,16 +45,17 @@
                                         <input type="text" name="username" id="username" placeholder="user name" value="${params.username}" style="text-align:center;width:200px;" class="form-control" />
                                         <label for="email"></label>
                                         <input type="text" name="email" id="email" placeholder="email" value="${params.email}" style="text-align:center;width:200px;" class="form-control" />
-                                        <button style="margin: auto 10px;" id="filterUser" class="btn btn-primary btn-xs" type="submit" form="filterUsers">Filter</button>
+                                        <button style="margin: auto 10px;" id="filterUserBtn" class="btn btn-primary btn-xs" type="submit" form="filterUsers">Filter</button>
                                         <g:link class="btn btn-outline-primary btn-xs" controller="user" action="index" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
                                     </div>
                                 </g:form>
                             </div>
+                            <p></p>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Count</th>
-                                        <th>ID</th>
+%{--                                        <th>ID</th>--}%
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>Username</th>
@@ -74,8 +75,8 @@
                                                 <g:set var="idx" value="${index}"/>
                                             </g:else>
                                             <tr>
-                                                <td>${idx}</td>
-                                                <td><g:link controller="user" action="show" params='[id:"${user.id}"]'>${user.id}</g:link> </td>
+                                                <td><g:link controller="user" action="show" params='[id:"${user.id}"]'>${idx}</g:link> </td>
+%{--                                                <td>${user.id}</td>--}%
                                                 <td>${user.firstName}</td>
                                                 <td>${user.lastName}</td>
                                                 <td>${user.username}</td>
