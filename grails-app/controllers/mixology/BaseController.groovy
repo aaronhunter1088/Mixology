@@ -1,5 +1,7 @@
 package mixology
 
+import javax.servlet.http.HttpServletRequest
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.CREATED
 import static org.springframework.http.HttpStatus.FORBIDDEN
@@ -61,7 +63,7 @@ interface IController {
             '*'{ render status: UNAUTHORIZED }
         }
     } // 401, unauthorized to view content
-    default void forbidden(def method, def message) { // 403
+    default void forbidden(def method, def message) {
         request.withFormat {
             form multipartForm {
                 flash.message = message ?: 'You do not have permission to view this content'
@@ -69,7 +71,7 @@ interface IController {
             }
             '*'{ render status: FORBIDDEN }
         }
-    }
+    } // 403
     default void notFound(def method, def message) {
         request.withFormat {
             form multipartForm {
@@ -79,11 +81,12 @@ interface IController {
             '*'{ render status: NOT_FOUND }
         }
     } // 404
-    default void methodNotAllowed(def method, def message) {
+    default void methodNotAllowed(HttpServletRequest request, def method, def message) {
         request.withFormat {
             form multipartForm {
                 flash.message = message ?: 'Check your request method!'
-                redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+                //redirect action: "index", method: method ?: "create", status: METHOD_NOT_ALLOWED
+                render status: METHOD_NOT_ALLOWED
             }
             '*'{ render status: METHOD_NOT_ALLOWED }
         }

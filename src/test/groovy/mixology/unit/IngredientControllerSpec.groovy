@@ -3,17 +3,13 @@ package mixology.unit
 import enums.Alcohol
 import enums.GlassType
 import enums.Unit
-import org.grails.datastore.mapping.query.api.Criteria
-import org.grails.orm.hibernate.query.PagedResultList
 import grails.plugin.springsecurity.SpringSecurityService
 import mixology.Role
 import mixology.RoleService
 import mixology.UserRole
 import mixology.UserRoleService
 import mixology.UserService
-import org.junit.Ignore
 import org.springframework.test.context.ContextConfiguration
-
 import grails.testing.web.controllers.ControllerUnitTest
 import mixology.Drink
 import mixology.Ingredient
@@ -24,8 +20,10 @@ import mixology.User
 import org.junit.Test
 import spock.lang.Specification
 import grails.testing.gorm.DataTest
+import spock.lang.Unroll
 
 import static enums.Unit.*
+import static org.springframework.http.HttpStatus.*
 
 @ContextConfiguration
 class IngredientControllerSpec extends Specification implements ControllerUnitTest<IngredientController>, DataTest {
@@ -47,7 +45,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         (1..numberToCreate).each {
             def customIngredient = new Ingredient([
                     name: 'CustomIngredient'+"{$it}",
-                    unit: Unit.getRandomUnit(),
+                    unit: getRandomUnit(),
                     amount: 1
             ])
             customIngredients << customIngredient
@@ -189,7 +187,8 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         // save all ingredients
         drink1.ingredients.each { ingredientService.save(it, false) }
         drink2.ingredients.each { ingredientService.save(it, false) }
-        ingredientService.save(createDefaultIngredient(), false)
+        def defaultIngredient = createDefaultIngredient()
+        ingredientService.save(defaultIngredient, false)
         drinkService.save(drink1, false)
         drinkService.save(drink2, false)
 
@@ -239,11 +238,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         def ingredients = []
         ingredients.addAll(ings1)
         ingredients.addAll(ings2)
-        controller.ingredientService = ingredientService
         controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> testUser}
-        controller.userService = userService
-        controller.roleService = roleService
-        controller.userRoleService = userRoleService
 
         when: 'call controller.index'
         controller.index()
@@ -263,7 +258,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         drink2.ingredients.each { testUser.addToIngredients(it) }
 
         def myCriteria = [
-                list : { Object args, Object cls ->
+                list : { Object x, Object y ->
                     [
                             resultList: testUser.ingredients.take(5),
                             totalCount: testUser.ingredients.size()
@@ -284,22 +279,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     @Test
     void "test show ingredients"() {
         given:
-        def user = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
-        def ingredient = Stub(Ingredient) {
-            id >> 1
-        }
-        controller.ingredientService = Stub(IngredientService) {
-            get(_) >> ingredient
-        }
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-        }
-        controller.userService = userService
-        controller.userRoleService = userRoleService
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
 
         when:
         controller.show(1)
@@ -311,15 +291,9 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     @Test
     void "test create action"() {
         given:
-        def user = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
         controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
+            getPrincipal() >> testUser
         }
-        controller.userService = userService
 
         when:
         controller.create()
@@ -329,39 +303,23 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
 
     // Test Saving
+    @Unroll('controller.save(): #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
-    void "test save fails because method is GET"() {
-        given:
-        request.method = 'GET'
-        controller.params.option = 'test'
-
+    void "test save fails because wrong request method"() {
         when:
+        if (value != 'POST') {
+            controller.params.something = 'hasToBeHere'
+        }
+        request.method = value
         controller.save()
-
         then:
-        response.status == 405
-    }
-
-    @Test
-    void "test save fails because method is PUT"() {
-        when:
-        request.method = 'PUT'
-        controller.save()
-
-        then:
-        response.status == 405
-    }
-
-    @Test
-    void "test save fails because method is DELETE"() {
-        given:
-        request.method = 'DELETE'
-
-        when:
-        controller.save()
-
-        then:
-        response.status == 405
+        expected.value() == response.status
+        where:
+        value   | expected              | expectedErrorCode
+        'GET'   | METHOD_NOT_ALLOWED    | ''
+        'PUT'   | METHOD_NOT_ALLOWED    | ''
+        'DELETE'| METHOD_NOT_ALLOWED    | ''
+        'POST'  | NOT_FOUND             | ''
     }
 
     @Test
@@ -430,6 +388,37 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
 
     @Test
+    void "test saving an ingredient fails because it already exists"() {
+        given:
+        request.method = 'POST'
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        controller.params.ingredientName = 'Vodka'
+        controller.params.ingredientUnit = Unit.OZ
+        controller.params.ingredientAmount = 1.5
+        Role role = new Role(authority: enums.Role.ADMIN.name).save()
+        UserRole.create(user, role)
+        //controller.createIngredientsFromParams(params) >> testIngredient
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        controller.ingredientService = ingredientService
+        controller.userService = userService
+        controller.userRoleService = userRoleService
+
+        when:
+        Role.findByAuthority('ROLE_ADMIN') >> role
+        Role.findByAuthority('ROLE_USER') >> null
+        controller.save()
+
+        then:
+        response.status == 400
+    }
+
+    @Test
     void "test saving one ingredient"() {
         given:
         request.method = 'POST'
@@ -453,14 +442,9 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         Role role = new Role(authority: enums.Role.ADMIN.name).save()
         UserRole.create(user, role)
         controller.createIngredientsFromParams(params,role) >> testIngredient
-        //controller.ingredientService = Stub(IngredientService) { save(_) >> testIngredient}
         controller.springSecurityService = Stub(SpringSecurityService) {
              getPrincipal() >> user
         }
-        //controller.ingredientService = Stub(IngredientService) { saveIngredientToUser() >> null}
-        controller.ingredientService = ingredientService
-        controller.userService = userService
-        controller.userRoleService = userRoleService
 
         when:
         controller.save()
@@ -507,37 +491,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         response.status == 201
     }
 
-    @Test
-    void "test saving an ingredient fails because it already exists"() {
-        given:
-        request.method = 'POST'
-        def user = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
-        controller.params.ingredientName = 'Vodka'
-        controller.params.ingredientUnit = Unit.OZ
-        controller.params.ingredientAmount = 1.5
-        Role role = new Role(authority: enums.Role.ADMIN.name).save()
-        UserRole.create(user, role)
-        //controller.createIngredientsFromParams(params) >> testIngredient
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-        }
-        controller.ingredientService = ingredientService
-        controller.userService = userService
-        controller.userRoleService = userRoleService
-
-        when:
-        Role.findByAuthority('ROLE_ADMIN') >> role
-        Role.findByAuthority('ROLE_USER') >> null
-        controller.save()
-
-        then:
-        response.status == 400
-    }
-
     /* TODO: Rethink if this is needed.
         Technically, an admin can also
         have custom drinks and ingredients. */
@@ -560,18 +513,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
 //        then:
 //        response.status == 400
 //    }
-
-    @Test
-    void "save ingredient returns 404"() {
-        given:
-        request.method = 'POST'
-
-        when:
-        controller.save()
-
-        then:
-        response.status == 404
-    }
 
     // Test Editing
     @Test

@@ -79,7 +79,7 @@ class UserController extends BaseController {
             return
         }
         if (request.method != 'POST') {
-            methodNotAllowed('','')
+            methodNotAllowed(request,'','')
             return
         }
         if (!Boolean.valueOf(params.passwordsMatch)) {

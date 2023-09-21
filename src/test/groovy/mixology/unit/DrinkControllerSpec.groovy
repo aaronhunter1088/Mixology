@@ -12,13 +12,10 @@ import mixology.DrinkController
 import mixology.DrinkService
 import mixology.Ingredient
 import mixology.IngredientService
-import mixology.Role
 import mixology.RoleService
 import mixology.User
-import mixology.UserRole
 import mixology.UserRoleService
 import mixology.UserService
-import org.grails.orm.hibernate.query.PagedResultList
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.validation.BeanPropertyBindingResult

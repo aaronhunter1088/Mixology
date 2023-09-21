@@ -126,12 +126,10 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save() {
         if (!params) {
-            notFound('','')
-            return
+            return notFound('','')
         }
         if (request.method != 'POST') {
-            methodNotAllowed('','')
-            return
+            return methodNotAllowed(request,'','')
         }
         Ingredient errorI = new Ingredient()
         List<Ingredient> ingredientErrors = []
@@ -417,7 +415,13 @@ class IngredientController extends BaseController {
     def updateIngredientDrinks(def ingredientToUpdate, def user, def params) {
         def drinksBefore = ingredientToUpdate.drinks*.id ?: []
         def drinksAfter = []
-        params?.drinks?.each{ String id -> drinksAfter << Long.valueOf(id) }
+        if (params.drinks instanceof String) {
+            logger.info("only 1 drink")
+            drinksAfter << Long.valueOf(params.drinks as Long)
+        } else {
+            logger.info("multiple drinks")
+            params?.drinks?.each{ String id -> drinksAfter << Long.valueOf(id) }
+        }
         def drinksToRemove = drinksBefore - drinksAfter
         if (drinksToRemove?.size() > 0) {
             drinksToRemove.each { Long id ->
