@@ -46,7 +46,7 @@
                         </g:if><g:else>
                             <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
                             <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
-                                <g:form action="${action}" controller="drink" name="filterDrinks" method="get">
+                                <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                     <div id="filterDrinksFormDiv" style="display:flex;">
                                         <label for="id"></label>
                                         <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />

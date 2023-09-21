@@ -31,7 +31,7 @@ class DrinkController extends BaseController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
+    @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def index() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = roleService.findByAuthority(enums.Role.ADMIN.name)
@@ -123,6 +123,7 @@ class DrinkController extends BaseController {
         respond drink, model:[adminIsLoggedIn:(adminUser?true:false)]
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showDrinks() {
         redirect(uri:'/')
     }

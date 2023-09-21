@@ -1,18 +1,6 @@
 <%@ page import="grails.util.Environment; enums.*; mixology.*; java.time.LocalTime;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%
-    def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
-    def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
-    int hour = LocalTime.now().getHour()
-    String greeting = 'Good ';
-    if (0 <= hour && hour < 12 ) greeting += 'morning, ';
-    else if (12 <= hour && hour < 17) greeting += 'afternoon, ';
-    else greeting += 'evening, ';
-%>
-<g:set var="user" value="${user}"/>
-<g:set var="greet" value="${greeting}"/>
 
-<g:set var="user" value="${user}"/>
 <style>
     .navbar-default .navbar-nav .open .dropdown-menu>li>a, .navbar-default .navbar-nav .open
     .dropdown-menu {

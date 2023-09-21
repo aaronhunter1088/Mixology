@@ -53,7 +53,12 @@
                                         <label for="name"></label>
                                         <input type="text" name="name" id="name" placeholder="ingredient name" value="${params.name}" style="text-align:center;width:200px;" class="form-control" />
                                         <label for="unit"></label>
-                                        <input type="text" name="unit" id="unit" placeholder="unit" value="${params.unit}" style="text-align:center;width:200px;" class="form-control" />
+                                        <select id="unit" name="unit" style="width:100px;text-align:center;" class="form-control">
+                                            <option label="Units" <g:if test="${!params.unit}">selected</g:if> disabled>Units</option>
+                                            <g:each in="${Unit.values()}" var="unit">
+                                                <option value="${unit}" <g:if test="${(params.unit as String) == unit.value.toUpperCase()}">selected</g:if>>${unit}</option>
+                                            </g:each>
+                                        </select>
                                         <label for="amount"></label>
                                         <input type="text" name="amount" id="amount" placeholder="amount" value="${params.amount}" style="text-align:center;width:200px;" class="form-control" />
                                         <g:if test="${!customIngredients}">
@@ -63,7 +68,7 @@
                                                    onclick="triggerCustomCheckbox();" />
                                         </g:if>
                                         <button style="margin: auto 10px;" id="filterIngredientBtn" class="btn btn-primary btn-xs" type="submit" form="filterIngredients">Filter</button>
-                                        <g:link class="btn btn-outline-primary btn-xs" controller="ingredient" action="index" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
+                                        <g:link class="btn btn-outline-primary btn-xs" controller="ingredient" action="${params.action}" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
                                     </div>
                                 </g:form>
                             </div>
