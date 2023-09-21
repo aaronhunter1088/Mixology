@@ -7,8 +7,11 @@ class LogoutController {
 
     private static Logger logger = LogManager.getLogger(LogoutController.class)
 
+    def springSecurityService
+    def userService
+
     def index = {
-        logger.info("${principal.fullname} is now logged out!")
+        logger.info("${springSecurityService.getPrincipal().fullname} is now logged out!")
         session.invalidate()
         redirect(uri:'/')
     }

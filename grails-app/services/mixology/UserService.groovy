@@ -78,7 +78,7 @@ class UserService {
             User.withTransaction {
                 user.delete(flush:true)
             }
-            logger.info("User '${user.name}' deleted!")
+            logger.info("User '${user.firstName}' deleted!")
         }
     }
 
