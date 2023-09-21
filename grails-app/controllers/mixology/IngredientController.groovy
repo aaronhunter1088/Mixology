@@ -79,10 +79,13 @@ class IngredientController extends BaseController {
             and {
                 if (params.id) {
                     eq('id', params.id as Long)
-                } else {
+                }
+                else {
                     if (params.name) eq ('name', params.name as String)
                     if (params.unit) eq ( 'unit', Unit.valueOf(params.unit as String))
                     if (params.amount) eq ( 'amount', params.alcohol as double)
+                    if (params.custom) eq ('custom', Boolean.valueOf(params.custom))
+                    else eq ( 'custom', false)
                 }
             }
         })
@@ -106,6 +109,10 @@ class IngredientController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         respond ingredientService.get(id), model:[user:user, role:role]
+    }
+
+    def showIngredients() {
+        redirect(action:'index')
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -223,9 +230,9 @@ class IngredientController extends BaseController {
             methodNotAllowed('','')
             return
         }
+        Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
         def drinksBefore = ingredientToUpdate?.drinks*.id ?: []
         ingredientToUpdate.clearErrors()
         if ( (!ingredientToUpdate.isCustom() && adminRole) ||
@@ -264,14 +271,14 @@ class IngredientController extends BaseController {
      */
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def copy(Ingredient ingredient) {
+        Ingredient copied
         if (!ingredient) {
-            notFound('','')
-            return
+            return notFound('','')
         }
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         if (user) {
             logger.info("we have a user logged in ${user}")
-            Ingredient copied = new Ingredient([
+            copied = new Ingredient([
                     name: ingredient.name,
                     unit: ingredient.unit,
                     amount: ingredient.amount
@@ -286,13 +293,16 @@ class IngredientController extends BaseController {
                 }
                 '*' { redirect(controller:"ingredient", action:"show", params:[id:copied.id]) }
             }
+        } else {
+            ingredient.errors.reject('default.copy.error.message', [ingredient.name] as Object[], 'Could not copy')
         }
+
         request.withFormat {
             html {
                 flash.message = message(code: 'default.updated.error.message', args: [message(code: 'ingredient.label', default: 'Ingredient')])
                 respond copied.errors, view:'show', status:BAD_REQUEST
             }
-            '*'{ respond copied.errors, view:'show', status:BAD_REQUEST }
+            '*'{ respond ingredient?.errors, view:'show', status:BAD_REQUEST }
         }
     }
 

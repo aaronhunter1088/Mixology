@@ -28,9 +28,7 @@ import static org.springframework.http.HttpStatus.*
 @ContextConfiguration
 class IngredientControllerSpec extends Specification implements ControllerUnitTest<IngredientController>, DataTest {
 
-    Class<?>[] getDomainClassesToMock(){
-        return [Drink, Ingredient, User] as Class[]
-    }
+    Class<?>[] getDomainClassesToMock(){return [Drink, Ingredient, User] as Class[]}
 
     Drink drink1, drink2
     User adminUser, testUser
@@ -230,6 +228,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         assert aSet.size() == 3
     }
 
+    // Test Index
     @Test
     void "test index action"() {
         given:
@@ -251,6 +250,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         }
     }
 
+    // Test Custom Index
     @Test
     void "test custom index"() {
         given:
@@ -276,8 +276,9 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         assert (model.ingredientList).resultList as ArrayList == ((testUser.ingredients as List) - ingredientE)
     }
 
+    // Test Show Ingredient
     @Test
-    void "test show ingredients"() {
+    void "test show ingredient"() {
         given:
         controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
 
@@ -288,6 +289,31 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         response.status == 200
     }
 
+    // Test Show all Ingredients
+    @Test
+    void "test show all ingredients"() {
+        when:
+        controller.showIngredients()
+
+        then:
+        response.status == FOUND.value()
+    }
+
+    // Test Show Custom Ingredients
+    @Test
+    void "test show custom ingredients"() {
+        given:
+        testUser.addToIngredients(ingredientA)
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+
+        when:
+        controller.showCustomIngredients()
+
+        then:
+        response.status == 200
+    }
+
+    // Test Create
     @Test
     void "test create action"() {
         given:
@@ -305,7 +331,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     // Test Saving
     @Unroll('controller.save(): #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
-    void "test save fails because wrong request method"() {
+    void "test save fails because wrong request method or params not supplied"() {
         when:
         if (value != 'POST') {
             controller.params.something = 'hasToBeHere'
@@ -542,6 +568,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         response.status == 200
     }
 
+    // Test Updating
     @Test
     void "update ingredient fails when no ingredient"() {
         when:
@@ -583,6 +610,41 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
 
         then:
             response.status == 400
+    }
+
+    @Test
+    void "test fails to delete ingredient because ID is not present"() {
+        when:
+        request.method = 'DELETE'
+        controller.delete(null)
+
+        then:
+        response.status == 400
+    }
+
+    @Test
+    void "test delete ingredient fails because non admin user and default"() {
+        given:
+        def user = new User([
+                username: "testusername@gmail.com",
+                firstName: "test",
+                lastName: "user"
+        ]).save(validate:false)
+        Role userRole = new Role(authority: enums.Role.USER.name)
+        UserRole.create(user, userRole)
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> user
+        }
+        controller.ingredientService = ingredientService
+        controller.userService = userService
+        controller.userRoleService = userRoleService
+
+        when:
+        request.method = 'DELETE'
+        controller.delete(defaultIngredient.id as Long)
+
+        then:
+        response.status == 401
     }
 
     @Test
@@ -652,41 +714,6 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
 
     @Test
-    void "test fails to delete ingredient because ID is not present"() {
-        when:
-            request.method = 'DELETE'
-            controller.delete(null)
-
-        then:
-            response.status == 400
-    }
-
-    @Test
-    void "test delete ingredient fails because non admin user and default"() {
-        given:
-        def user = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
-        Role userRole = new Role(authority: enums.Role.USER.name)
-        UserRole.create(user, userRole)
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-        }
-        controller.ingredientService = ingredientService
-        controller.userService = userService
-        controller.userRoleService = userRoleService
-
-        when:
-            request.method = 'DELETE'
-            controller.delete(defaultIngredient.id as Long)
-
-        then:
-            response.status == 401
-    }
-
-    @Test
     void "test delete ingredient is successful"() {
         given:
         controller.ingredientService.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> adminUser}
@@ -701,6 +728,28 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         then:
         response.status == 204
     }
+
+    // Test Copying
+    @Test
+    void "test copy ingredient duplicates exactly"() {
+        given:
+        testUser.ingredients = new HashSet<Ingredient>()
+        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> testUser}
+        assert testUser.ingredients.size() == 0
+
+        when:
+        controller.copy(ingredientA as Ingredient)
+
+        then:
+        assert testUser.ingredients.size() == 1
+        def copied = testUser.ingredients[0]
+        assert copied.name == ingredientA.name
+        assert copied.unit == ingredientA.unit
+        assert copied.amount == ingredientA.amount
+        assert copied.id != ingredientA.id
+    }
+
+    // Test Deleting
 
     // Test UI Call
     @Test

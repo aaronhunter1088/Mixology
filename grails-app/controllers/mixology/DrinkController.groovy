@@ -2,7 +2,6 @@ package mixology
 
 import enums.*
 import grails.converters.JSON
-import grails.orm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
@@ -124,10 +123,10 @@ class DrinkController extends BaseController {
         respond drink, model:[adminIsLoggedIn:(adminUser?true:false)]
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showDrinks() {
         redirect(uri:'/')
     }
+
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
@@ -211,107 +210,103 @@ class DrinkController extends BaseController {
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
-    def update(Drink drink) {
-        if (!drink) {
-            notFound('','')
-            return
+    def update() {
+        if (!params) {
+            return notFound('','')
         }
         if (request.method != 'PUT') {
-            methodNotAllowed('','')
-            return
+            return methodNotAllowed('','')
         }
-        // Get UR based on current user
+        Drink drinkToUpdate = drinkService.get(params.id as Long)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         try {
-            drink.clearErrors()
+            drinkToUpdate.clearErrors()
             // if not a custom drink and user has adminRole
-            if (!drink.isCustom() && adminRole) {
-                drink.name = params?.name ?: drink.name
-                drink.number = params?.number ? Integer.valueOf(params.number as String) : drink.number
-                drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drink.alcoholType
-                drink.symbol = params?.symbol ?: drink.symbol
-                drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
-                drink.mixingInstructions = params?.mixingInstructions ?: drink.mixingInstructions
-                drink.version = (params?.version as Long) ?: drink.version
-                //validIngredients = createNewIngredientsFromParams(params)
+            if (!drinkToUpdate.isCustom() && adminRole) {
+                drinkToUpdate.name = params?.name ?: drinkToUpdate.name
+                drinkToUpdate.number = params?.number ? Integer.valueOf(params.number as String) : drinkToUpdate.number
+                drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drinkToUpdate.alcoholType
+                drinkToUpdate.symbol = params?.symbol ?: drinkToUpdate.symbol
+                drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
+                drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
+                drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
                 validIngredients = obtainFromParams(params)
                 validIngredients.each{
-                    drink.ingredients.add(it as Ingredient)
+                    drinkToUpdate.ingredients.add(it as Ingredient)
                 }
-                drink.ingredients.each { Ingredient i ->
+                drinkToUpdate.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
-                    if (!i.drinks.contains(drink)) i.addToDrinks(drink as Drink)
+                    if (!i.drinks.contains(drinkToUpdate)) i.addToDrinks(drinkToUpdate as Drink)
                 }
                 // Find all ingredients currently associated with drink
-                List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
+                List<Long> associatedIngredientIds = drinkToUpdate.ingredients*.id as List<Long>
                 logger.info("${associatedIngredientIds}")
                 for(Long id : associatedIngredientIds) {
-                    if ( !(id in drink.ingredients*.id)) {
-                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.name}")
+                    if ( !(id in drinkToUpdate.ingredients*.id)) {
+                        logger.info("id ${id} not found in drinkToUpdate.ingredients. removing ${id} from drink: ${drinkToUpdate.name}")
                         Ingredient i = Ingredient.findById(id)
-                        i.removeFromDrinks(drink)
+                        i.removeFromDrinks(drinkToUpdate)
                     }
                 }
-                drinkService.save(drink, user, false)
+                drinkService.save(drinkToUpdate, user, false)
                 logger.info("default drink saved")
             }
             // if is a custom drink and user has either role
-            else if (drink.isCustom() && (!adminRole || !userRole)) {
-                drink.name = params?.drinkName ?: drink.name
-                drink.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drink.number
-                drink.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drink.alcoholType
-                drink.symbol = params?.drinkSymbol ?: drink.symbol
-                drink.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drink.suggestedGlass
-                drink.mixingInstructions = params?.instructions ?: drink.mixingInstructions
-                drink.version = (params?.version as Long) ?: drink.version
+            else if (drinkToUpdate.isCustom() && (!adminRole || !userRole)) {
+                drinkToUpdate.name = params?.drinkName ?: drinkToUpdate.name
+                drinkToUpdate.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drinkToUpdate.number
+                drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcoholType
+                drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
+                drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
+                drinkToUpdate.mixingInstructions = params?.instructions ?: drinkToUpdate.mixingInstructions
+                drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
                 validIngredients = obtainFromParams(params)
                 validIngredients.each{
-                    drink.ingredients.add(it as Ingredient)
+                    drinkToUpdate.addToIngredients(it as Ingredient)
                 }
-                drink.ingredients.each { Ingredient i ->
+                drinkToUpdate.ingredients.each { Ingredient i ->
                     if (!i.drinks) i.drinks = new HashSet<Drink>()
-                    if (!i.drinks.contains(drink)) i.addToDrinks(drink)
+                    if (!i.drinks.contains(drinkToUpdate)) i.addToDrinks(drinkToUpdate)
                 }
-                List<Long> associatedIngredientIds = drink.ingredients*.id as List<Long>
+                List<Long> associatedIngredientIds = drinkToUpdate.ingredients*.id as List<Long>
                 logger.info("${associatedIngredientIds}")
                 for(Long id : associatedIngredientIds) {
-                    if ( !(id in drink.ingredients*.id)) {
-                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drink.name}")
+                    if ( !(id in drinkToUpdate.ingredients*.id)) {
+                        logger.info("id ${id} not found in drink.ingredients. removing ${id} from drink: ${drinkToUpdate.name}")
                         Ingredient i = Ingredient.findById(id)
-                        i.removeFromDrinks(drink as Drink)
+                        i.removeFromDrinks(drinkToUpdate as Drink)
                     }
                 }
-                drinkService.save(drink, user, true)
+                drinkService.save(drinkToUpdate, user, true)
                 logger.info("custom drink saved!")
             }
             else {
-                drink.errors.reject('default.updated.error.message', [drink.name] as Object[], '')
+                drinkToUpdate.errors.reject('default.updated.error.message', [drinkToUpdate.name] as Object[], '')
             }
             validIngredients.clear()
-        } catch (ValidationException e) {
+        } catch (Exception e) {
             logger.error("exception ${e.getMessage()}")
-            respond drink.errors, view:'edit'
-            return
+            drinkToUpdate.errors.reject('default.updated.error.message', [drinkToUpdate.name] as Object[], '')
         }
 
-        if (drink.errors.hasErrors()) {
-            Set<Ingredient> ingredients = Ingredient.findAllByDrinksInList(drink.ingredients as List)
-            drink.ingredients = ingredients
+        if (drinkToUpdate.errors.hasErrors()) {
+            Set<Ingredient> ingredients = Ingredient.findAllByDrinksInList(drinkToUpdate.ingredients as List)
+            drinkToUpdate.ingredients = ingredients
             request.withFormat {
                 form multipartForm {
-                    respond drink.errors, view:'edit'
+                    respond drinkToUpdate.errors, view:'edit', status:BAD_REQUEST
                 }
-                '*' { respond drink.errors, view:'edit' }
+                '*' { respond drinkToUpdate.errors, view:'edit', status:BAD_REQUEST }
             }
         } else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
-                    respond drink, view:'show'
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drinkToUpdate.name])
+                    respond drinkToUpdate, view:'show'
                 }
-                '*'{ respond drink, view:'show', status: OK }
+                '*'{ respond drinkToUpdate, view:'show', status: OK }
             }
         }
     }
@@ -382,9 +377,12 @@ class DrinkController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def delete(Long id) {
-        if (!id) {
+        if (!id || !params) {
             notFound('','')
             return
+        }
+        if (request.method != 'DELETE') {
+            return methodNotAllowed('','')
         }
         Drink drink = drinkService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)

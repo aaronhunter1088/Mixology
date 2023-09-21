@@ -2,6 +2,7 @@ package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
+import enums.Role
 import enums.Unit
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
@@ -16,14 +17,22 @@ import mixology.RoleService
 import mixology.User
 import mixology.UserRoleService
 import mixology.UserService
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.junit.Test
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import static org.springframework.http.HttpStatus.*
 
 @ContextConfiguration
 class DrinkControllerSpec extends Specification implements ControllerUnitTest<DrinkController>, DataTest {
+
+    private static final Logger logger = LogManager.getLogger(DrinkControllerSpec.class)
 
     Class<?>[] getDomainClassesToMock(){ return [Drink, Ingredient, User] as Class[] }
 
@@ -149,8 +158,8 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 alcoholType: Alcohol.TEQUILA,
                 symbol: 'D2',
                 ingredients: createIngredientsWithVodkaAndDAndE(),
-                canBeDeleted: true,
-                custom: true
+                canBeDeleted: false,
+                custom: false
         ])
         // save all ingredients
         drink1.ingredients.each { ingredientService.save(it, false) }
@@ -159,7 +168,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         drinkService.save(drink1, false)
         drinkService.save(drink2, false)
 
-        def roleAdmin = roleService.save(enums.Role.ADMIN.name)
+        def roleAdmin = roleService.save(Role.ADMIN.name)
         adminUser = new User([
                 username: "adminuser@gmail.com",
                 firstName: "admin",
@@ -169,7 +178,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         ]).save(validate:false)
         userRoleService.save(adminUser, roleAdmin)
 
-        def roleUser = roleService.save(enums.Role.USER.name)
+        def roleUser = roleService.save(Role.USER.name)
         testUser = new User([
                 username: "testusername@gmail.com",
                 firstName: "test",
@@ -208,15 +217,15 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "delete one drink doesn't delete other drink"() {
         given:"Two drinks exist"
-        println "# of drinks: ${controller.drinkService.count()}"
+        logger.info("# of drinks: ${controller.drinkService.count()}")
         assert controller.drinkService.count() == 2
         drink1.user = testUser
         testUser.addToDrinks(drink1).save(flush:true)
-
+        request.method = 'DELETE'
         controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+        controller.params.something = 'hasToBeHere'
 
         when:
-        request.method = 'DELETE'
         controller.delete(drink1.id)
 
         then:"Drink1 no longer exists"
@@ -232,6 +241,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         assert ingredientService.count() == 6
     }
 
+    // Test Index
     @Test
     void "test index action"() {
         given:
@@ -248,13 +258,13 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         assert model.drinkCount == drinks.size()
     }
 
+    // Test Custom Index
     @Test
     void "test customIndex action"() {
         given:
         testUser.addToDrinks(drink1).addToDrinks(drink2).save(flush:true)
 
         def myCriteria = [
-                //list : {Map args, Closure  cls -> testUser*.drinks as PagedResultList}
                 list : {Map args, Closure cls ->
                     [
                             resultList: testUser.drinks,
@@ -273,6 +283,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         assert (model.drinkList).resultList as ArrayList == (testUser.drinks as List)
     }
 
+    // Test Show Drink
     @Test
     void "test show action"() {
         given:
@@ -291,6 +302,17 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         response.status == 200
     }
 
+    // Test Show all Drinks
+    @Test
+    void "test show all drinks"() {
+        when:
+        controller.showDrinks()
+
+        then:
+        response.status == FOUND.value()
+    }
+
+    // Test Show Custom Drinks
     @Test
     void "test showCustomDrinks action"() {
         given:
@@ -306,6 +328,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         view == '/drink/customDrinks'
     }
 
+    // Test Create
     @Test
     void "test create action"() {
         given:
@@ -320,34 +343,24 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         response.status == 200
     }
 
+    // Test Saving
+    @Unroll('controller.save(): #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
-    void "test save fails because method is GET"() {
+    void "test save fails because wrong request method"() {
         when:
-        request.method = 'GET'
+        if (value != 'POST') {
+            controller.params.something = 'hasToBeHere'
+        }
+        request.method = value
         controller.save()
-
         then:
-        response.status == 405
-    }
-
-    @Test
-    void "test save fails because method is PUT"() {
-        when:
-        request.method = 'PUT'
-        controller.save()
-
-        then:
-        response.status == 405
-    }
-
-    @Test
-    void "test save fails because method is DELETE"() {
-        when:
-        request.method = 'DELETE'
-        controller.save()
-
-        then:
-        response.status == 405
+        expected.value() == response.status
+        where:
+        value   | expected              | expectedErrorCode
+        'GET'   | METHOD_NOT_ALLOWED    | ''
+        'PUT'   | METHOD_NOT_ALLOWED    | ''
+        'DELETE'| METHOD_NOT_ALLOWED    | ''
+        'POST'  | NOT_FOUND             | ''
     }
 
     @Test
@@ -384,7 +397,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
         when:
         request.method = 'POST'
-        controller.params.something = "must_be_here"
+        controller.params.something = "hasToBeHere"
         controller.save()
 
         then:
@@ -444,6 +457,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         response.status == 201
     }
 
+    // Test Editing
     @Test
     void "test edit action"() {
         given:
@@ -459,66 +473,66 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         response.status == 200
     }
 
+    // Test Updating
+    @Unroll('controller.update(): #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
-    void "test update fails because method is GET"() {
+    void "test update fails because wrong request method or params not supplied"() {
         when:
-        request.method = 'GET'
-        controller.update(drink1)
-
+        if (value != 'PUT') {
+            controller.params.something = 'hasToBeHere'
+        }
+        request.method = value
+        controller.update()
         then:
-        response.status == 405
+        expected.value() == response.status
+        where:
+        value   | expected              | expectedErrorCode
+        'GET'   | METHOD_NOT_ALLOWED    | ''
+        'POST'  | METHOD_NOT_ALLOWED    | ''
+        'DELETE'| METHOD_NOT_ALLOWED    | ''
+        'PUT'   | NOT_FOUND             | ''
     }
 
     @Test
-    void "test update fails because method is POST"() {
+    void "test update fails because of validation errors"() {
+        given:
+        testUser.drinks = new HashSet<Drink>()
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> testUser
+        }
+        controller.drinkService = Stub(DrinkService) {save(_,_,_) >> {
+            Errors error = new BeanPropertyBindingResult(new Drink(), "Test drink")
+            return new ValidationException("test update drink fails validation", error)
+        }}
+        request.method = 'PUT'
+        controller.params.id = drink1.id
+        controller.params.something = "hasToBeHere"
+
         when:
-        request.method = 'POST'
-        controller.update(drink1)
+        controller.update()
 
         then:
-        response.status == 405
-    }
-
-    @Test
-    void "test update fails because method is DELETE"() {
-        when:
-        request.method = 'DELETE'
-        controller.update(drink1)
-
-        then:
-        response.status == 405
+        response.status == 400
     }
 
     @Test
     void "test updating a default drink"() {
         given:
-        drink1.custom = false
-        drink1.canBeDeleted = false
-        drink1.save(flush:true)
-        adminUser.drinks = new HashSet<Drink>()
-        adminUser.addToDrinks(drink1)
+        adminUser.addToDrinks(drink2)
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> adminUser
         }
-        controller.drinkService = Stub(DrinkService) { save(_) >> drink1}
+        controller.drinkService = Stub(DrinkService) { get(_) >> drink2; save(_) >> drink2}
+        request.method = 'PUT'
+        controller.params.id = drink2.id
+        controller.params.name = 'updatedName'
+        controller.params.ingredients = ["4", "5"]
 
         when:
-        request.method = 'PUT'
-        controller.params.name = 'updatedName'
-//        controller.params.drinkNumber = '11'
-//        controller.params.alcoholType = 'VODKA'
-//        controller.params.drinkSymbol = 'TD'
-//        controller.params.instructions = 'Test instructions'
-//        controller.params.glass = 'HIGHBALL'
-        controller.params.ingredients = ["1", "2"]
-//        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-//        controller.params.ingredientAmount = [1.5, 1.5]
-//        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-//        controller.params.version = 2l
-        controller.update(drink1 as Drink)
+        controller.update()
 
         then:
-        drink1.name == 'updatedName'
+        drink2.name == 'updatedName'
         response.status == 200
     }
 
@@ -545,7 +559,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 //        controller.params.ingredientAmount = [1.5, 1.5]
 //        controller.params.ingredientUnit = ['OZ', 'SPLASH']
 //        controller.params.version = 2l
-        controller.update(drink1 as Drink)
+        controller.update()
 
         then:
         drink1.name == 'updatedName'
@@ -558,6 +572,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         response.status == 200
     }
 
+    // Test Copying
     @Test
     void "test copy drink duplicates exactly"() {
         given:
@@ -594,32 +609,75 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         }
     }
 
-//    @Test
-//    void "test delete drink deletes only drink"() {
-//        given:
-//        def numOfDrinks = drinkService.count()
-//        def drinkIngredients = drink1.ingredients as List<Ingredient>
-//        def user = new User([
-//                username: "testusername@gmail.com",
-//                firstName: "test",
-//                lastName: "user"
-//        ]).save(validate:false)
-//        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> user}
-//        controller.drinkService.springSecurityService = Stub(SpringSecurityService) {
-//            getPrincipal() >> user
-//        }
-//
-//        when:
-//        request.method = 'DELETE'
-//        controller.delete(drink1.id)
-//
-//        then:
-//        assert drinkService.count() == numOfDrinks - 1
-//        drinkIngredients?.each {
-//            assert it.id
-//        }
-//        response.status == 204
-//    }
+    // Test Deleting
+    @Unroll('controller.delete(): #value should have returned #expected with errorCode: #expectedErrorCode')
+    @Test
+    void "test delete fails because wrong request method or params not supplied"() {
+        when:
+        if (value != 'DELETE') {
+            controller.params.something = 'hasToBeHere'
+        }
+        request.method = value
+        controller.delete(1)
+        then:
+        expected.value() == response.status
+        where:
+        value   | expected              | expectedErrorCode
+        'GET'   | METHOD_NOT_ALLOWED    | ''
+        'POST'  | METHOD_NOT_ALLOWED    | ''
+        'PUT'   | METHOD_NOT_ALLOWED    | ''
+        'DELETE'| NOT_FOUND             | ''
+    }
+
+    @Test
+    void "test delete drinks fails because drink is not deletable"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+        controller.params.something = 'hasToBeHere'
+        request.method = 'DELETE'
+
+        when:
+        controller.delete(drink2.id)
+
+        then:
+        response.status == BAD_REQUEST.value() // 400
+    }
+
+    @Test
+    void "test delete drinks fails in service call"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+        controller.params.something = 'hasToBeHere'
+        request.method = 'DELETE'
+        controller.drinkService = Stub(DrinkService) { delete(_,_,_) >> new Exception('Mocked')}
+
+        when:
+        controller.delete(drink1.id)
+
+        then:
+        response.status == BAD_REQUEST.value() // 400
+    }
+
+    @Test
+    void "test delete drink deletes only drink"() {
+        given:
+        def numOfDrinks = drinkService.count()
+        def drinkIngredients = drink1.ingredients as List<Ingredient>
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+        controller.drinkService.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
+        request.method = 'DELETE'
+        controller.params.something = 'hasToBeHere'
+
+        when:
+        controller.delete(drink1.id)
+
+        then:
+        assert drinkService.count() == numOfDrinks - 1
+        drinkIngredients?.each {
+            assert it.id
+        }
+        response.status == 204
+    }
 
     @Test
     void "test already existing ingredient returns true"() {
