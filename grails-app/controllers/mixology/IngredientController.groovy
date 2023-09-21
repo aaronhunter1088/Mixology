@@ -6,6 +6,8 @@ import grails.validation.ValidationException
 import enums.Unit
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import grails.orm.PagedResultList
+
 import static org.springframework.http.HttpStatus.*
 import static mixology.DrinkController.isOn
 import javax.servlet.http.HttpServletResponse
@@ -17,6 +19,7 @@ class IngredientController extends BaseController {
     def drinkService
     def ingredientService
     def userService
+    def roleService
     def userRoleService
     def springSecurityService
 
@@ -25,7 +28,8 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def role = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def adminRole = userRoleService.getRoleIfExists(user as User, role as Role)
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -82,7 +86,7 @@ class IngredientController extends BaseController {
                 }
             }
         })
-        logger.info("custom ingredients size: ${userIngredients.totalCount}")
+        logger.info("custom ingredients size: ${userIngredients?.totalCount}")
         withFormat {
             html {
                 render view:'index',
@@ -132,12 +136,14 @@ class IngredientController extends BaseController {
         Ingredient errorI = new Ingredient()
         List<Ingredient> ingredientErrors = []
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def userRole = roleService.findByAuthority(enums.Role.USER.name)
+        def adminUser = userRoleService.getRoleIfExists(user as User, adminRole as Role)
+        def regularUser = userRoleService.getRoleIfExists(user as User, userRole as Role)
         List<Ingredient> ingredients
         int savedCount = 0
         try {
-            ingredients = createIngredientsFromParams(params, adminRole)
+            ingredients = createIngredientsFromParams(params, adminUser)
             ingredients.each { ingredient ->
                 Ingredient saved = null
                 if (
@@ -300,7 +306,8 @@ class IngredientController extends BaseController {
         }
         Ingredient ingredient = ingredientService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def role = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def adminRole = userRoleService.getRoleIfExists(user as User, role as Role)
         boolean adminIsLoggedIn = adminRole ? true : false
         if ( (!ingredient.canBeDeleted && adminRole) ||
              (ingredient.canBeDeleted) ){
@@ -337,7 +344,7 @@ class IngredientController extends BaseController {
      * @param role
      * @return
      */
-    def createIngredientsFromParams(def params, def adminRole) {
+    def createIngredientsFromParams(def params, def adminUser) {
         List<String> ingredientNames = new ArrayList<>()
         List<Unit> units = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
@@ -362,7 +369,7 @@ class IngredientController extends BaseController {
                     unit: units.get(i),
                     amount: ingredientAmounts.get(i)
             ])
-            if (adminRole) {
+            if (adminUser) {
                 ingredient.canBeDeleted = false
                 ingredient.custom = false
             }

@@ -2,6 +2,7 @@ package mixology
 
 import enums.*
 import grails.converters.JSON
+import grails.orm.PagedResultList
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
@@ -25,6 +26,7 @@ class DrinkController extends BaseController {
     def drinkService
     def ingredientService
     def userService
+    def roleService
     def userRoleService
     def springSecurityService
 
@@ -33,8 +35,8 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_ANONYMOUSLY'])
     def index() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def role = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def adminUserRole = userRoleService.getRoleIfExists(user as User, role as Role)
         def drinks = null
         def args = [
                 max: params.max ?: 5,
@@ -61,7 +63,7 @@ class DrinkController extends BaseController {
                 render view:'index',
                        model: [drinkList: drinks,
                                drinkCount: drinks.totalCount,
-                               adminIsLoggedIn:(adminRole?true:false),
+                               adminIsLoggedIn:(adminUserRole?true:false),
                                customDrinks:false,
                                params:params
                        ]
@@ -73,8 +75,10 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def userRole = roleService.findByAuthority(enums.Role.USER.name)
+        def adminUser = userRoleService.getRoleIfExists(user as User, adminRole as Role)
+        def regularUser = userRoleService.getRoleIfExists(user as User, userRole as Role)
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -95,13 +99,13 @@ class DrinkController extends BaseController {
                 }
             }
         })
-        logger.info("custom drinks size: ${userDrinks.totalCount}")
+        logger.info("custom drinks size: ${userDrinks?.totalCount ?: userDrinks.size()}")
         withFormat {
             html {
                 render view:'index',
                         model:[drinkList:userDrinks,
                                drinkCount:userDrinks.totalCount,
-                               adminIsLoggedIn:(adminRole?true:false),
+                               adminIsLoggedIn:(adminUser?true:false),
                                customDrinks:true,
                                params:params
                         ]
@@ -115,8 +119,9 @@ class DrinkController extends BaseController {
     def show(Long id) {
         Drink drink = drinkService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        respond drink, model:[adminIsLoggedIn:(role?true:false)]
+        def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
+        def adminUser = userRoleService.getRoleIfExists(user as User, roleAdmin as Role)
+        respond drink, model:[adminIsLoggedIn:(adminUser?true:false)]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])

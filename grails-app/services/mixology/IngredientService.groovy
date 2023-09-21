@@ -109,15 +109,16 @@ class IngredientService {
             if (!user?.ingredients?.contains(ingredient)) {
                 logger.warn("A user, id:: ${user.id} is deleting an ingredient they did not create.")
                 logger.warn("Ingredient belongs to user, id:: ${ingredient?.user?.id}")
+                ingredient.user = null
+            } else {
+                user.removeFromIngredients(ingredient)
             }
-            user.removeFromIngredients(ingredient)
-            ingredient.user = null
             try {
                 iDrinks.each { drink ->
                     drink.removeFromIngredients(ingredient)
                     ingredient.removeFromDrinks(drink)
                 }
-                if (iDrinks.size() > 0) {
+                if (iDrinks?.size() > 0) {
                     iDrinks.eachWithIndex { Drink drink, int i ->
                         logger.warn("Deleting this ingredient will affect this drink, id:: ${drink.id}")
                     }

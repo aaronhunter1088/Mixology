@@ -35,9 +35,6 @@ import javax.persistence.criteria.Root;
 class UserService {
 
     private static Logger logger = LogManager.getLogger(UserService.class)
-    def springSecurityService
-    def dataSource
-    def grailsApplication
 
     User get(Long id) {
         User user = User.findById(id as Long)

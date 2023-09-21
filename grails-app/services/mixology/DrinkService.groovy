@@ -114,9 +114,11 @@ class DrinkService {
             if (!user?.drinks?.contains(drink)) {
                 logger.warn("A user, id:: ${user.id} is deleting a drink they did not create.")
                 logger.warn("Drink belongs to user, id:: ${drink?.user?.id}")
+                drink.user = null
+            } else {
+                user.removeFromDrinks(drink)
             }
             try {
-                user.removeFromDrinks(drink)
                 def ingredients = drink.ingredients.collect{it} ?: []
                 ingredients?.each { ingredient ->
                     drink.removeFromIngredients(ingredient)
