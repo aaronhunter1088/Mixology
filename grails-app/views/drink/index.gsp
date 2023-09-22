@@ -28,7 +28,7 @@
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <g:render template="../navigation"/>
+                    <g:render template="../navigation" model="[user:user]"/>
                 </section>
                 <section class="row">
                     <div id="list-drink" class="col-12 content scaffold-list">
@@ -37,6 +37,42 @@
                         <div class="message" role="status">${flash.message}</div>
                         </g:if>
 
+                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
+                        <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
+                            <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
+                                <div id="filterDrinksFormDiv" style="display:flex;">
+                                    <label for="id"></label>
+                                    <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
+                                    <label for="name"></label>
+                                    <input type="text" name="name" id="name" placeholder="name" value="${params.name}" style="text-align:center;" class="form-control" />
+                                    <label for="number"></label>
+                                    <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
+                                    <label for="alcoholSelect"></label>
+                                    <select id="alcoholSelect" name="alcohol" style="width:120px;text-align:center;" class="form-control">
+                                        <option label="Alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>Alcohols</option>
+                                        <g:each in="${Alcohol.values()}" var="alcohol">
+                                            <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
+                                        </g:each>
+                                    </select>
+                                    <label for="glassSelect"></label>
+                                    <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
+                                        <option label="Glasses" selected disabled>Glasses</option>
+                                        <g:each in="${GlassType.values()}" var="glass">
+                                            <option value="${glass}">${glass}</option>
+                                        </g:each>
+                                    </select>
+                                    <g:if test="${!customDrinks}">
+                                        <label style="margin: auto 10px;" for="defaultDrink">Default Drink? </label>
+                                        <input type="checkbox" name="defaultDrink" id="defaultDrink"
+                                               <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
+                                               onclick="triggerCustomCheckbox();" />
+                                    </g:if>
+                                    <button style="margin: auto 10px;" id="filterDrinkBtn" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
+                                    <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
+                                </div>
+                            </g:form>
+                        </div>
+                        <p></p>
                         <g:if test="${drinkCount <= 0}">
                             <g:if test="${customDrinks}">
                             <p>No custom drinks found!</p>
@@ -44,42 +80,6 @@
                             <p>No default drinks found!</p>
                             </g:else>
                         </g:if><g:else>
-                            <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                            <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
-                                <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
-                                    <div id="filterDrinksFormDiv" style="display:flex;">
-                                        <label for="id"></label>
-                                        <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
-                                        <label for="name"></label>
-                                        <input type="text" name="name" id="name" placeholder="name" value="${params.name}" style="text-align:center;" class="form-control" />
-                                        <label for="number"></label>
-                                        <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
-                                        <label for="alcoholSelect"></label>
-                                        <select id="alcoholSelect" name="alcohol" style="width:100px;text-align:center;" class="form-control">
-                                            <option label="Alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>Alcohols</option>
-                                            <g:each in="${Alcohol.values()}" var="alcohol">
-                                                <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
-                                            </g:each>
-                                        </select>
-                                        <label for="glassSelect"></label>
-                                        <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
-                                            <option label="Glasses" selected disabled>Glasses</option>
-                                            <g:each in="${GlassType.values()}" var="glass">
-                                                <option value="${glass}">${glass}</option>
-                                            </g:each>
-                                        </select>
-                                        <g:if test="${!customDrinks}">
-                                            <label style="margin: auto 10px;" for="defaultDrink">Default Drink? </label>
-                                            <input type="checkbox" name="defaultDrink" id="defaultDrink"
-                                                   <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
-                                                   onclick="triggerCustomCheckbox();" />
-                                        </g:if>
-                                        <button style="margin: auto 10px;" id="filterDrinkBtn" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
-                                        <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
-                                    </div>
-                                </g:form>
-                            </div>
-                            <p></p>
                             <table>
                                 <thead>
                                     <tr>

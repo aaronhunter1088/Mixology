@@ -106,6 +106,7 @@ class DrinkController extends BaseController {
                                drinkCount:userDrinks.totalCount,
                                adminIsLoggedIn:(adminUser?true:false),
                                customDrinks:true,
+                               user:user,
                                params:params
                         ]
             }
@@ -120,7 +121,7 @@ class DrinkController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
         def adminUser = userRoleService.getRoleIfExists(user as User, roleAdmin as Role)
-        respond drink, model:[adminIsLoggedIn:(adminUser?true:false)]
+        respond drink, model:[user:user,adminIsLoggedIn:(adminUser?true:false)]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -626,16 +627,16 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def sendADrinkEmail() {
         if (!params) {
-            badRequest()
+            badRequest(flash, request,'', '')
         }
         if (request.method != 'GET') {
-            badRequest()
+            badRequest(flash, request, '', '')
         }
-        def user = User.findByUsername(springSecurityService.getPrincipal().username as String)
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         // Create email
         // Save email
         // Send email
-        println "SimpleEmail Start"
+        logger.info("SimpleEmail Start")
         //String smtpHostServer = "smtp.example.com";
         //String emailID = "email_me@example.com";
         Properties props = new Properties()
@@ -707,14 +708,15 @@ class DrinkController extends BaseController {
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false))
 
             msg.saveChanges()
-            println "Message is ready"
+            logger.info("Message is ready")
             Transport.send(msg)
 
-            println "Email Sent Successfully!!"
+            logger.info("Email Sent Successfully!!")
             return true
         }
         catch (Exception e) {
-            e.printStackTrace()
+            logger.error("An exception occurred while sending the email", e)
+            logger.error("Exception: ${e.getMessage()}")
             return false
         }
     }

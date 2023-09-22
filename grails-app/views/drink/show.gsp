@@ -61,13 +61,13 @@
             }
         </style>
     </head>
-    <g:set var="drink" scope="request" value="${message(code: 'drink.label', default: 'Drink')}" />
+    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
     <body>
         <div id="content">
             <div class="container">
                 <section class="row" id="navigation">
-                    <g:render template="../navigation"/>
+                    <g:render template="../navigation" model="[user:user]"/>
                 </section>
                 <div id="show-drink" class="col-12 scaffold-show">
                     <h1>Show Drink</h1>
@@ -144,7 +144,7 @@
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                         <g:if test="${drink.custom || adminIsLoggedIn}">
                                             <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.email.share" default="Share"/></g:link>
+                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.share.label" default="Share"/></g:link>
                                             <i class="fa-solid fa-trash-can">
                                             <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                                             </i>

@@ -103,7 +103,7 @@
                     </div>
                     <div id="column2" style="margin:0;padding:0;width:2100px;">
                         <div id="title" style="width:1200px;height:600px;">
-                            <h1 id="chartTitle" style="width:2400px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
+                            <h1 id="chartTitle" style="width:2100px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                             <div id="reference" style="display:inline-flex;">
                                 <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
                                     <g:render template="customReferenceChart" model="[drinks:drinkList]"/>

@@ -55,6 +55,7 @@ class IngredientController extends BaseController {
                        model:[ingredientList:ingredients,
                               ingredientCount: ingredients.totalCount,
                               adminIsLoggedIn:(adminRole?true:false),
+                              user:user,
                               params:params
                        ]
             }
@@ -95,6 +96,7 @@ class IngredientController extends BaseController {
                               ingredientCount: userIngredients.totalCount,
                               adminIsLoggedIn:(adminRole?true:false),
                               customIngredients:true,
+                              user:user,
                               params:params
                        ]
             }
