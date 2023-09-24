@@ -1,6 +1,9 @@
 <%@ page import="grails.util.Environment; enums.*; mixology.*; java.time.LocalTime;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-
+<%
+    def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
+    def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
+%>
 <style>
     .navbar-default .navbar-nav .open .dropdown-menu>li>a, .navbar-default .navbar-nav .open
     .dropdown-menu {

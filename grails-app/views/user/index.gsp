@@ -18,7 +18,6 @@
             }
         </style>
     </head>
-    <g:set var="user" value="${message(code: 'user.label', default: 'User')}" />
     <body style="overflow-x:scroll;">
         <div id="content">
             <div class="container">
@@ -76,7 +75,6 @@
                                             </g:else>
                                             <tr>
                                                 <td><g:link controller="user" action="show" params='[id:"${user.id}"]'>${idx}</g:link> </td>
-%{--                                                <td>${user.id}</td>--}%
                                                 <td>${user.firstName}</td>
                                                 <td>${user.lastName}</td>
                                                 <td>${user.username}</td>

@@ -83,7 +83,7 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Count</th>
+                                        <th>Count (${drinkCount})</th>
 %{--                                        <th>ID</th>--}%
                                         <th>Drink Name</th>
                                         <th>Drink Symbol</th>

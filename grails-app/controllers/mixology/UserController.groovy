@@ -62,10 +62,10 @@ class UserController extends BaseController {
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
-        def user = userService.get(id)
-
-        def decry = user.password
-        render view:'show', model:[user:user]
+        def userToDisplay = userService.get(id)
+        def currentUser = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        boolean showPassword = currentUser.id == id
+        render view:'show', model:[user:userToDisplay, showPassword:showPassword]
     }
 
     def create() {

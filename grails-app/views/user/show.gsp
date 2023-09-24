@@ -121,7 +121,13 @@
                                             <label for='password'>Password</label>
                                             <div class="input-wrapper">
                                                 <div class="input-wrapper">
-                                                    <input type="password" disabled name="password" value="${UserPasswordEncoderListener.decrypt(user.passwordConfirm)}" id="password" />
+                                                    <input type="password" disabled name="password"
+                                                            <g:if test="${showPassword}">
+                                                                value="${UserPasswordEncoderListener.decrypt(user.passwordConfirm)}"
+                                                            </g:if><g:else>
+                                                                value="${user.passwordConfirm}"
+                                                            </g:else>
+                                                           id="password" />
                                                     <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                                 </div>
                                             </div>

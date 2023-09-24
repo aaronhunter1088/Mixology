@@ -14,19 +14,23 @@ class BootStrap {
         //addTestUser()
         //addMBallUser()
         //updateAllTestUserIngredients()
-        def user = User.findById(2)
+//        def user = User.findById(1)
+//        def user4 = User.findById(4)
+
 //        def users = User.all
 //        users.each {User user ->
 //            println "Updating password"
 //            if (user.id == 1) {user.password = 'p@ssword1!'; user.passwordConfirm = 'p@ssword1!';}
-            if (user.id == 2) {user.password = 'password123$'; user.passwordConfirm = 'password123$';}
+//            if (user.id == 2) {user.password = 'password123$'; user.passwordConfirm = 'password123$';}
 //            if (user.id == 4) {user.password = 'gingerNix123$'; user.passwordConfirm = 'gingerNix123$';}
 //        }
 //        users.each {User user ->
-            User.withNewTransaction {
-                user.save(flush:true, validate:false)
-            }
+//            User.withNewTransaction {
+//                user.save(flush:true, validate:false)
+//            }
 //        }
+
+
     }
 
     def destroy = {
