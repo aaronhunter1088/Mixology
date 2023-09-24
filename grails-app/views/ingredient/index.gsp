@@ -76,8 +76,7 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Count</th>
-    %{--                                    <th>ID</th>--}%
+                                        <th>Count (${ingredientCount})</th>
                                         <th>Name</th>
                                         <th>Unit</th>
                                         <th>Amount</th>

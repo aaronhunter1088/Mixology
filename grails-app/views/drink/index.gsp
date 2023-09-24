@@ -84,7 +84,6 @@
                                 <thead>
                                     <tr>
                                         <th>Count (${drinkCount})</th>
-%{--                                        <th>ID</th>--}%
                                         <th>Drink Name</th>
                                         <th>Drink Symbol</th>
                                         <th>Drink Number</th>

@@ -20,6 +20,7 @@ class User implements Serializable {
     String passwordConfirm
     String mobileNumber
     String photo
+    boolean darkMode
 
     def springSecurityService
 
@@ -41,6 +42,7 @@ class User implements Serializable {
         enabled(default:1)
         accountLocked(default:0)
         passwordExpired(default:0, nullable:true)
+        darkMode(default:0)
     }
 
     static mapping = {
@@ -48,7 +50,7 @@ class User implements Serializable {
         password column: '`password`'
         autowire true
     }
-    static transients = ['springSecurityService','darkMode']
+    static transients = ['springSecurityService']
 
     @Override
     String toString() { "$firstName $lastName" }
@@ -59,11 +61,6 @@ class User implements Serializable {
      */
     Set<Role> getAuthorities() {
         UserRole.findAllByUser(this)*.role
-    }
-
-    transient boolean darkMode = false
-    boolean darkMode() {
-        darkMode
     }
 
 }

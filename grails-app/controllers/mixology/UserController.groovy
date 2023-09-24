@@ -151,6 +151,11 @@ class UserController extends BaseController {
 
         user.firstName = params?.firstName ?: user.firstName
         user.lastName = params?.lastName ?: user.lastName
+        if (params?.cellphone) {
+            def cellphone = params.cellphone as String
+            cellphone = cellphone.trim().replaceAll('\\D','')
+            user.mobileNumber = cellphone
+        }
         user.email = params?.email ?: user.email
         params?.drinks?.each {
             Drink drink = Drink.read(it as Long)
@@ -183,6 +188,7 @@ class UserController extends BaseController {
     def darkMode() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         user.darkMode = !user.darkMode
+        userService.save(user, false)
         logger.info("user.enableDarkMode from (${!user.darkMode}) to (${user.darkMode})")
         redirect (uri:'/')
     }
