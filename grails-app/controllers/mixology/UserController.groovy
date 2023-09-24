@@ -63,6 +63,8 @@ class UserController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         def user = userService.get(id)
+
+        def decry = user.password
         render view:'show', model:[user:user]
     }
 

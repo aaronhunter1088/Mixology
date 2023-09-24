@@ -1,4 +1,4 @@
-<%@ page import="enums.*; mixology.*;" %>
+<%@ page import="enums.*; mixology.*; mixology.UserPasswordEncoderListener;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
@@ -121,7 +121,7 @@
                                             <label for='password'>Password</label>
                                             <div class="input-wrapper">
                                                 <div class="input-wrapper">
-                                                    <input type="password" disabled name="password" value="${user.password}" id="password" />
+                                                    <input type="password" disabled name="password" value="${UserPasswordEncoderListener.decrypt(user.passwordConfirm)}" id="password" />
                                                     <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                                 </div>
                                             </div>
@@ -185,8 +185,6 @@
                                 </i>
                             </fieldset>
                         </g:form>
-
-
                     </div>
                 </div>
             </div>
