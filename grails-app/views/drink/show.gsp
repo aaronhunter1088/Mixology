@@ -61,8 +61,6 @@
             }
         </style>
     </head>
-    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
-    <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
     <body>
         <div id="content">
             <div class="container">
@@ -89,34 +87,34 @@
                                     <hr style="height:1px;background-color:#000080">
                                 </legend>
                                 <div id="drink" style="width:100%;float:left;">
-                                    <div class="formfield" id="name">
-                                        <label for='drinkName'>Drink Name</label>
+                                    <div class="formfield" id="drinkName">
+                                        <label for='name'>Drink Name</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkName" value="${drink.name}" required="" id="drinkName" />
+                                            <input type="text" disabled name="name" value="${drink.name}" required="" id="name" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="number">
-                                        <label for='drinkNumber'>Drink Number</label>
+                                    <div class="formfield" id="drinkNumber">
+                                        <label for='number'>Drink Number</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkNumber" value="${drink.number}" required="" id="drinkNumber" />
+                                            <input type="text" disabled name="number" value="${drink.number}" required="" id="number" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="alcohol">
-                                        <label for='alcoholType'>Drink Type</label>
+                                    <div class="formfield" id="alcoholType">
+                                        <label for='alcohol'>Drink Type</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="alcoholType" value="${drink.alcoholType}" required="" id="alcoholType" />
+                                            <input type="text" disabled name="alcohol" value="${drink.alcoholType}" required="" id="alcohol" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="symbol">
-                                        <label for='drinkSymbol'>Drink Symbol</label>
+                                    <div class="formfield" id="drinkSymbol">
+                                        <label for='symbol'>Drink Symbol</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkSymbol" value="${drink.symbol}" required="" id="drinkSymbol" />
+                                            <input type="text" disabled name="symbol" value="${drink.symbol}" required="" id="symbol" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="glass">
-                                        <label for="glassType">Suggested Glass</label>
+                                    <div class="formfield" id="glassType">
+                                        <label for="glass">Suggested Glass</label>
                                         <div class="input-wrapper">
-                                            <input type="text" disabled name="drinkSymbol" value="${drink.suggestedGlass}" required="" id="glassType" />
+                                            <input type="text" disabled name="glass" value="${drink.suggestedGlass}" required="" id="glass" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="instructions">

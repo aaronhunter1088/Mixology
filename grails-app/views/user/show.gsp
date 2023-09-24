@@ -64,7 +64,7 @@
             /*Keeps scroll bar present*/
             ::-webkit-scrollbar {
                 -webkit-appearance: none;
-                width: 7px;
+                width: 0 !important
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
@@ -73,26 +73,25 @@
             }
         </style>
     </head>
-    <g:set var="user" scope="request" value="${message(code: 'user.label', default: 'User')}" />
     <body>
-        <div id="content">
-            <div class="container">
-                <section class="row" id="navigation">
-                    <g:render template="../navigation"/>
-                </section>
-                <div id="show-user" class="col-12 scaffold-show" role="main">
-                    <h1>Show User</h1>
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
-                    <div style="display:flex;justify-content:center;">
-                        <div style="display:block;justify-content:center;">
-                            <fieldset style="border:thick solid #007bff;">
-                                <legend style="margin-left:25px;padding-left:10px;width:auto;">
-                                    ${user.toString()} &emsp14;
-                                    <hr style="height:1px;background-color:#007bff;">
-                                </legend>
-                                <div style="display:flex;justify-content:center;">
+        <div class="container">
+            <div class="row" id="navigation">
+                <g:render template="../navigation"/>
+            </div>
+            <div id="show-user" class="col-12 scaffold-show" role="main">
+                <h1>Show User</h1>
+                <g:if test="${flash.message}">
+                    <div class="message" role="status">${flash.message}</div>
+                </g:if>
+                <div style="display:flex;justify-content:center;">
+                    <div style="display:block;justify-content:center;">
+                        <fieldset style="border:thick solid #007bff;">
+                            <legend style="margin-left:25px;padding-left:10px;width:auto;">
+                                ${user.firstName} ${user.lastName} &emsp14;
+                                <hr style="height:1px;background-color:#007bff;">
+                            </legend>
+                            <div style="display:block;justify-content:center;">
+                                <div style="display:inline-flex;justify-content:center;">
                                     <div id="user" style="width:50%;float:left;">
                                         <div class="formfield" id="firstName">
                                             <label for='firstName'>First Name</label>
@@ -127,17 +126,25 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div id="photo" style="width:50%;float:right;text-align:center;">
+                                        <g:if test="${!user.photo || user.photo == ''}">
+                                            <p>No image uploaded!</p>
+                                        </g:if><g:else>
+                                            <img src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
+                                        </g:else>
+                                    </div>
+                                </div>
+                                <div style="display:inline-flex;justify-content:center;">
+                                    <div id="userDrinks" style="float:left;padding:10px 10px 0 10px;width:300px;">
                                         <g:if test="${user.drinks.size() > 0}">
-                                            <div class="formfield" id="drinks" style="display:block;">
-                                                <label>Users Drinks</label><br>
-                                                <div style="margin-top:-25px;height:100px;overflow-y:auto;">
-                                                    <g:each in="${user.drinks.sort{ it.id } }" var="drink" status="i">
-                                                        <div style="display:block;">
-                                                            <input hidden type="checkbox" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
-                                                            <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link> : ${drink.id}
-                                                        </div>
-                                                    </g:each>
-                                                </div>
+                                            <label>Users Drinks</label><br>
+                                            <div style="height:100px;overflow-y:auto;">
+                                                <g:each in="${user.drinks.sort{ it.id } }" var="drink" status="i">
+                                                    <div style="display:block;">
+                                                        <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link>
+                                                    </div>
+                                                </g:each>
                                             </div>
                                         </g:if>
                                         <g:else>
@@ -148,27 +155,38 @@
                                             </div>
                                         </g:else>
                                     </div>
-                                    <div id="photo" style="width:50%;float:right;text-align:center;">
-                                        <g:if test="${!user.photo || user.photo == ''}">
-                                            <p>No image uploaded!</p>
+                                    <div id="userIngredients" style="float:right;padding:10px;text-align:right;">
+                                        <g:if test="${user.ingredients.size() > 0}">
+                                            <label>Users Ingredients</label><br>
+                                            <div style="height:100px;overflow-y:auto;text-align:right;">
+                                                <g:each in="${user.ingredients.sort{ it.id } }" var="ingredient" status="i">
+                                                    <div style="display:block;padding-right:5px;">
+                                                        <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link>
+                                                    </div>
+                                                </g:each>
+                                            </div>
                                         </g:if>
                                         <g:else>
-                                            <img src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
+                                            <div class="formfield" id="noingredients">
+                                                <div class="input-wrapper">
+                                                    <p>After you copy a drink, or create an ingredient, ingredients will appear here.</p>
+                                                </div>
+                                            </div>
                                         </g:else>
                                     </div>
                                 </div>
+                            </div>
+                        </fieldset>
+                        <g:form resource="${this.user}" method="DELETE">
+                            <fieldset class="buttons">
+                                <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.user}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                <i class="fa-solid fa-trash-can">
+                                    <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                </i>
                             </fieldset>
-                            <g:form resource="${this.user}" method="DELETE">
-                                <fieldset class="buttons">
-                                    <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.user}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                    <i class="fa-solid fa-trash-can">
-                                        <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                    </i>
-                                    </fieldset>
-                            </g:form>
+                        </g:form>
 
 
-                        </div>
                     </div>
                 </div>
             </div>

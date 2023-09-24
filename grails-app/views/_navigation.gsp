@@ -16,7 +16,7 @@
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#home" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;Home</a>
                     <ul class="dropdown-menu" id="home" style="background-color:#000000;">
-                        <g:link class="fa fa-home" controller="drink" action="showDrinks">&nbsp;Default Drinks</g:link>
+                        <g:link class="fa fa-home" url="${createLink(uri: '/')}">&nbsp;Default Drinks</g:link>
                         <g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Your Drinks</g:link>
                     </ul>
                 </li> <!-- Home -->

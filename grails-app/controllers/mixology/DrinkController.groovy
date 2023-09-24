@@ -121,10 +121,14 @@ class DrinkController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
         def adminUser = userRoleService.getRoleIfExists(user as User, roleAdmin as Role)
-        respond drink, model:[user:user,adminIsLoggedIn:(adminUser?true:false)]
+        render view:'show',
+               model:[user:user,
+                      drink:drink,
+                      adminIsLoggedIn:(adminUser?true:false)
+               ]
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showDrinks() {
         redirect(uri:'/')
     }
