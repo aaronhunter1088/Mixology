@@ -190,7 +190,7 @@ class UserController extends BaseController {
         user.darkMode = !user.darkMode
         userService.save(user, false)
         logger.info("user.enableDarkMode from (${!user.darkMode}) to (${user.darkMode})")
-        redirect (uri:'/')
+        redirect (uri:"${params.uri}")
     }
 
     def createUserFromParams(user, params, file) {

@@ -266,7 +266,7 @@ class DrinkController extends BaseController {
                 drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcoholType
                 drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
                 drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
-                drinkToUpdate.mixingInstructions = params?.instructions ?: drinkToUpdate.mixingInstructions
+                drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
                 drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
                 validIngredients = obtainFromParams(params)
                 validIngredients.each{
@@ -310,7 +310,7 @@ class DrinkController extends BaseController {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drinkToUpdate.name])
-                    respond drinkToUpdate, view:'show'
+                    render view:'show', model:[drink:drinkToUpdate,user:user], status:OK
                 }
                 '*'{ respond drinkToUpdate, view:'show', status: OK }
             }

@@ -10,10 +10,10 @@
         background-color: ghostwhite;
         color:#222;
     }
-</style>                    <!-- navbar-dark -->
-<div id="home-bar" class="navbar navbar-expand-sm navbar-inverse" style="padding:30px 0;text-align:center;">
+</style>                    <!-- navbar-dark OR navbar-inverse-->
+<div id="home-bar" <g:if test="${user.darkMode}">class="navbar navbar-expand-sm navbar-dark" </g:if><g:else>class="navbar navbar-expand-sm navbar-inverse"</g:else> style="padding:30px 0;text-align:center;">
     <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
-        <ul class="nav navbar-nav ml-auto navbar-inverse">
+        <ul <g:if test="${user.darkMode}">class="nav navbar-nav ml-auto navbar-dark" </g:if><g:else>class="nav navbar-nav ml-auto navbar-inverse" </g:else>>
             <div style="display:flex;margin: auto 10px;align-content:center;">
                 <!-- Default homepage or custom homepage -->
                 <li class="dropdown-btn dropdown">
@@ -32,7 +32,7 @@
                             <g:link class="fa fa-user" controller="user" action="create">&nbsp;New User</g:link>
                         </sec:ifAnyGranted>
                         <g:link class="fa fa-circle-info" controller="user" action="show" params="[id:user.id]">&nbsp;User Details</g:link>
-                        <g:link class="fa fa-circle-info" controller="user" action="darkMode">&nbsp;Enable <g:if test="${user.darkMode}">Light</g:if><g:else>Dark</g:else> Mode</g:link>
+                        <g:link class="fa fa-circle-info" controller="user" action="darkMode" params="[uri:request.requestURI]">&nbsp;Enable <g:if test="${user.darkMode}">Light</g:if><g:else>Dark</g:else> Mode</g:link>
                         <g:link class="fa fa-light fa-arrow-right-from-bracket" controller="logout" action="index">&nbsp;Logout</g:link>
                     </ul>
                 </li> <!-- Users -->
@@ -89,5 +89,3 @@
         </ul>
     </div>
 </div>
-
-<!--<div id="nameAndNavigation" style="display: grid;" class="navbar navbar-expand-lg navbar-dark"></div>-->

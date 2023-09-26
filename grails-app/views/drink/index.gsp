@@ -17,28 +17,76 @@
                 line-height: 1.5 !important;
                 border-radius: 3px !important;
             }
-            #filterDrinksFormDiv input,select {
+            #filterDrinksFormDiv > a,
+            #filterDrinksFormDiv > input::placeholder,
+            #filterDrinksFormDiv > select {
+                color:black;
+            }
+            #filterDrinksFormDiv > input,
+            #filterDrinksFormDiv > select,option {
+                background-color:white;
+                border-color:black;
                 margin: auto 10px;
+            }
+            a {
+                color: ghostwhite;
+            }
+            a:visited {
+                color: gray;
+            }
+            a:hover {
+                color: ghostwhite;
+            }
+            a:active {
+                color: coral;
             }
         </style>
     </head>
+    <%
+        def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
+        def userService = grailsApplication.mainContext.getBean('userService')
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        def darkMode = user.darkMode
+    %>
+    <g:set var="darkMode" value="${user.darkMode}"/>
     <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
-    <body>
-        <div id="content">
-            <div class="container">
-                <section class="row" id="navigation">
-                    <g:render template="../navigation" model="[user:user]"/>
-                </section>
-                <section class="row">
-                    <div id="list-drink" class="col-12 content scaffold-list">
-                        <h1><g:message code="default.list.label" args="[drink]" /></h1>
-                        <g:if test="${flash.message}">
+    <g:if test="${darkMode}">
+        <style>
+            #filterDrinksFormDiv > a,
+            #filterDrinksFormDiv > input::placeholder,
+            #filterDrinksFormDiv > select {
+                color:#e2e3e5;
+            }
+            #filterDrinksFormDiv > input,
+            #filterDrinksFormDiv > select,option {
+                background-color:black;
+                border-color:white;
+            }
+            #drinksHeaderRow > *{
+                color:black;
+                background-color:gray !important;
+            }
+        </style>
+    </g:if>
+    <body style="padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
+        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
+                <div id="list-drink">
+                    <div style="display:inline-flex;vertical-align:middle;">
+                        <div>
+                            <g:render template="../navigation" model="[user:user]"/>
+                        </div>
+                        <div style="margin:auto;padding-top:10px;vertical-align:middle;">
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[drink]" /></h1>
+                        </div>
+                    </div>
+                    <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
-                        </g:if>
-
-                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                        <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
+                    </g:if>
+                    <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
+                    <div style="text-align:center;">
+                        <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
                             <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                 <div id="filterDrinksFormDiv" style="display:flex;">
                                     <label for="id"></label>
@@ -75,58 +123,69 @@
                         <p></p>
                         <g:if test="${drinkCount <= 0}">
                             <g:if test="${customDrinks}">
-                            <p>No custom drinks found!</p>
+                                <p>No custom drinks found!</p>
                             </g:if><g:else>
                             <p>No default drinks found!</p>
-                            </g:else>
+                        </g:else>
                         </g:if><g:else>
-                            <table>
+                            <table id="drinksTable">
                                 <thead>
-                                    <tr>
-                                        <th>Count (${drinkCount})</th>
-                                        <th>Drink Name</th>
-                                        <th>Drink Symbol</th>
-                                        <th>Drink Number</th>
-                                        <th>Alcohol Type</th>
-                                        <th>Ingredients</th>
-                                        <th>Suggested Glass</th>
-                                    </tr>
+                                <tr id="drinksHeaderRow" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
+                                    <th>Count (${drinkCount})</th>
+                                    <th>Drink Name</th>
+                                    <th>Drink Symbol</th>
+                                    <th>Drink Number</th>
+                                    <th>Alcohol Type</th>
+                                    <th>Ingredients</th>
+                                    <th>Suggested Glass</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 <g:if test="${drinkList.size() > 0}">
-                                <% int index = 1 %>
-                                <g:each in="${drinkList}" var="drink">
-                                    <g:if test="${params.offset && (params.offset as int) != 0}">
-                                        <g:set var="idx" value="${index + (params.offset as int)}"/>
-                                    </g:if><g:else>
-                                    <g:set var="idx" value="${index}"/>
-                                </g:else>
-                                    <tr>
-                                        <td>${idx}</td>
-%{--                                        <td>${drink.id}</td>--}%
-                                        <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
-                                        <td>${drink.symbol}</td>
-                                        <td>${drink.number}</td>
-                                        <td>${drink.alcoholType}</td>
-                                        <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
-                                        <td>${drink.suggestedGlass}</td>
-                                    </tr>
-                                    <% index += 1 %>
-                                </g:each>
+                                    <% int index = 1 %>
+                                    <g:each in="${drinkList}" var="drink">
+                                        <g:if test="${params.offset && (params.offset as int) != 0}">
+                                            <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                        </g:if><g:else>
+                                        <g:set var="idx" value="${index}"/>
+                                    </g:else>
+                                        <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <td>${idx}</td>
+                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
+                                            <td>${drink.symbol}</td>
+                                            <td>${drink.number}</td>
+                                            <td>${drink.alcoholType}</td>
+                                            <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
+                                            <td>${drink.suggestedGlass}</td>
+                                        </tr>
+                                        <% index += 1 %>
+                                    </g:each>
                                 </g:if>
                                 </tbody>
                             </table>
-                            <div class="pagination">
-                            <g:paginate controller="drink"
-                                        action="${params.action}"
-                                        total="${drinkCount}"
-                                        max="5"
-                                        params="${params}" />
+                            <div class="pagination" style="color:${darkMode?'black':'white'};">
+                                <g:paginate controller="drink"
+                                            action="${params.action}"
+                                            total="${drinkCount}"
+                                            max="5"
+                                            params="${params}" />
+                                <script type="text/javascript">
+                                    let paginationLinks = $(".pagination").find('a')
+                                    <g:if test="${darkMode}">
+                                    paginationLinks.each( function () {
+                                        $(this).css('color', 'black');
+                                    })
+                                    </g:if><g:else>
+                                    paginationLinks.each( function () {
+                                        $(this).css('color', 'black');
+                                    })
+                                    </g:else>
+                                </script>
                             </div>
                         </g:else>
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
         <script type="text/javascript">
             function triggerCustomCheckbox() {
