@@ -92,86 +92,94 @@
             }
         </style>
     </head>
-
-    <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-    <body>
-        <div id="content" role="main">
-            <div class="container">
-                <section class="row" id="navigation">
-                    <g:render template="../navigation"/>
-                </section>
-                <div id="errorMessages" class="col-12 content scaffold-create" role="main">
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
-                    <g:hasErrors bean="${this.user}">
-                        <ul class="errors" role="alert">
-                            <g:eachError bean="${this.user}" var="error">
-                                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                            </g:eachError>
-                        </ul>
-                    </g:hasErrors>
+    <g:set var="darkMode" value="${currentUser.darkMode}"/>
+    <g:if test="${darkMode}">
+        <style>
+            .input-wrapper > input,textarea {
+                background-color:black;
+                color:white;
+                border-color:white;
+            }
+            fieldset::before {
+                background: #000;
+                color:white;
+            }
+        </style>
+    </g:if>
+    <body style="padding:50px;background-color:${darkMode?'black':'white'};">
+        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+            <section style="background-color:${darkMode?'black':'white'};">
+                <div class="container">
+                    <div id="navigation" style="display:flex;justify-content:center;">
+                        <g:render template="../navigation" model="[user:currentUser]"/>
+                    </div>
                 </div>
-                <div id="edit-user" class="col-12 scaffold-show" role="main">
-                    <h1>Create User</h1>
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
+                <g:if test="${flash.message}">
+                    <div class="message" role="status">${flash.message}</div>
+                </g:if>
+                <g:hasErrors bean="${this.newUser}">
+                    <ul class="errors" role="alert">
+                        <g:eachError bean="${this.newUser}" var="error">
+                            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                        </g:eachError>
+                    </ul>
+                </g:hasErrors>
+                <div id="create-user">
                     <div style="display:flex;justify-content:center;">
                         <fieldset style="border:thick solid #007bff;">
-                            <legend style="margin-left:25px;width:auto;">
-                                &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
+                            <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
+                                &emsp14;<g:message code="default.create.label" args="['User']" />&emsp14;
                                 <hr style="height:1px;background-color:#007bff">
                             </legend>
                             <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data" onsubmit="return isValid();">
                                 <g:hiddenField id="passwordsMatch" name="passwordsMatch" value="false" />
                                 <div id="create-user" style="text-align:left;float:left;">
-                                    <div class="formfield" style="">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
                                         <div class="input-wrapper">
                                             <input type="text" name="firstName" value="" required="" id="firstName" />
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
                                         <div class="input-wrapper">
                                             <input type="text" name="lastName" value="" required="" id="lastName" />
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='email'><span class='required-indicator'>*</span> Email</label>
                                         <div class="input-wrapper">
                                             <input type="text" name="email" value="" required="" id="email" />
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
                                         <div class="input-wrapper">
                                             <input type="text" name="cellphone" value="" required="" id="cellphone" />
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='password'><span class='required-indicator'>*</span> Password</label>
                                         <div class="input-wrapper">
                                             <input type="password" name="password" value="" required="" id="password" />
                                             <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
                                         <div class="input-wrapper">
                                             <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
                                             <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                         </div>
                                     </div>
-                                    <div class="formfield">
+                                    <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
                                         <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
                                             <span id="uploadSpan" style="margin-top:5px;">Upload</span>
                                             <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
                                         </div>
                                     </div>
-                                    <div class="formfield" style="margin-top:25px;padding-left:50%;">
+                                    <div class="formfield" style="margin-top:25px;padding-left:50%;color:${darkMode?'white':'black'};">
                                         <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
                                     </div>
                                 </div>
@@ -179,9 +187,8 @@
                         </fieldset>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
-
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("create-user page loaded");

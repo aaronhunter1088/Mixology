@@ -20,25 +20,60 @@
             #filterIngredientsFormDiv input,select {
                 margin: auto 10px;
             }
+            a {
+                color: black;
+            }
+            a:visited {
+                color: gray;
+            }
+            a:hover {
+                color: gray;
+            }
+            a:active {
+                color: coral;
+            }
         </style>
     </head>
-    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
+    <g:set var="darkMode" value="${user.darkMode}"/>
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
-    <body>
-        <div id="content">
-            <div class="container">
-                <section class="row" id="navigation">
-                    <g:render template="../navigation" model="[user:user]"/>
-                </section>
-                <section class="row">
-                    <div id="list-ingredient" class="col-12 content scaffold-list">
-                        <h1><g:message code="default.list.label" args="[ingredient]" /></h1>
-                        <g:if test="${flash.message}">
+    <g:if test="${darkMode}">
+        <style>
+            #filterIngredientsFormDiv > a,
+            #filterIngredientsFormDiv > input::placeholder,
+            #filterIngredientsFormDiv > select {
+                color:#e2e3e5;
+            }{
+                color:#e2e3e5;
+            }
+            #filterIngredientsFormDiv > input,
+            #filterIngredientsFormDiv > select,option {
+                background-color:black;
+                border-color:white;
+            }
+            #ingredientsHeaderRow > *{
+                color:black;
+                background-color:gray !important;
+            }
+        </style>
+    </g:if>
+    <body style="padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
+        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
+                <div id="list-ingredient">
+                    <div style="display:inline-flex;vertical-align:middle;">
+                        <div id="navigation">
+                            <g:render template="../navigation" model="[user:user]"/>
+                        </div>
+                        <div style="margin:auto;padding-top:10px;vertical-align:middle;">
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="['Ingredient']" /></h1>
+                        </div>
+                    </div>
+                    <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
-                        </g:if>
-
+                    </g:if>
+                    <div id="list">
                         <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'customIndex'}"/>
-                        <div id="filter" style="text-align:center;width:auto;display:flex;justify-content:center;">
+                        <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
                             <g:form action="${action}" controller="ingredient" name="filterIngredients" method="get">
                                 <div id="filterIngredientsFormDiv" style="display:flex;">
                                     <label for="id"></label>
@@ -55,7 +90,7 @@
                                     <label for="amount"></label>
                                     <input type="text" name="amount" id="amount" placeholder="amount" value="${params.amount}" style="text-align:center;width:200px;" class="form-control" />
                                     <g:if test="${!customIngredients}">
-                                        <label style="margin: auto 10px;" for="defaultIngredient">Default Ingredient? </label>
+                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultIngredient">Default Ingredient? </label>
                                         <input type="checkbox" name="defaultIngredient" id="defaultIngredient"
                                                <g:if test="${params.defaultIngredient && isOn(params.defaultIngredient as String)}">checked="checked"</g:if>
                                                onclick="triggerCustomCheckbox();" />
@@ -68,52 +103,65 @@
                         <p></p>
                         <g:if test="${ingredientCount <= 0}">
                             <g:if test="${customIngredients}">
-                            <p>No custom ingredients found!</p>
+                                <p>No custom ingredients found!</p>
                             </g:if><g:else>
-                            <p>No default ingredients found!</p>
-                            </g:else>
+                                <p>No default ingredients found!</p>
+                        </g:else>
                         </g:if><g:else>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Count (${ingredientCount})</th>
-                                        <th>Name</th>
-                                        <th>Unit</th>
-                                        <th>Amount</th>
-                                        <th>Drinks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% int index = 1; %>
-                                    <g:each in="${ingredientList}" var="ingredient">
+                        <table>
+                            <thead>
+                            <tr id="ingredientsHeaderRow">
+                                <th>Count (${ingredientCount})</th>
+                                <th>Name</th>
+                                <th>Unit</th>
+                                <th>Amount</th>
+                                <th>Drinks</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <g:if test="${ingredientCount > 0}">
+                                <% int index = 1; %>
+                                <g:each in="${ingredientList}" var="ingredient">
                                     <g:if test="${params.offset && (params.offset as int) != 0}">
                                         <g:set var="idx" value="${index + (params.offset as int)}"/>
                                     </g:if><g:else>
                                     <g:set var="idx" value="${index}"/>
                                 </g:else>
-                                    <tr>
-                                        <td>${idx}</td>
-    %{--                                    <td>${ingredient.id}</td>--}%
-                                        <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${ingredient.name}</g:link> </td>
+                                    <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                        <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${ingredient.id}</g:link></td>
+                                        <td>${ingredient.name}</td>
                                         <td>${ingredient.unit}</td>
                                         <td>${ingredient.amount}</td>
                                         <td>${ingredient.drinks}</td>
                                     </tr>
                                     <% index++; %>
                                 </g:each>
-                                </tbody>
-                            </table>
-                            <div class="pagination">
+                            </g:if>
+                            </tbody>
+                        </table>
+                        <div class="pagination">
                             <g:paginate controller="ingredient"
                                         action="${params.action}"
                                         total="${ingredientCount}"
                                         max="5"
                                         params="${params}"/>
-                            </div>
-                        </g:else>
+                            <script type="text/javascript">
+                                let paginationLinks = $(".pagination").find('a')
+                                <g:if test="${darkMode}">
+                                paginationLinks.each( function () {
+                                    $(this).css('color', 'black');
+                                })
+                                </g:if><g:else>
+                                paginationLinks.each( function () {
+                                    $(this).css('color', 'black');
+                                })
+                                </g:else>
+                            </script>
+                        </div>
+                    </g:else>
                     </div>
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
         <script type="text/javascript">
             function triggerCustomCheckbox() {

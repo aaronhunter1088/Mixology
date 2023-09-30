@@ -97,8 +97,7 @@
                                 <hr style="height:1px;background-color:#000080">
                             </legend>
                             <g:form resource="${this.drink}" method="put" name="updateDrink">
-                                <input type="text" hidden name="version" value="${drink.version}"/>
-                                <div id="update-drink1" style="width:50%;float:left;color:${darkMode?'white':'black'};">
+                                <div id="update-drink1" style="width:50%;float:left;padding:10px;color:${darkMode?'white':'black'};">
                                     <div class="formfield">
                                         <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                         <div class="input-wrapper">
@@ -155,11 +154,25 @@
                                             <g:textArea form="updateDrink" name="mixingInstructions" value="${drink.mixingInstructions}" rows="5" cols="40"/>
                                         </div>
                                     </div>
+                                    <div style="display:inline-flex;">
+                                        <div class="formfield">
+                                            <label for='custom'>Default Drink?&nbsp;</label>
+                                            <div class="input-wrapper">
+                                                <input type="checkbox" disabled name="custom" value="${!drink.custom}" <g:if test="${!drink.custom}"> checked="checked" </g:if> id="custom" />
+                                            </div>
+                                        </div>
+                                        <div class="formfield">
+                                            <label for='deletable'>Deletable?&nbsp;</label>
+                                            <div class="input-wrapper">
+                                                <input type="checkbox" disabled name="deletable" value="${drink.canBeDeleted}" <g:if test="${drink.canBeDeleted}"> checked="checked" </g:if> id="deletable" />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="update-drink2" style="width:50%;display:block;float:right;color:${darkMode?'white':'black'};">
                                     <div class="formfield">
-                                        <label style="text-align:right;padding-right:30px;">Ingredients</label><br>
                                         <div style="margin-top:-25px;height:419px;overflow-y:auto;">
+                                            <p style="text-align:left;">Ingredients</p>
                                             <g:each in="${user.ingredients.sort{it.id}}" var="ingredient" status="i">
                                                 <g:if test="${drinkIngredients.contains(ingredient)}">
                                                     <div style="display:block;">

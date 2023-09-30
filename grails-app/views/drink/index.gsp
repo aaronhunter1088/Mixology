@@ -29,13 +29,13 @@
                 margin: auto 10px;
             }
             a {
-                color: ghostwhite;
+                color: black;
             }
             a:visited {
                 color: gray;
             }
             a:hover {
-                color: ghostwhite;
+                color: gray;
             }
             a:active {
                 color: coral;
@@ -85,7 +85,7 @@
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
                     <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
-                    <div style="text-align:center;">
+                    <div id="list" style="text-align:center;">
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
                             <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                 <div id="filterDrinksFormDiv" style="display:flex;">
@@ -109,8 +109,8 @@
                                             <option value="${glass}">${glass}</option>
                                         </g:each>
                                     </select>
-                                    <g:if test="${!customDrinks}">
-                                        <label style="margin: auto 10px;" for="defaultDrink">Default Drink? </label>
+                                    <g:if test="${adminIsLoggedIn}">
+                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultDrink">Default Drink? </label>
                                         <input type="checkbox" name="defaultDrink" id="defaultDrink"
                                                <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
                                                onclick="triggerCustomCheckbox();" />
@@ -125,23 +125,23 @@
                             <g:if test="${customDrinks}">
                                 <p>No custom drinks found!</p>
                             </g:if><g:else>
-                            <p>No default drinks found!</p>
-                        </g:else>
+                                <p>No default drinks found!</p>
+                            </g:else>
                         </g:if><g:else>
                             <table id="drinksTable">
                                 <thead>
-                                <tr id="drinksHeaderRow" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
-                                    <th>Count (${drinkCount})</th>
-                                    <th>Drink Name</th>
-                                    <th>Drink Symbol</th>
-                                    <th>Drink Number</th>
-                                    <th>Alcohol Type</th>
-                                    <th>Ingredients</th>
-                                    <th>Suggested Glass</th>
-                                </tr>
+                                    <tr id="drinksHeaderRow">
+                                        <th>Count (${drinkCount})</th>
+                                        <th>Drink Name</th>
+                                        <th>Drink Symbol</th>
+                                        <th>Drink Number</th>
+                                        <th>Alcohol Type</th>
+                                        <th>Ingredients</th>
+                                        <th>Suggested Glass</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <g:if test="${drinkList.size() > 0}">
+                                <g:if test="${drinkCount > 0}">
                                     <% int index = 1 %>
                                     <g:each in="${drinkList}" var="drink">
                                         <g:if test="${params.offset && (params.offset as int) != 0}">
@@ -150,20 +150,20 @@
                                         <g:set var="idx" value="${index}"/>
                                     </g:else>
                                         <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <td>${idx}</td>
-                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.name}</g:link> </td>
+                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.id}</g:link></td>
+                                            <td>${drink.name}</td>
                                             <td>${drink.symbol}</td>
                                             <td>${drink.number}</td>
                                             <td>${drink.alcoholType}</td>
                                             <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
                                             <td>${drink.suggestedGlass}</td>
                                         </tr>
-                                        <% index += 1 %>
+                                        <% index++; %>
                                     </g:each>
                                 </g:if>
                                 </tbody>
                             </table>
-                            <div class="pagination" style="color:${darkMode?'black':'white'};">
+                            <div class="pagination">
                                 <g:paginate controller="drink"
                                             action="${params.action}"
                                             total="${drinkCount}"

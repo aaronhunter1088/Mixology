@@ -56,9 +56,8 @@
         def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
         def userService = grailsApplication.mainContext.getBean('userService')
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def darkMode = user.darkMode
     %>
-    <g:set var="darkMode" value="${user.darkMode}"/>
+    <g:set var="darkMode" value="${user?.darkMode ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="text-align:center;">
             <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="navigation">

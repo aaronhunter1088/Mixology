@@ -108,7 +108,12 @@ class IngredientController extends BaseController {
     def show(Long id) {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        respond ingredientService.get(id), model:[user:user, role:role]
+        def ingredient = ingredientService.get(id)
+        render view:'show',
+               model:[user:user,
+                      role:role,
+                      ingredient:ingredient
+               ]
     }
 
     def showIngredients() {

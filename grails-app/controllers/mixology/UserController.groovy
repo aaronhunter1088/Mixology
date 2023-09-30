@@ -27,6 +27,7 @@ class UserController extends BaseController {
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def index() {
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -53,6 +54,7 @@ class UserController extends BaseController {
                 render view:'index',
                        model:[userList:users,
                               userCount:users.totalCount,
+                              user:user,
                               params:params
                        ]
             }
@@ -65,12 +67,17 @@ class UserController extends BaseController {
         def userToDisplay = userService.get(id)
         def currentUser = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         boolean showPassword = currentUser.id == id
-        render view:'show', model:[user:userToDisplay, showPassword:showPassword]
+        render view:'show',
+               model:[user:userToDisplay,
+                      currentUser:currentUser,
+                      howPassword:showPassword
+        ]
     }
 
     def create() {
-        User user = new User(params)
-        respond user
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        User newUser = new User(params)
+        render view:'create', model:[newUser:newUser,currentUser:user]
     }
 
     def save(User user) {
