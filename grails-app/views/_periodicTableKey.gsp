@@ -1,6 +1,6 @@
 <%@ page import="enums.*; mixology.Drink;" %>
-<h2><b>KEY</b></h2>
-<div style="display:inline-flex;">
+<h2 style="color:${darkMode?'white':'black'};"><b>KEY</b></h2>
+<div style="display:inline-flex;color:${darkMode?'white':'black'};">
     <div id="leftColumn" style="width:100px;height:280px;">
         <p></p>
         <p></p>
@@ -23,9 +23,9 @@
                 <div id="innerLeft" style="height:200px;float:left;">
                     <div style="text-align:left;padding-left:10px;padding-top:10px;width:140px;height:50px;">
                         <p style="text-align:center;font-size:5em;margin:0;color:navy;"><b>20</b></p>
-                        <p style="margin:0;">1.5 oz Tequila</p>
-                        <p style="margin:0;">0.5 oz Triple Sec</p>
-                        <p style="margin:0;">1 oz Lemon Juice</p>
+                        <p style="margin:0;color:black;">1.5 oz Tequila</p>
+                        <p style="margin:0;color:black;">0.5 oz Triple Sec</p>
+                        <p style="margin:0;color:black;">1 oz Lemon Juice</p>
                     </div>
                 </div>
                 <div id="innerRight" style="height:200px;float:right;">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div style="padding-left:10px;padding-top:10px;"> <!-- text-align:left; looked funny. keep centered -->
-                <p style="margin:0;height:45px;">Mix ingredients and enjoy!</p>
+                <p style="margin:0;height:45px;color:black;">Mix ingredients and enjoy!</p>
             </div>
             <div>
                 <p style="text-align:center;font-size:2em;margin:0;color:#a60000;"><b>MARGARITA</b></p>

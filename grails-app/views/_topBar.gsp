@@ -3,6 +3,7 @@
 <style>
     .home-bar {
         display:inline-flex;
+        text-align:left;
     }
     .home-bar a, .dropdown-btn {
         padding: 6px 8px 6px 16px;

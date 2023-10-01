@@ -54,6 +54,18 @@
                 color:black;
                 background-color:gray !important;
             }
+            a {
+                color: white;
+            }
+            a:visited {
+                color: gray;
+            }
+            a:hover {
+                color: gray;
+            }
+            a:active {
+                color: coral;
+            }
         </style>
     </g:if>
     <body style="padding:50px;margin:0;background-color:${darkMode?'black':'white'};">

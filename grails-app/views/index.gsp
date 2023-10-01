@@ -59,11 +59,11 @@
     %>
     <g:set var="darkMode" value="${user?.darkMode ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
-        <div id="container" style="text-align:center;">
+        <div id="container" style="">
             <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="navigation">
                 <g:render template="/topBar"/>
             </div>
-            <div style="padding-top:75px;">
+            <div style="padding-top:75px;text-align:center;">
                 <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:2em;margin:0;">
                     <div id="column1" style="margin:0;padding:0;width:600px;">
                         <div id="tequilaDrinks" style="margin:0;padding:0;">
@@ -84,7 +84,7 @@
                         </div>
                         <div id="spacer" style="height:100px;"></div> <!-- for white space only -->
                         <div id="key" style="text-align:center;padding:0;">
-                            <g:render template="/periodicTableKey"/>
+                            <g:render template="/periodicTableKey" model="[darkMode:darkMode]"/>
                         </div>
                     </div>
                     <div id="column2" style="margin:0;padding:0;width:2100px;">
@@ -164,7 +164,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="shooterDrinks" style="width:2550px;padding:5em;">
+                        <div id="shooterDrinks" style="width:2540px;padding:5em;">
                             <div class="card">
                                 <p style="text-align:center;margin-bottom:0;">Shooter Drinks</p>
                                 <%
