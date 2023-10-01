@@ -118,7 +118,14 @@
                                     <g:render template="../measurementsCard"/>
                                 </div>
                                 <div id="glasses" style="text-align:center;">
-                                    <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger();" width="450px" height="300px" style="mix-blend-mode:initial;" src="${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}" alt="All Cocktails"/>
+                                    <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger(${darkMode});"
+                                         width="450px" height="300px" style="mix-blend-mode:initial;" alt="All Cocktails"
+                                         <g:if test="${darkMode}">
+                                             src="${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}"
+                                         </g:if><g:else>
+                                            src="${resource(dir:'../assets/images',file:'allGlasses-white.png')}"
+                                         </g:else>
+                                    />
                                     <p style="font-size:2em;margin:0;color:#a60000;"><b>Suggested Glass Options</b></p>
                                 </div>
                             </div>
@@ -347,8 +354,14 @@
                             <div class="card">
                                 <p style="text-align:center;margin-bottom:0;">Custom  Frozen Drinks</p>
                                 <div style="display:inline-flex;">
-                                    <div style="width:300px;height:300px;">
-                                        <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
+                                    <div style="width:300px;height:300px;background-color:${darkMode?'black':'white'};">
+                                        <img title="Don't Drink And Drive!" width="290px" height="290px" alt="Don't Drink and Drive"
+                                             <g:if test="${darkMode}">
+                                                 src="${resource(dir:'../assets/images',file:'dontDrinkAndDriveDarkMode.png')}"
+                                             </g:if><g:else>
+                                                 src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}"
+                                            </g:else>
+                                        />
                                     </div>
                                     <%
                                         def frozenDrinks = drinkList.findAll { it.alcoholType == Alcohol.FROZEN }
@@ -401,16 +414,24 @@
                 </div>
             </div>
         </div>
-    </body>
     <script>
-        $(document).ready(function() {
-            console.log("custom drinks loaded");
-        });
-        function makeSuggestedGlassesBigger() {
-            let newWindow = window.open("", "glasses", "width=1000,height=800");
-            newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
-            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}\" alt=\"All Cocktails\"/>");
-            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:#a60000;\"><b>Suggested Glass Options</b></p>");
+    $(document).ready(function() {
+        console.log("custom drinks loaded");
+    });
+    function makeSuggestedGlassesBigger(darkMode) {
+        let newWindow = window.open("", "glasses", "width=1000,height=800");
+        newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
+        if (darkMode) {
+            newWindow.document.write("<body style='background-color:black;'>");
+            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b>Suggested Glass Options</b></p>");
+            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
+        } else {
+            newWindow.document.write("<body style='background-color:white;'>");
+            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:black;\"><b>Suggested Glass Options</b></p>");
+            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.png')}\" alt=\"All Cocktails\"/>");
         }
-    </script>
+        newWindow.document.write("</body>")
+    }
+</script>
+    </body>
 </html>
