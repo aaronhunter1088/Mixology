@@ -72,7 +72,6 @@ class UserPasswordEncoderListener {
     private static final String ALGO = "AES"
 
     private static final byte[] keyValue = new byte[16];
-    //private static final byte[] keyValue = new byte[] { 'T' as char, 'E' as char, 'S' as char, 'T' as char }
     /**
      * Encrypt a string using AES encryption algorithm.
      *
@@ -82,8 +81,6 @@ class UserPasswordEncoderListener {
     public static String encrypt(String password) {
         String encodedPwd = "";
         try {
-            //KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGO)
-            //keyGenerator.init(128) // block size is 128bits
             SecretKey secretKey = generateKey()
             logger.info("secretKey generated")
             byte[] plainTextByte = password.getBytes();
@@ -112,8 +109,6 @@ class UserPasswordEncoderListener {
         logger.info("decrypting $encrypted")
         String decodedPWD = "";
         try {
-            //KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGO)
-            //keyGenerator.init(128) // block size is 128bits
             SecretKey secretKey = generateKey()
             logger.info("secretKey generated")
             Base64.Decoder decoder = Base64.getDecoder();

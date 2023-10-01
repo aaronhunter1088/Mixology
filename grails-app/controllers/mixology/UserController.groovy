@@ -70,7 +70,7 @@ class UserController extends BaseController {
         render view:'show',
                model:[user:userToDisplay,
                       currentUser:currentUser,
-                      howPassword:showPassword
+                      showPassword:showPassword
         ]
     }
 

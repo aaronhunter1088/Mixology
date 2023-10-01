@@ -150,17 +150,17 @@
                                                     <div class="input-wrapper">
                                                         <input type="password" disabled name="password"
                                                             <g:if test="${showPassword}">
-                                                                value="${UserPasswordEncoderListener.decrypt(user.passwordConfirm)}"
+                                                                value="${UserPasswordEncoderListener.decodePasswordConfirm(user.passwordConfirm)}"
                                                             </g:if><g:else>
-                                                            value="${user.passwordConfirm}"
-                                                        </g:else>
+                                                                value="${user.passwordConfirm}"
+                                                            </g:else>
                                                                id="password" />
                                                         <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="photo" style="width:50%;float:right;text-align:center;">
+                                        <div id="photo" style="width:50%;float:right;text-align:center;padding:10px;">
                                             <g:if test="${!user.photo || user.photo == ''}">
                                                 <p>No image uploaded!</p>
                                             </g:if><g:else>

@@ -89,13 +89,13 @@
                     </div>
                     <div id="column2" style="margin:0;padding:0;width:2100px;">
                         <div id="title" style="width:1200px;height:600px;">
-                            <h1 id="chartTitle" style="width:2100px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
+                            <h1 id="chartTitle" style="color:${darkMode?'white':'black'};width:2100px;font-size:180px;padding-left:35px;">Periodic Table of Mixology</h1>
                             <div id="reference" style="display:inline-flex;">
                                 <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
-                                    <g:render template="/referenceChart"/>
+                                    <g:render template="/referenceChart" model="[darkMode:darkMode]"/>
                                 </div>
                                 <div id="measurements" style="margin-left:50px;margin-right:50px;">
-                                    <g:render template="/measurementsCard"/>
+                                    <g:render template="/measurementsCard" model="[darkMode:darkMode]"/>
                                 </div>
                                 <div id="glasses" style="text-align:center;">
                                     <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger();" width="450px" height="300px" style="mix-blend-mode:initial;" src="${resource(dir:'../assets/images',file:'allGlasses-white.jpg')}" alt="All Cocktails"/>
@@ -207,7 +207,7 @@
                             <div class="card">
                                 <p style="text-align:center;margin-bottom:0;">Frozen Drinks</p>
                                 <div style="display:inline-flex;">
-                                    <div style="width:300px;height:300px;">
+                                    <div style="width:300px;height:300px;padding:5px;background-color:${darkMode?'black':'white'};">
                                         <img title="Don't Drink And Drive!" width="290px" height="290px" src="${resource(dir:'../assets/images',file:'dontDrinkAndDrive.png')}" alt="Don't Drink and Drive"/>
                                     </div>
                                     <%

@@ -1,6 +1,5 @@
 <%@ page import="enums.*; mixology.*; java.time.LocalTime;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-
 <style>
     .home-bar {
         display:inline-flex;
@@ -47,7 +46,7 @@
     <sec:ifLoggedIn>
         <div id="loggedInDiv" style="display:inline-flex;">
             <img style="width:100px;height:100px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-            <div id="nameAndNav" style="display:inline-block;width:auto;">
+            <div id="nameAndNav" style="display:inline-block;width:auto;color:${user?.darkMode?'white':'black'};">
                 <h1>${greet} ${user}</h1>
                 <g:render template="/navigation" />
             </div>

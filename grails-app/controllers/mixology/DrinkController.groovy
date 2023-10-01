@@ -136,7 +136,11 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showCustomDrinks() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        render view:'customDrinks', model:[drinkList:user.drinks,params:params]
+        render view:'customDrinks',
+               model:[drinkList:user.drinks,
+                      darkMode:user.darkMode,
+                      params:params
+               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
