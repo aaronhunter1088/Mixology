@@ -52,16 +52,6 @@
             fieldset .no-before::before {
                 content: "";
             }
-            /* th {text-align: center;} */
-            /* Fix table head */
-            .tableFixHead    { overflow: auto; height: 600px; }
-            .tableFixHead th { position: sticky; top: 0; }
-
-            /* Just common table stuff. */
-            table  { border-collapse: collapse; width: 100%; }
-            th, td { padding: 8px 16px; text-align: center; }
-            th     { background:#eee; }
-            /*Keeps scroll bar present*/
             ::-webkit-scrollbar {
                 -webkit-appearance: none;
                 width: 7px;
@@ -94,123 +84,136 @@
         </style>
     </head>
     <g:set var="user" scope="request" value="${message(code: 'user.label', default: 'User')}" />
-    <body>
-        <div id="content" role="main">
-            <div class="container">
-                <section class="row" id="navigation">
-                    <g:render template="../navigation"/>
-                </section>
-                <div id="errorMessages" class="col-12 content scaffold-create" role="main">
-                    <g:if test="${flash.message}">
-                        <div class="message" role="status">${flash.message}</div>
-                    </g:if>
-                    <g:hasErrors bean="${this.user}">
-                        <ul class="errors" role="alert">
-                            <g:eachError bean="${this.user}" var="error">
-                                <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-                            </g:eachError>
-                        </ul>
-                    </g:hasErrors>
-                </div>
-                <section class="row">
-                    <div id="edit-user" class="col-12 scaffold-show" role="main">
-                        <h1>Edit User</h1>
-                        <g:if test="${flash.message}">
-                            <div class="message" role="status">${flash.message}</div>
-                        </g:if>
-                        <div style="display:flex;justify-content:center;">
-                            <div style="display:block;justify-content:center;">
-                                <fieldset style="border:thick solid #007bff;">
-                                    <legend style="margin-left:25px;padding-left:10px;width:auto;">
-                                        ${user.toString()} &emsp14;
-                                        <hr style="height:1px;background-color:#007bff;">
-                                    </legend>
-                                    <g:form resource="${this.user}" method="put" name="updateUser" enctype="multipart/form-data">
-                                        <div style="display:block;justify-content:center;">
-                                            <g:if test="${!user.photo}"><div id="user" style="width:100%;"></g:if>
-                                            <g:else><div id="user" style="width:50%;float:left;"></g:else>
-                                                <div class="formfield" id="firstName">
-                                                    <label for='firstName'>First Name</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="firstName" value="${user.firstName}" required=""/>
-                                                    </div>
-                                                </div>
-                                                <div class="formfield" id="lastName">
-                                                    <label for='lastName'>LastName</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="lastName" value="${user.lastName}" required=""/>
-                                                    </div>
-                                                </div>
-                                                <div class="formfield" id="email">
-                                                    <label for='email'>Email</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="email" value="${user.email}" required=""/>
-                                                    </div>
-                                                </div>
-                                                <div class="formfield" id="cellphone">
-                                                    <label for='cellphone'>Cellphone</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="cellphone" value="${user.mobileNumber}" />
-                                                    </div>
-                                                </div>
-                                                <div class="formfield">
-                                                    <label for='password'>Password</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="password" value="" id="password" />
-                                                    </div>
-                                                </div>
-                                                <div class="formfield">
-                                                    <label for='passwordConfirm'>Confirm Password</label>
-                                                    <div class="input-wrapper">
-                                                        <input type="text" name="passwordConfirm" value="" id="passwordConfirm" />
-                                                    </div>
-                                                </div>
-                                                <g:if test="${!user.photo}">
-                                                    <div class="formfield">
-                                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
-                                                        <div id="uploadPhoto1" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:43%;height:32px;">
-                                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
-                                                            <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
-                                                        </div>
-                                                    </div>
-                                                    <g:if test="${user.drinks.size() > 0}">
-                                                        <div class="formfield" id="drinks" style="display:block;">
-                                                            <label>Users Drinks</label><br>
-                                                            <div style="margin-top:-15px;height:100px;overflow-y:auto;">
-                                                                <g:each in="${user.drinks}" var="drink" status="i">
-                                                                    <div style="display:block;">
-                                                                        <div style="display:inline-flex;width:100%;">
-                                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                                            <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/>
-                                                                            <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
-                                                                        </div>
-                                                                    </div>
-                                                                </g:each>
-                                                            </div>
-                                                        </div>
-                                                    </g:if>
-                                                </g:if>
-                                            </div>
-                                            <g:if test="${user.photo}">
-                                                <div id="uploadPhoto2" style="width:50%;float:right;">
-                                                    <img id="img" src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
-                                                    <a id="xBtn" href="javascript:clearImage();"><b>X</b></a>
-                                                </div>
-                                            </g:if>
-                                        </div>
-                                        <div class="formfield" style="margin-top:25px;text-align:center;">
-                                            <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/user/show/${user.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
-                                            <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser">Update</button>
-                                        </div>
-                                        <input type="hidden" name="clearedImage" id="clearedImage" value="false"/>
-                                        <input type="hidden" name="id" id="id" value="${user.id}"/>
-                                    </g:form>
-                                </fieldset>
-                            </div>
-                        </div>
+    <g:set var="darkMode" value="${darkMode}"/>
+    <g:if test="${darkMode}">
+        <style>
+            fieldset::before {
+                background: #000000;
+                color: #fff;
+            }
+            .input-wrapper > select,option {
+                background-color:black;
+                border-color:white;
+                color:white;
+            }
+            .input-wrapper > input,textarea {
+                background-color:black;
+                color:white;
+            }
+        </style>
+    </g:if>
+    <body style="padding:50px;background-color:${darkMode?'black':'white'};">
+        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
+                <div style="display:inline-flex;text-align:center;">
+                    <div id="navigation">
+                        <g:render template="../navigation" model="[user:user]"/>
                     </div>
-                </section>
-            </div>
+                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">
+                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.edit.label" args="[user]" /></h1>
+                    </div>
+                </div>
+                <g:if test="${flash.message}">
+                    <div class="message" role="status">${flash.message}</div>
+                </g:if>
+                <g:hasErrors bean="${this.user}">
+                    <ul class="errors" role="alert">
+                        <g:eachError bean="${this.user}" var="error">
+                            <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+                        </g:eachError>
+                    </ul>
+                </g:hasErrors>
+                <div style="display:inline-flex;text-align:left;">
+                    <div id="edit-user">
+                        <fieldset style="border:thick solid #007bff;">
+                            <legend style="margin-left:25px;padding-left:10px;width:auto;color:${darkMode?'white':'black'};">
+                                <g:message code="default.edit.label" args="['User']"/>&emsp14;
+                                <hr style="height:1px;background-color:#007bff;">
+                            </legend>
+                            <g:form resource="${this.user}" method="put" name="updateUser" enctype="multipart/form-data">
+                                <div style="display:block;justify-content:center;color:${darkMode?'white':'black'};">
+                                <g:if test="${!user.photo}"><div id="user" style="width:100%;"></g:if>
+                                <g:else><div id="user" style="width:50%;float:left;"></g:else>
+                                <div class="formfield" id="firstName">
+                                    <label for='firstName'>First Name</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="firstName" value="${user.firstName}" required=""/>
+                                    </div>
+                                </div>
+                                <div class="formfield" id="lastName">
+                                    <label for='lastName'>LastName</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="lastName" value="${user.lastName}" required=""/>
+                                    </div>
+                                </div>
+                                <div class="formfield" id="email">
+                                    <label for='email'>Email</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="email" value="${user.email}" required=""/>
+                                    </div>
+                                </div>
+                                <div class="formfield" id="cellphone">
+                                    <label for='cellphone'>Cellphone</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="cellphone" value="${user.mobileNumber}" />
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='password'>Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="password" value="" id="password" />
+                                    </div>
+                                </div>
+                                <div class="formfield">
+                                    <label for='passwordConfirm'>Confirm Password</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" name="passwordConfirm" value="" id="passwordConfirm" />
+                                    </div>
+                                </div>
+                                <g:if test="${!user.photo}">
+                                    <div class="formfield">
+                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
+                                        <div id="uploadPhoto1" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:43%;height:32px;">
+                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
+                                            <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
+                                        </div>
+                                    </div>
+                                    <g:if test="${user.drinks.size() > 0}">
+                                        <div class="formfield" id="drinks" style="display:block;">
+                                            <label>Users Drinks</label><br>
+                                            <div style="margin-top:-15px;height:100px;overflow-y:auto;">
+                                                <g:each in="${user.drinks}" var="drink" status="i">
+                                                    <div style="display:block;">
+                                                        <div style="display:inline-flex;width:100%;">
+                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
+                                                            <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/>
+                                                            <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                        </div>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                </g:if>
+                                </div>
+                                <g:if test="${user.photo}">
+                                    <div id="uploadPhoto2" style="width:50%;float:right;">
+                                        <img id="img" src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
+                                        <a id="xBtn" href="javascript:clearImage();"><b>X</b></a>
+                                    </div>
+                                </g:if>
+                                </div>
+                                <div class="formfield" style="margin-top:25px;text-align:center;">
+                                    <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/user/show/${user.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
+                                    <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser">Update</button>
+                                </div>
+                                <input type="hidden" name="clearedImage" id="clearedImage" value="false"/>
+                                <input type="hidden" name="id" id="id" value="${user.id}"/>
+                            </g:form>
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
         </div>
         <script type="text/javascript">
             $(document).ready(function() {

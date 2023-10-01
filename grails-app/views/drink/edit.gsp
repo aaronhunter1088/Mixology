@@ -90,7 +90,7 @@
                     </ul>
                 </g:hasErrors>
                 <div style="display:inline-flex;text-align:left;">
-                    <div id="edit-drink" class="col-12 scaffold-show">
+                    <div id="edit-drink">
                         <fieldset style="border:thick solid #000080;">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
                                 &emsp14;<g:message code="default.edit.label" args="['Drink']" />&emsp14;

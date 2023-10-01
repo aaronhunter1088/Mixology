@@ -127,7 +127,10 @@ class UserController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         User user = userService.get(id)
-        respond user
+        render view:'edit',
+               model:[user:user,
+                   darkMode:user.darkMode
+               ]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])

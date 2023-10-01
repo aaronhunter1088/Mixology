@@ -67,13 +67,10 @@
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
-            <section style="background-color:${darkMode?'black':'white'};">
-                <div style="display:inline-flex;text-align:center;">
+            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
+                <div style="display:inline-flex;vertical-align:middle;">
                     <div id="navigation">
                         <g:render template="../navigation" model="[user:user]"/>
-                    </div>
-                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">
-                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.show.label" args="[ingredient]" /></h1>
                     </div>
                 </div>
                 <g:if test="${flash.message}">
@@ -88,7 +85,7 @@
                 </g:hasErrors>
                 <div id="show-ingredient" class="container">
                     <div style="display:flex;justify-content:center;">
-                        <div style="display:block;">
+                        <div style="display:block;text-align:left;">
                             <fieldset style="border:thick solid #008011; width:100%;" class="no-before">
                                 <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
                                     ${ingredient.name} &emsp14;
@@ -113,9 +110,9 @@
                                             <input type="text" disabled name="ingredientAmount" value="${ingredient.amount}" required="" id="ingredientAmount" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="drinks">
+                                    <div class="formfield" id="drinks" style="">
                                         <label>Ingredient Drinks</label><br>
-                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;">
+                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
                                             <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
                                                 <div style="display:block;">
                                                     <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/>

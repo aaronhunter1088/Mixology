@@ -93,7 +93,7 @@
                     <div id="edit-ingredient" class="col-12 scaffold-show">
                         <fieldset style="border:thick solid #008011;">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
-                                &emsp14;<g:message code="default.edit.label" args="[ingredient]" />&emsp14;
+                                &emsp14;<g:message code="default.edit.label" args="['Ingredient']" />&emsp14;
                                 <hr style="height:1px;background-color:#008011;">
                             </legend>
                             <g:form resource="${this.ingredient}" method="put" name="updateIngredient">
@@ -144,7 +144,7 @@
                                 <div id="update-ingredient2" style="width:50%;display:block;float:right;">
                                     <div class="formfield">
                                         <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                            <p style="text-align:left;">Drinks</p>
+                                            <p style="text-align:left;color:${darkMode?'white':'black'};">Drinks</p>
                                             <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
                                                 <g:if test="${(ingredient as Ingredient).drinks.contains(drink)}">
                                                     <div style="display:block;color:${darkMode?'white':'black'};">

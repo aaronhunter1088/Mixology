@@ -60,6 +60,15 @@
                 border: none;
                 content: "\f24d  Copy"
             }
+            ::-webkit-scrollbar {
+                -webkit-appearance:none;
+                width: 5px;
+            }
+            ::-webkit-scrollbar-thumb {
+                border-radius: 4px;
+                background-color: gray;
+                box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            }
         </style>
     </head>
     <g:set var="darkMode" value="${user.darkMode}"/>
@@ -74,13 +83,13 @@
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
             <section style="background-color:${darkMode?'black':'white'};">
-                <div style="display:inline-flex;text-align:center;">
-                    <div id="navigation">
+                <div class="container">
+                    <div id="navigation" style="display:flex;justify-content:center;">
                         <g:render template="../navigation" model="[user:user]"/>
                     </div>
-                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">
-                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.show.label" args="[drink]"/></h1>
-                    </div>
+%{--                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">--}%
+%{--                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.show.label" args="[drink]"/></h1>--}%
+%{--                    </div>--}%
                 </div>
                 <g:if test="${flash.message}">
                     <div id="errors" class="message" role="status">${flash.message}</div>
@@ -139,7 +148,7 @@
                                     </div>
                                     <div class="formfield" id="ingredients">
                                         <label>Ingredients</label><br/>
-                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;">
+                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
                                             <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
                                                 <div style="display:block;">
                                                     <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
