@@ -109,9 +109,6 @@
                     <div id="navigation">
                         <g:render template="../navigation" model="[user:user]"/>
                     </div>
-                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">
-                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.edit.label" args="[user]" /></h1>
-                    </div>
                 </div>
                 <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
@@ -123,11 +120,11 @@
                         </g:eachError>
                     </ul>
                 </g:hasErrors>
-                <div style="display:inline-flex;text-align:left;">
-                    <div id="edit-user">
+                <div id="edit-user" class="container">
+                    <div style="display:inline-flex;text-align:left;">
                         <fieldset style="border:thick solid #007bff;">
                             <legend style="margin-left:25px;padding-left:10px;width:auto;color:${darkMode?'white':'black'};">
-                                <g:message code="default.edit.label" args="['User']"/>&emsp14;
+                                <g:message code="default.edit.label" args="[user]"/>&emsp14;
                                 <hr style="height:1px;background-color:#007bff;">
                             </legend>
                             <g:form resource="${this.user}" method="put" name="updateUser" enctype="multipart/form-data">

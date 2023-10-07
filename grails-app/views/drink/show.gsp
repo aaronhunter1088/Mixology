@@ -148,7 +148,7 @@
                                     </div>
                                     <div class="formfield" id="ingredients">
                                         <label>Ingredients</label><br/>
-                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
+                                        <div style="margin-top:-25px;height:100px;padding-right:10px;overflow-y:auto;text-align:right;">
                                             <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
                                                 <div style="display:block;">
                                                     <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>

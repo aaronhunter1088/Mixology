@@ -111,7 +111,7 @@
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinks" style="">
-                                        <label>Ingredient Drinks</label><br>
+                                        <label>Drinks</label><br>
                                         <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
                                             <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
                                                 <div style="display:block;">

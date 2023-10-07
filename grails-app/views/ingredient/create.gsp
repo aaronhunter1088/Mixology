@@ -99,11 +99,11 @@
                                         <div id="ingredientRow1" style="position:relative;display:flex;justify-content:space-evenly;">
                                             <div style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                                 <label for="ingredientName">Name&nbsp;<span class='required-indicator'>*</span></label>
-                                                <input type="text" id="ingredientName" name="ingredientName" class="form-control" required style="background-color:${darkMode?'black':'white'};">
+                                                <input type="text" id="ingredientName" name="ingredientName" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                             </div>
                                             <div style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                                 <label for="ingredientUnitSelect">Unit&nbsp;<span class='required-indicator'>*</span></label>
-                                                <select id="ingredientUnitSelect" style="background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
+                                                <select id="ingredientUnitSelect" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
                                                     <option value="" label="Select One" selected disabled>Select One</option>
                                                     <g:each in="${Unit.values()}" var="unit" name="ingredientUnit">
                                                         <option value="${unit}">${unit}</option>

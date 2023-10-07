@@ -21,13 +21,12 @@ class Drink implements Serializable{
         symbol(size:2..2, blank:false, nullable:false)
         number(min:1, nullable:false)
         alcoholType(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
-        ingredients(minSize:0, nullable:true)
         mixingInstructions(blank:false, nullable:false)
         suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
         canBeDeleted(default:true)
         custom(default:true)
-        ingredients(nullable:true)
-        user(nullable:true,default:0)
+        ingredients(minSize:0, nullable:true)
+        user(nullable:true)
     }
     /*
     Drink belongs to a User

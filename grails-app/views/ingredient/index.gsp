@@ -137,10 +137,10 @@
                                     <g:if test="${params.offset && (params.offset as int) != 0}">
                                         <g:set var="idx" value="${index + (params.offset as int)}"/>
                                     </g:if><g:else>
-                                    <g:set var="idx" value="${index}"/>
-                                </g:else>
+                                        <g:set var="idx" value="${index}"/>
+                                    </g:else>
                                     <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                        <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${ingredient.id}</g:link></td>
+                                        <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${idx}</g:link></td>
                                         <td>${ingredient.name}</td>
                                         <td>${ingredient.unit}</td>
                                         <td>${ingredient.amount}</td>

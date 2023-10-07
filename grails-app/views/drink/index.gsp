@@ -67,6 +67,18 @@
                 color:black;
                 background-color:gray !important;
             }
+            a {
+                color: white;
+            }
+            a:visited {
+                color: gray;
+            }
+            a:hover {
+                color: gray;
+            }
+            a:active {
+                color: coral;
+            }
         </style>
     </g:if>
     <body style="padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
@@ -150,7 +162,7 @@
                                         <g:set var="idx" value="${index}"/>
                                     </g:else>
                                         <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${drink.id}</g:link></td>
+                                            <td><g:link controller="drink" action="show" params='[id:"${drink.id}"]'>${idx}</g:link></td>
                                             <td>${drink.name}</td>
                                             <td>${drink.symbol}</td>
                                             <td>${drink.number}</td>
