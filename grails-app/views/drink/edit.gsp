@@ -62,10 +62,14 @@
                 border-color:white;
                 color:white;
             }
-            .input-wrapper > input,textarea {
+            .input-wrapper > textarea {
                 background-color:black;
                 color:white;
-            }
+            } /* Required */
+            .input-wrapper > input,textarea:focus {
+                background-color:black;
+                color:white;
+            } /* Required */
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">

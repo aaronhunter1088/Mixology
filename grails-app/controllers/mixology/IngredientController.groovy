@@ -246,6 +246,7 @@ class IngredientController extends BaseController {
             ingredientToUpdate.amount = params?.amount ? Double.valueOf(params.amount as double) : ingredientToUpdate.amount
             ingredientToUpdate.unit = params?.unit ? Unit.valueOf(params.unit as String) : ingredientToUpdate.unit
             ingredientToUpdate = updateIngredientDrinks(ingredientToUpdate, user, params)
+            ingredientService.save(ingredientToUpdate, user, true)
         }
         else {
             ingredientToUpdate.errors.reject('default.updated.error.message', [ingredientToUpdate.name] as Object[], '')
@@ -264,7 +265,7 @@ class IngredientController extends BaseController {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'ingredient.label', default: 'ingredientToUpdate'), ingredientToUpdate.toString()])
-                    redirect ingredientToUpdate
+                    redirect action:'show', params: [id:ingredientToUpdate.id], method:'GET'
                 }
                 '*'{ respond ingredientToUpdate, [status: OK] }
             }

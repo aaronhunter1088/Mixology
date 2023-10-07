@@ -62,7 +62,7 @@
             border-color:white;
             color:white;
         }
-        .input-wrapper > input,textarea {
+        .input-wrapper > input {
             background-color:black;
             color:white;
         }
@@ -107,7 +107,7 @@
                                     <div class="formfield">
                                         <label for='unit'><span class='required-indicator'>*</span> Unit</label>
                                         <div class="input-wrapper">
-                                            <select name="alcoholType" class="form-control" style="width:42%;">
+                                            <select name="unit" class="form-control" style="width:42%;">
                                                 <option label="Select One" selected disabled>Select One</option>
                                                 <g:each in="${Unit.values()}" var="unit" name="unit">
                                                     <g:if test="${ingredient.unit == unit}">

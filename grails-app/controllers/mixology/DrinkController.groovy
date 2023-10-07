@@ -314,7 +314,9 @@ class DrinkController extends BaseController {
             request.withFormat {
                 form multipartForm {
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drinkToUpdate.name])
-                    render view:'show', model:[drink:drinkToUpdate,user:user], status:OK
+                    //render view:'show', model:[drink:drinkToUpdate,user:user,adminIsLoggedIn:(adminRole?true:false)], status:OK
+                    //return show(drinkToUpdate.id)
+                    redirect action:'show', params: [id:drinkToUpdate.id], method:'GET'
                 }
                 '*'{ respond drinkToUpdate, view:'show', status: OK }
             }

@@ -67,9 +67,9 @@
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
-            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
-                <div style="display:inline-flex;vertical-align:middle;">
-                    <div id="navigation">
+            <section style="background-color:${darkMode?'black':'white'};">
+                <div class="container">
+                    <div id="navigation" style="display:flex;justify-content:center;">
                         <g:render template="../navigation" model="[user:user]"/>
                     </div>
                 </div>

@@ -87,12 +87,9 @@
                     <div id="navigation" style="display:flex;justify-content:center;">
                         <g:render template="../navigation" model="[user:user]"/>
                     </div>
-%{--                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">--}%
-%{--                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.show.label" args="[drink]"/></h1>--}%
-%{--                    </div>--}%
                 </div>
                 <g:if test="${flash.message}">
-                    <div id="errors" class="message" role="status">${flash.message}</div>
+                    <div class="message" role="status">${flash.message}</div>
                 </g:if>
                 <g:hasErrors bean="${this.drink}">
                     <ul class="errors" role="alert">
