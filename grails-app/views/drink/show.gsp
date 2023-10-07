@@ -139,20 +139,25 @@
                                     </div>
                                     <div class="formfield" id="instructions">
                                         <label for='instructions'>Mixing Instructions</label>
-                                        <div class="input-wrapper">
+                                        <div class="input-wrapper" style="text-align:right;">
                                             <textarea disabled readonly name="instructions" rows="5" cols="40">${drink.mixingInstructions}</textarea>
                                         </div>
                                     </div>
                                     <div class="formfield" id="ingredients">
-                                        <label>Ingredients</label><br/>
-                                        <div style="margin-top:-25px;height:100px;padding-right:10px;overflow-y:auto;text-align:right;">
-                                            <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
-                                                <div style="display:block;">
-                                                    <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
-                                                    <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link>
-                                                </div>
-                                            </g:each>
-                                        </div>
+                                        <g:if test="${!drink.ingredients || drink.ingredients.size() == 0}">
+                                            <label>No Ingredients</label>
+                                            <p>Once you add this drink to an ingredient, they'll show here</p>
+                                        </g:if><g:else>
+                                            <label>Ingredients</label><br/>
+                                            <div style="margin-top:-25px;height:100px;padding-right:10px;overflow-y:auto;text-align:right;">
+                                                <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
+                                                    <div style="display:block;">
+                                                        <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
+                                                        <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </g:else>
                                     </div>
                                 </div>
                             </fieldset>

@@ -111,15 +111,20 @@
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinks" style="">
-                                        <label>Drinks</label><br>
-                                        <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
-                                            <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
-                                                <div style="display:block;">
-                                                    <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/>
-                                                    <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link>
-                                                </div>
-                                            </g:each>
-                                        </div>
+                                        <g:if test="${!ingredient.drinks || ingredient.drinks.size() == 0}">
+                                            <label>No Drinks</label>
+                                            <p>Once you add this ingredient to a drink, they'll show here</p>
+                                        </g:if><g:else>
+                                            <label>Drinks</label><br>
+                                            <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
+                                                <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
+                                                    <div style="display:block;">
+                                                        <input hidden type="checkbox" disabled name="ingredients" id="" checked value="${drink}"/>
+                                                        <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink}</g:link>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </g:else>
                                     </div>
                                 </div>
                             </fieldset>
