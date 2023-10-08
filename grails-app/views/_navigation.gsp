@@ -19,6 +19,7 @@
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#home" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;Home</a>
                     <ul class="dropdown-menu" id="home" style="background-color:#000000;">
+                        <li class="dropdown-header" style="padding-left:10px;">Home</li><br/>
                         <g:link class="fa fa-home" url="${createLink(uri: '/')}">&nbsp;Default Drinks</g:link>
                         <g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;Your Drinks</g:link>
                     </ul>
@@ -26,7 +27,7 @@
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-user dropdown-toggle" data-toggle="dropdown" data-target="#userMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;User <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="userMgmt" style="background-color:#000000;">
-                        <li class="dropdown-header">User Mgmt</li>
+                        <li class="dropdown-header" style="padding-left:10px;">User Mgmt</li><br/>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <g:link class="fa-solid fa-list" controller="user" action="index">&nbsp;Show all Users</g:link>
                             <g:link class="fa fa-user" controller="user" action="create">&nbsp;New User</g:link>
@@ -39,7 +40,7 @@
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa-solid fa-martini-glass-empty dropdown-toggle" data-toggle="dropdown" data-target="#drinkMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;Drinks <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="drinkMgmt" style="background-color:#000000;">
-                        <li class="dropdown-header">Drink Mgmt</li>
+                        <li class="dropdown-header" style="padding-left:10px;">Drink Mgmt</li><br/>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <g:link class="fa-solid fa-list" controller="drink" action="index">&nbsp;Drinks</g:link>
                         </sec:ifAnyGranted>
@@ -50,7 +51,7 @@
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa-solid fa-jar-wheat dropdown-toggle" data-toggle="dropdown" data-target="#ingredientMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;Ingredients <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="ingredientMgmt" style="background-color:#000000;">
-                        <li class="dropdown-header">Ingredient Mgmt</li>
+                        <li class="dropdown-header" style="padding-left:10px;">Ingredient Mgmt</li><br/>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;Ingredients</g:link>
                         </sec:ifAnyGranted>

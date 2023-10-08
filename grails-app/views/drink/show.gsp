@@ -60,6 +60,7 @@
                 border: none;
                 content: "\f24d  Copy"
             }
+            /*These two webkit scrollbars control size and color*/
             ::-webkit-scrollbar {
                 -webkit-appearance:none;
                 width: 5px;

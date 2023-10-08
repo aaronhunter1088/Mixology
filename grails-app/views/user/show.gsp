@@ -61,14 +61,14 @@
             table  { border-collapse: collapse; width: 100%; }
             th, td { padding: 8px 16px; text-align: center; }
             th     { background:#eee; }
-            /*Keeps scroll bar present*/
+            /*These two webkit scrollbars control size and color*/
             ::-webkit-scrollbar {
-                -webkit-appearance: none;
-                width: 0 !important
+                -webkit-appearance:none;
+                width: 5px;
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: rgba(0, 0, 0, .5);
+                background-color: gray;
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
             }
             a {
