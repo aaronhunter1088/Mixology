@@ -1,6 +1,8 @@
 package mixology
 
 import enums.Unit
+
+import static enums.Unit.getPluralUnit
 import groovy.transform.ToString
 
 import javax.persistence.Transient
@@ -43,10 +45,11 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     }
 
     String prettyName() {
+        def unitToUse = this.amount == 1 ? this.unit.getValue().toLowerCase() : getPluralUnit(unit).getValue().toLowerCase()
         if (amount % 1 == 0) {
-            (int)amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
+            (int)amount + ' ' + unitToUse + ' of ' + name
         } else {
-            amount + ' ' + unit.getValue().toUpperCase() + ' of ' + name
+            amount + ' ' + unitToUse + ' of ' + name
         }
     }
 

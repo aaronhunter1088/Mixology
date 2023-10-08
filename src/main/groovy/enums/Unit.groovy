@@ -7,21 +7,18 @@ import java.security.SecureRandom
 @ToString
 enum Unit {
 
-    OZ("oz"),
-    FLUID_OZ("fluid_oz"),
-    SPLASH("splash"),
-    DASH("dash"),
-    SODA_CAN("soda_can"),
-    TABLESPOON("tablespoon"),
-    TEASPOON("teaspoon"),
-    //LEMON_WEDGE("lemon wedge"),
-    //LEMON("lemon"),
-    //LIME_WEDGE("lime wedge"),
-    //LIME("lime"),
-    WEDGE("wedge"),
-    SCOOP("scoop"),
-    FRUIT("fruit"),
-    CUP("cup")
+    // second value used for printing to screen only
+    OZ("oz"), OZS("ounces"),
+    FLUID_OZ("fluid_oz"), FL_OZS("fluid_ounces"),
+    SPLASH("splash"), SPLASHES("slashes"),
+    DASH("dash"), DASHES("dashes"),
+    SODA_CAN("soda_can"), SODA_CANS("soda_cans"),
+    TABLESPOON("tablespoon"), TABLESPOONS("tablespoons"),
+    TEASPOON("teaspoon"), TEASPOONS("teaspoons"),
+    WEDGE("wedge"), WEDGES("wedges"),
+    SCOOP("scoop"), SCOOPS("scoops"),
+    FRUIT("fruit"), FRUITS("fruits"),
+    CUP("cup"), CUPS("cups")
 
     String value
     Unit(value) {
@@ -35,4 +32,20 @@ enum Unit {
         return values()[randNum]
     }
 
+    static Unit getPluralUnit(Unit unit) {
+        switch (unit) {
+            case OZ: return OZS; break;
+            case FLUID_OZ: return FL_OZS; break;
+            case SPLASH: return SPLASHES; break;
+            case DASH: return DASHES; break;
+            case SODA_CAN: return SODA_CANS; break;
+            case TABLESPOON: return TABLESPOONS; break
+            case TEASPOON: return TEASPOONS; break;
+            case WEDGE: return WEDGES; break;
+            case SCOOP: return SCOOPS; break;
+            case FRUIT: return FRUITS; break;
+            case CUP: return CUPS; break;
+            default: return unit;
+        }
+    }
 }
