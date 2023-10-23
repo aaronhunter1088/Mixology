@@ -82,7 +82,7 @@
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
-        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+        <div id="showDrink" class="" style="background-color:${darkMode?'black':'white'};">
             <section style="background-color:${darkMode?'black':'white'};">
                 <div class="container">
                     <div id="navigation" style="display:flex;justify-content:center;">
@@ -162,15 +162,16 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <g:form resource="${this.drink}" method="DELETE">
+                            <g:form resource="${this.drink}" method="DELETE" name="deleteForm">
                                 <fieldset class="buttons">
                                     <sec:ifLoggedIn>
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                         <g:if test="${drink.custom || adminIsLoggedIn}">
                                             <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.share.label" default="Share"/></g:link>
+%{--                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.share.label" default="Share"/></g:link>--}%
+                                            <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">Share</a>
                                             <i class="fa-solid fa-trash-can">
-                                                <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+                                                <input type="submit" form="deleteForm" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
                                             </i>
                                         </g:if>
                                     </sec:ifLoggedIn>
@@ -181,10 +182,25 @@
                 </div>
             </section>
         </div>
+        <!-- Modal HTML embedded directly into document -->
+        <div id="sendEmailDiv" class="modal container" style="width:300px;height:150px;">
+            <g:form controller="drink" action="sendADrinkEmail" method="POST" name="emailDrink">
+                <input name="drinkId" id="drinkId" type="hidden" value="${this.drink.id}"/>
+                <input name="recipientName" id="recipientName" type="text" placeholder="Enter recipient name" required="required"/>
+                <input name="recipientEmail" id="recipientEmail" type="text" placeholder="Enter recipient email" required="required"/>
+                <br/>
+                <input class="btn btn-outline-success btn-xs" type="submit" form="emailDrink" value="${message(code: 'default.share.label', default: 'Share')}" />
+            </g:form>
+        </div>
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("show drink loaded");
             });
+            function getSendeeEmail(drinkId) {
+                console.log("getSendeeEmail");
+                console.log("drinkId: " + drinkId);
+
+            }
         </script>
     </body>
 </html>

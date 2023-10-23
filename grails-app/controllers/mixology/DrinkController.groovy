@@ -5,6 +5,9 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
+import groovy.text.SimpleTemplateEngine
+import groovy.text.Template
+import org.grails.gsp.GroovyPagesTemplateEngine
 
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
@@ -14,6 +17,9 @@ import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+
+import java.nio.charset.Charset
+
 import static org.springframework.http.HttpStatus.*
 import javax.servlet.http.HttpServletResponse
 
@@ -29,7 +35,10 @@ class DrinkController extends BaseController {
     def userRoleService
     def springSecurityService
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [sendADrinkEmail: "POST",
+                             save: "POST",
+                             update: "PUT",
+                             delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def index() {
@@ -633,13 +642,18 @@ class DrinkController extends BaseController {
         result
     }
 
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def saveSharedDrink() {
+        logger.info("Implement saving shared drink")
+    }
+
     // TODO: move into its own service
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def sendADrinkEmail() {
         if (!params) {
             badRequest(flash, request,'', '')
         }
-        if (request.method != 'GET') {
+        if (request.method != 'POST') {
             badRequest(flash, request, '', '')
         }
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
@@ -672,11 +686,21 @@ class DrinkController extends BaseController {
             }
         }
         Session session = Session.getInstance(props, auth)
-        def bindMap = ['user':user, 'drink': Drink.findById(params.id as Long)]
-        def emailTemplate = new File('grails-app/views/email/drinkEmail.gsp')
-        def emailText = new GStringTemplateEngine().createTemplate(emailTemplate).make(bindMap)
 
-        boolean sent = sendEmail(session, "aaronhunter@live.com", "Test Email", emailText.toString())
+        User userExists = userService.getByUsername(params.recipientEmail as String)
+        Drink drink = Drink.findById(params.drinkId as Long)
+        def imageAsString = convertImageToString(drink.glassImage)
+        def bindMap = [
+                user:user,
+                userExists:userExists?true:false,
+                rName:params.recipientName,
+                drink:drink,
+                image:imageAsString]
+        def engine = new GStringTemplateEngine()
+        def template = engine.createTemplate(new File('grails-app/views/email/drinkEmail.gsp'))
+        template = template.make(bindMap)
+        def text = template.toString()
+        boolean sent = sendEmail(session, params.recipientEmail as String, "Test Email", text)
 //        sendEmail(session, "aaronhunter@live.com",  "Test Email", """
 //        Hi ${user.firstName + ' ' + user.lastName},
 //        This is a test email which will soon be built
@@ -687,7 +711,7 @@ class DrinkController extends BaseController {
         if (sent) {
             flash.message = 'Email was sent'
             //redirect show(params.id as Long)
-            redirect action:'show', params:[id:params.id], method: "GET", status: OK
+            redirect action:'show', params:[id:drink.id], method: "GET", status: OK
             //redirect (view:'show', model:['id', params.id])
             //redirect show(params.id as Long)
         } else {
@@ -700,9 +724,30 @@ class DrinkController extends BaseController {
         }
     }
 
+    String convertImageToString(String glassImage) {
+        String encodedString = ''
+        if (!glassImage) return encodedString
+        encodedString = Base64.getEncoder().encodeToString(new File("grails-app/assets/images/$glassImage").getBytes() as byte[])
+    }
+
+    //user:user, userExists:userExists?true:false, rName:params.recipientName, drink:drink
+    static String getSendDrinkEmailText(def bindingMap) {
+        """
+        Hi ${bindingMap.rName},
+        
+        ${bindingMap.user.firstName} ${bindingMap.user.lastName} used Mixology to create this drink and thought you may like it.
+        
+        ${bindingMap.drink.name} - ${bindingMap.drink.symbol}
+        ${bindingMap.drink.mixingInstructions}
+
+        
+        Suggested Glass: ${bindingMap.drink.suggestedGlass}
+        """.toString()
+    }
+
     static boolean sendEmail(Session session, String toEmail, String subject, String body){
         try {
-            MimeMessage msg = new MimeMessage(session);
+            MimeMessage msg = new MimeMessage(session)
             //set message headers
             msg.setHeader("Content-Type", "text/html; charset=UTF-8")
             msg.setHeader("Content-Length", body.length() as String)

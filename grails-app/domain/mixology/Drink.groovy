@@ -3,6 +3,7 @@ package mixology
 import enums.*
 import exceptions.UnsupportedGlassException
 import groovy.transform.ToString
+import org.grails.io.support.ResourceLoader
 
 @ToString
 class Drink implements Serializable{
@@ -158,6 +159,16 @@ class Drink implements Serializable{
             }
         }
         return glassImage
+    }
+
+    String getFullPathToImage() {
+        if (this.glassImage) {
+            def imagePath = this.glassImage //"grails-app/assets/images/${this.glassImage}"
+            if (!imagePath) throw new Exception("Could not find image")
+            else imagePath
+        } else {
+            throw new Exception("No image found")
+        }
     }
 
     static Drink createFillerDrink(alcoholType) {

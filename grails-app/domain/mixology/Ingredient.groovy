@@ -37,7 +37,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static mapping = {
         table 'ingredients'
     }
-    static transients = ['fillerIngredient','givenId']
+    static transients = ['fillerIngredient','givenId','prettyName']
 
     @Override
     String toString() {

@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
     <title>Drink Email</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -7,11 +7,29 @@
 </head>
 
 <body>
-Hi ${user.firstName} ${user.lastName},
+Hi ${rName},
 <br/><br/>
-This is a test email which will soon be built
-out to share this drink, ${drink.name}.
-<br/><br/>
-Stay tuned!
+${user.firstName} ${user.lastName} used Mixology to create this drink and thought you may like it.
+<hr/>
+<h3>${drink.name}&emsp;${drink.symbol}</h3>
+<i>${drink.mixingInstructions}</i>
+<p>
+    <img src="data:image/png;base64, ${image}" alt="glassImage" style="float:left;width:42px;height:42px;">
+    Suggested Glass: ${drink.suggestedGlass}
+</p>
+<br/>
+<h4>Ingredients (${drink.ingredients.size()})</h4>
+<ol>
+    <%  drink.ingredients.each { %>
+    <li>${it.prettyName()}</li>
+    <% } %>
+</ol>
+<hr/>
+<p>Make sure you let your friend know how it turns out.</p>
+<% if (userExists) { %>
+    <p>If you want, you can save this drink to your collection by clicking <g:createLink controller="drink" action="saveSharedDrink" params='[drinkId:"${drink.id}"]' >save</g:createLink>.</p>
+<% } else { %>
+    <p>If you want to create your own drinks, you can create your own account with Mixology by clicking <g:createLinkTo controller="user" action="create">here</g:createLinkTo>.</p>
+<% } %>
 </body>
 </html>

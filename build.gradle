@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.sun.activation:javax.activation:1.2.0'
     implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
-
+    compileOnly group: 'org.codehaus.groovy', name: 'groovy-templates', version: '2.5.7'
     //compileOnly 'org.grails.plugins:mail:3.0.0'
     //compileOnly "org.grails.plugins:mail:2.0.0.RC6"
     // log4j2
