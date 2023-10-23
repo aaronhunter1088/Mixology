@@ -645,6 +645,12 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER'])
     def saveSharedDrink() {
         logger.info("Implement saving shared drink")
+        if (!params) {
+            badRequest(flash, request,'', '')
+        }
+        println "${params.drinkId}"
+        println "${params.rEmail}"
+        save()
     }
 
     // TODO: move into its own service
@@ -693,7 +699,8 @@ class DrinkController extends BaseController {
         def bindMap = [
                 user:user,
                 userExists:userExists?true:false,
-                rName:params.recipientName,
+                rName:params.recipientName as String,
+                rEmail:params.recipientEmail as String,
                 drink:drink,
                 image:imageAsString]
         def engine = new GStringTemplateEngine()
@@ -728,21 +735,6 @@ class DrinkController extends BaseController {
         String encodedString = ''
         if (!glassImage) return encodedString
         encodedString = Base64.getEncoder().encodeToString(new File("grails-app/assets/images/$glassImage").getBytes() as byte[])
-    }
-
-    //user:user, userExists:userExists?true:false, rName:params.recipientName, drink:drink
-    static String getSendDrinkEmailText(def bindingMap) {
-        """
-        Hi ${bindingMap.rName},
-        
-        ${bindingMap.user.firstName} ${bindingMap.user.lastName} used Mixology to create this drink and thought you may like it.
-        
-        ${bindingMap.drink.name} - ${bindingMap.drink.symbol}
-        ${bindingMap.drink.mixingInstructions}
-
-        
-        Suggested Glass: ${bindingMap.drink.suggestedGlass}
-        """.toString()
     }
 
     static boolean sendEmail(Session session, String toEmail, String subject, String body){

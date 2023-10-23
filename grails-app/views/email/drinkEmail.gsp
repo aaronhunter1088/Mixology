@@ -27,7 +27,7 @@ ${user.firstName} ${user.lastName} used Mixology to create this drink and though
 <hr/>
 <p>Make sure you let your friend know how it turns out.</p>
 <% if (userExists) { %>
-    <p>If you want, you can save this drink to your collection by clicking <g:createLink controller="drink" action="saveSharedDrink" params='[drinkId:"${drink.id}"]' >save</g:createLink>.</p>
+<p>If you want, you can save this drink to your collection by clicking <a href="/drink/saveSharedDrink?drinkId=${drink.id}&userEmail=${rEmail}">save</a>.</p>
 <% } else { %>
     <p>If you want to create your own drinks, you can create your own account with Mixology by clicking <g:createLinkTo controller="user" action="create">here</g:createLinkTo>.</p>
 <% } %>
