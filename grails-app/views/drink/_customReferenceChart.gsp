@@ -1,7 +1,7 @@
 <%@ page import="enums.*; mixology.*;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <p style="font-size:35px;margin:0;color:#a60000;"><b>NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART</b></p>
-<div style="display:inline-flex;">
+<div style="display:inline-flex; text-align:left;">
     <div style="display:block;">
         <!-- Change from i=1; i<13 i++ when done. Remove if-->
         <% int count = 0; for (int i=0; i<=30; i++) { Drink drink = drinks[i]; if (drink == null) drink = Drink.createFillerDrink(Alcohol.TEQUILA) %>
