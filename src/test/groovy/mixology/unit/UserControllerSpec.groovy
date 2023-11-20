@@ -2,6 +2,7 @@ package mixology.unit
 
 import enums.Alcohol
 import enums.GlassType
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import mixology.Drink
@@ -39,6 +40,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                 regularUser = new User([
                         username: "testRegularUser@gmail.com",
                         password: "testMe123\$",
+                        passwordConfirm: "testMe123\$",
                         email: "testRegularUser@gmail.com",
                         firstName: "regular",
                         lastName: "user"
@@ -57,6 +59,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         username: "testAdminUser@gmail.com",
                         email: "testAdminUser@gmail.com",
                         password: "testMe123\$",
+                        passwordConfirm: "testMe123\$",
                         firstName: "admin",
                         lastName: "user"
                 ])
@@ -74,6 +77,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
                         username: "testUnsavedUser@gmail.com",
                         email: "testUnsavedUser@gmail.com",
                         password: "testMe123\$",
+                        passwordConfirm: "testMe123\$",
                         firstName: "unsavedRegular",
                         lastName: "user"
                 ])
@@ -103,6 +107,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     @Test
     void "test user index"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> regularUser}
+
         when: 'call controller.index'
             controller.index()
         then:
@@ -111,6 +118,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     @Test
     void "test show user returns user"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> regularUser}
+
         when:
             controller.show(regularUser.id)
         then:
@@ -119,6 +129,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     @Test
     void "test create action"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> regularUser}
+
         when:
             controller.create()
         then:

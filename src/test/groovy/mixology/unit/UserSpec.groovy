@@ -29,7 +29,8 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
                 lastName: 'Husky',
                 username: 'thusky@gmail.com',
                 email: 'thusky@gmail.com',
-                password: 'p@ssword1'
+                password: 'p@ssword1',
+                passwordConfirm: 'p@ssword1'
         ]).save(failOnError:true)
 
         then:
@@ -111,7 +112,8 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
                     lastName: 'Husky',
                     username: 'thusky@gmail.com',
                     email: 'thusky@gmail.com',
-                    password: 'p@ssword1'
+                    password: 'p@ssword1',
+                    passwordConfirm: 'p@ssword1'
             ])
 
         then:
@@ -149,7 +151,8 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
                 lastName: 'Husky',
                 username: 'thusky@gmail.com',
                 email: 'thusky@gmail.com',
-                password: 'p@ssword1'
+                password: 'p@ssword1',
+                passwordConfirm: 'p@ssword1'
         ])
 
         then:
@@ -250,14 +253,15 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
                 lastName: 'Husky',
                 username: 'thusky@gmail.com',
                 email: 'thusky@gmail.com',
-                password: 'p@ssword$2'
+                password: 'p@ssword$2',
+                passwordConfirm: 'p@ssword$2'
         ])
 
         then:
-        assertTrue user.validate()
+        assertTrue( user.validate() )
 
         and:
-        assertNull user.errors['password']?.code
+        assertNull ( user.errors['password']?.code )
     }
 
     @Test
@@ -269,6 +273,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
                 username: 'thusky@gmail.com',
                 email: 'thusky@gmail.com',
                 password: 'p@ssword!',
+                passwordConfirm: 'p@ssword!',
                 mobileNumber: 123
         ])
 
@@ -291,10 +296,10 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         user.mobileNumber = '1'*10
 
         then:
-        assertTrue user.validate()
+        assertTrue ( user.validate() )
 
         and:
-        assertNull user.errors['mobileNumber']?.code
+        assertNull ( user.errors['mobileNumber']?.code )
     }
 
 }

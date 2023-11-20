@@ -551,7 +551,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         controller.params.drinkNumber = '11'
         controller.params.alcoholType = 'VODKA'
         controller.params.drinkSymbol = 'TD'
-        controller.params.instructions = 'Test instructions'
+        controller.params.mixingInstructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
         controller.params.ingredients = ["1", "2", "3", "4", "5"]
 //        controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"

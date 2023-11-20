@@ -29,7 +29,7 @@ class IngredientSpec extends Specification implements DomainUnitTest<Ingredient>
 
         expect: 'ingredient values are valid'
             assertNotNull i.id
-            assert i.prettyName() == '1 DASH of Vodka'
+            assert i.prettyName() == '1 dash of Vodka'
 
         Ingredient j = new Ingredient([
                 name: 'Strawberry',
@@ -39,7 +39,7 @@ class IngredientSpec extends Specification implements DomainUnitTest<Ingredient>
 
         and: 'ingredient values are valid'
             assertNotNull j.id
-            assert j.prettyName() == '2.5 FRUIT of Strawberry'
+            assert j.prettyName() == '2.5 fruits of Strawberry'
     }
 
     @Unroll('Ingredient.validate() with name: #value should have returned #expected with errorCode: #expectedErrorCode')

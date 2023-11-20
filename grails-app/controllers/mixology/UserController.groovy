@@ -102,8 +102,7 @@ class UserController extends BaseController {
             MultipartFile file = multipartRequest.getFile('photo')
             def userRole = roleService.findByAuthority(enums.Role.USER.name)
             user = createUserFromParams(user, params, file)
-            user.validate()
-            if (!user.errors.hasErrors()) {
+            if (user.validate()) {
                 user = userService.save(user, true)
                 userRoleService.save(user, userRole, true)
                 request.withFormat {
@@ -211,6 +210,7 @@ class UserController extends BaseController {
                 username: params.email,
                 email: params.email,
                 password: params.password,
+                passwordConfirm: params.passwordConfirm,
                 mobileNumber: params.cellphone,
                 photo: reduced ?: ''
         ])
