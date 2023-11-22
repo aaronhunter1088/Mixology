@@ -67,7 +67,7 @@
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: gray;
+                background-color: rgb(128, 128, 128);
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
             }
         </style>
@@ -162,21 +162,16 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <g:form resource="${this.drink}" method="DELETE" name="deleteForm">
-                                <fieldset class="buttons">
-                                    <sec:ifLoggedIn>
-                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
-                                        <g:if test="${drink.custom || adminIsLoggedIn}">
-                                            <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
-%{--                                            <g:link class="fa fa-solid fa-share" action="sendADrinkEmail" resource="${this.drink}">&nbsp;<g:message code="default.share.label" default="Share"/></g:link>--}%
-                                            <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">Share</a>
-                                            <i class="fa-solid fa-trash-can">
-                                                <input type="submit" form="deleteForm" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                            </i>
-                                        </g:if>
-                                    </sec:ifLoggedIn>
-                                </fieldset>
-                            </g:form>
+                            <fieldset class="buttons">
+                                <sec:ifLoggedIn>
+                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    <g:if test="${drink.custom || adminIsLoggedIn}">
+                                        <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
+                                        <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>
+                                        <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
+                                    </g:if>
+                                </sec:ifLoggedIn>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
@@ -195,6 +190,8 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("show drink loaded");
+
+                var deleteTag = document.getElementsByClassName("fa-solid fa-trash-can");
             });
             function getSendeeEmail(drinkId) {
                 console.log("getSendeeEmail");

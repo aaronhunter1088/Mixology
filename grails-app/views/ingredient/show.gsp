@@ -56,7 +56,7 @@
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: gray;
+                background-color: rgb(128, 128, 128);
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
             }
         </style>
@@ -133,19 +133,15 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <g:form resource="${this.ingredient}" method="DELETE">
-                                <fieldset class="buttons" style="width:100%;">
-                                    <sec:ifLoggedIn>
-                                        <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
-                                        <g:if test="${ingredient.custom || role}">
-                                            <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                            <i class="fa-solid fa-trash-can">
-                                                <input type="submit" value="&nbsp;${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                            </i>
-                                        </g:if>
-                                    </sec:ifLoggedIn>
-                                </fieldset>
-                            </g:form>
+                            <fieldset class="buttons" style="width:100%;">
+                                <sec:ifLoggedIn>
+                                    <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    <g:if test="${ingredient.custom || role}">
+                                        <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                        <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.ingredient}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
+                                    </g:if>
+                                </sec:ifLoggedIn>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
