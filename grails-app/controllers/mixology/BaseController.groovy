@@ -72,7 +72,7 @@ interface IController {
             '*'{ render status: FORBIDDEN }
         }
     } // 403
-    default void notFound(def method, def message) {
+    default void notFound(def flash, def request, def method, def message) {
         request.withFormat {
             form multipartForm {
                 flash.message = message ?: message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])

@@ -163,9 +163,10 @@
                                         <div id="photo" style="width:50%;float:right;text-align:center;padding:10px;">
                                             <g:if test="${!user.photo || user.photo == ''}">
                                                 <p>No image uploaded!</p>
-                                            </g:if><g:else>
-                                            <img src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
-                                        </g:else>
+                                            </g:if>
+                                            <g:else>
+                                                <img src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>
+                                            </g:else>
                                         </div>
                                     </div>
                                     <div style="display:inline-flex;justify-content:center;">
@@ -210,14 +211,10 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <g:form resource="${this.user}" method="DELETE">
-                                <fieldset class="buttons">
-                                    <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.user}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                    <i class="fa-solid fa-trash-can">
-                                        <input type="submit" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-                                    </i>
-                                </fieldset>
-                            </g:form>
+                            <fieldset class="buttons">
+                                <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.user}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
+                                <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.user}">&nbsp;<g:message code="default.button.delete.label" default="Delete" /></g:link>
+                            </fieldset>
                         </div>
                     </div>
                 </div>

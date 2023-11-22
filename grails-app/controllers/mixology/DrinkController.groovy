@@ -646,11 +646,27 @@ class DrinkController extends BaseController {
     def saveSharedDrink() {
         logger.info("Implement saving shared drink")
         if (!params) {
-            badRequest(flash, request,'', '')
+            logger.info("No parameters passed in")
+            redirect(uri:'/')
         }
-        println "${params.drinkId}"
-        println "${params.rEmail}"
-        save()
+        logger.info "${params.userEmail}"
+        logger.info "${params.drinkId}"
+        // find the user. if no user found, for now do nothing
+        def user = userService.getByUsername(params.userEmail as String)
+        if (!user) {
+            logger.info("Couldn't find a user with email: ${params.userEmail}")
+            redirect(uri:'/')
+        }
+        // if user found, find the drink. if no drink, for now, do nothing
+        def drink = drinkService.get(params.drinkId as long)
+        if (!drink) {
+            logger.info("Couldn't find a drink with id: ${params.drinkId}")
+            redirect(uri:'/')
+        }
+        // if drink found, save drink to user. return nothing for now
+        user.addToDrinks(drink)
+        drink.user = user
+        userService.save(user, false)
     }
 
     // TODO: move into its own service
@@ -702,7 +718,8 @@ class DrinkController extends BaseController {
                 rName:params.recipientName as String,
                 rEmail:params.recipientEmail as String,
                 drink:drink,
-                image:imageAsString]
+                image:imageAsString,
+                testing:true]
         def engine = new GStringTemplateEngine()
         def template = engine.createTemplate(new File('grails-app/views/email/drinkEmail.gsp'))
         template = template.make(bindMap)

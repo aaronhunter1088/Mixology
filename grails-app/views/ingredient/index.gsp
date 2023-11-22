@@ -24,10 +24,10 @@
                 color: black;
             }
             a:visited {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:hover {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:active {
                 color: coral;
@@ -52,16 +52,16 @@
             }
             #ingredientsHeaderRow > *{
                 color:black;
-                background-color:gray !important;
+                background-color: rgb(128, 128, 128) !important;
             }
-            a {
+            a, p {
                 color: white;
             }
             a:visited {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:hover {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:active {
                 color: coral;
@@ -94,7 +94,7 @@
                                     <input type="text" name="name" id="name" placeholder="ingredient name" value="${params.name}" style="text-align:center;width:200px;" class="form-control" />
                                     <label for="unit"></label>
                                     <select id="unit" name="unit" style="width:100px;text-align:center;" class="form-control">
-                                        <option label="Units" <g:if test="${!params.unit}">selected</g:if> disabled>Units</option>
+                                        <option label="units" <g:if test="${!params.unit}">selected</g:if> disabled>Units</option>
                                         <g:each in="${Unit.values()}" var="unit">
                                             <option value="${unit}" <g:if test="${(params.unit as String) == unit.value.toUpperCase()}">selected</g:if>>${unit}</option>
                                         </g:each>

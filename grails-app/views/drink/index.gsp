@@ -32,10 +32,10 @@
                 color: black;
             }
             a:visited {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:hover {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:active {
                 color: coral;
@@ -51,6 +51,7 @@
     <g:set var="darkMode" value="${user.darkMode}"/>
     <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
+
     <g:if test="${darkMode}">
         <style>
             #filterDrinksFormDiv > a,
@@ -65,16 +66,16 @@
             }
             #drinksHeaderRow > *{
                 color:black;
-                background-color:gray !important;
+                background-color: rgb(128, 128, 128) !important;
             }
-            a {
+            a, p {
                 color: white;
             }
             a:visited {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:hover {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:active {
                 color: coral;
@@ -109,14 +110,14 @@
                                     <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
                                     <label for="alcoholSelect"></label>
                                     <select id="alcoholSelect" name="alcohol" style="width:120px;text-align:center;" class="form-control">
-                                        <option label="Alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>Alcohols</option>
+                                        <option label="alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>alcohols</option>
                                         <g:each in="${Alcohol.values()}" var="alcohol">
                                             <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
                                         </g:each>
                                     </select>
                                     <label for="glassSelect"></label>
                                     <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
-                                        <option label="Glasses" selected disabled>Glasses</option>
+                                        <option label="glasses" selected disabled>glasses</option>
                                         <g:each in="${GlassType.values()}" var="glass">
                                             <option value="${glass}">${glass}</option>
                                         </g:each>
@@ -139,7 +140,8 @@
                             </g:if><g:else>
                                 <p>No default drinks found!</p>
                             </g:else>
-                        </g:if><g:else>
+                        </g:if>
+                        <g:else>
                             <table id="drinksTable">
                                 <thead>
                                     <tr id="drinksHeaderRow">
