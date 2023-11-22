@@ -350,17 +350,7 @@ class DrinkController extends BaseController {
                 ingredient = ingredientService.save(ingredient, user, true)
                 logger.info("$ingredient saved:: ${ingredient.id}")
             }
-            Drink copiedDrink = new Drink([
-                    name : drink.name,
-                    symbol : drink.symbol,
-                    number : drink.number,
-                    alcoholType : drink.alcoholType,
-                    //ingredients : copiedIngredients,
-                    mixingInstructions : drink.mixingInstructions,
-                    suggestedGlass : drink.suggestedGlass
-                    //,canBeDeleted : true
-                    //,custom : true
-            ])
+            def copiedDrink = Drink.copyDrink(drink)
             copiedIngredients.each{ci ->
                 copiedDrink.addToIngredients(ci)
             }
@@ -664,9 +654,16 @@ class DrinkController extends BaseController {
             redirect(uri:'/')
         }
         // if drink found, save drink to user. return nothing for now
-        user.addToDrinks(drink)
-        drink.user = user
-        userService.save(user, false)
+        def copiedIngredients = Ingredient.copyAll(drink.ingredients) as List<Ingredient>
+        drink = Drink.copyDrink(drink)
+        copiedIngredients.each {ingredient ->
+            ingredientService.save(ingredient, user, false)
+        }
+        copiedIngredients.each{ci ->
+            drink.addToIngredients(ci)
+        }
+        drinkService.save(drink, user, true)
+
     }
 
     // TODO: move into its own service

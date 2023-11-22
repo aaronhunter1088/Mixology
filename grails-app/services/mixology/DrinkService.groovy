@@ -61,7 +61,10 @@ class DrinkService {
      */
     Drink save(Drink drink, boolean validate = false) {
         try {
-            drink.save(validate:validate, flush:true, failOnError:validate)
+            Drink.withNewTransaction {
+                drink.save(validate:validate, flush:true, failOnError:validate)
+            }
+            logger.info("Drink saved. id: (${drink.id})")
         } catch (Exception e) {
             logger.error("Could not save drink:: $drink", e)
         }

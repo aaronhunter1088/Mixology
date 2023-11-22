@@ -186,6 +186,20 @@ class Drink implements Serializable{
         ])
     }
 
+    static Drink copyDrink(Drink drink) {
+        Drink copiedDrink = new Drink([
+                name : drink.name,
+                symbol : drink.symbol,
+                number : drink.number,
+                alcoholType : drink.alcoholType,
+                mixingInstructions : drink.mixingInstructions,
+                suggestedGlass : drink.suggestedGlass,
+                canBeDeleted : drink.canBeDeleted,
+                custom : drink.custom
+        ])
+        copiedDrink
+    }
+
     transient boolean fillerDrink
     boolean getFillerDrink() { return fillerDrink }
     void setFillerDrink(boolean fillerDrink) { this.fillerDrink = fillerDrink }
