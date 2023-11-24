@@ -26,17 +26,20 @@ import static enums.Unit.*
 import static org.springframework.http.HttpStatus.*
 
 @ContextConfiguration
-class IngredientControllerSpec extends Specification implements ControllerUnitTest<IngredientController>, DataTest {
+class IngredientControllerSpec extends BaseController implements ControllerUnitTest<IngredientController> {
 
     Class<?>[] getDomainClassesToMock(){return [Drink, Ingredient, User] as Class[]}
 
     Drink drink1, drink2
     User adminUser, testUser
-    def drinkService = getDatastore().getService(DrinkService)
-    def ingredientService = getDatastore().getService(IngredientService)
-    def userService = getDatastore().getService(UserService)
-    def roleService = getDatastore().getService(RoleService)
-    def userRoleService = getDatastore().getService(UserRoleService)
+
+    def vodka = createIngredient('Vodka')
+    def ingredientA = createIngredient('A')
+    def ingredientB = createIngredient('B')
+    def ingredientC = createIngredient('C')
+    def ingredientD = createIngredient('D')
+    def ingredientE = createIngredient('E')
+    def defaultIngredient = createIngredient('default')
 
     Set<Ingredient> createCustomIngredients(int numberToCreate) {
         Set<Ingredient> customIngredients = []
@@ -44,7 +47,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
             def customIngredient = new Ingredient([
                     name: 'CustomIngredient'+"{$it}",
                     unit: getRandomUnit(),
-                    amount: 1
+                    amount: "$it" as double
             ])
             customIngredients << customIngredient
         } as Set<Ingredient>
@@ -52,111 +55,11 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     }
     Set<Ingredient> createIngredientsWithAAndBAndC() {
         Set<Ingredient> ingredients = []
-        ingredientA = createAIngredient()
-        ingredientB = createBIngredient()
-        ingredientC = createCIngredient()
         return ingredients << ingredientA << ingredientB << ingredientC
     }
     Set<Ingredient> createIngredientsWithVodkaAndDAndE() {
         Set<Ingredient> ingredients = []
-        vodka = createVodkaIngredient()
-        ingredientD = createDIngredient()
-        ingredientE = createEIngredient()
         return ingredients << vodka << ingredientD << ingredientE
-    }
-
-    def vodka
-    def createVodkaIngredient = {
-        if ( !vodka ) {
-            vodka = new Ingredient([
-                    name: 'Vodka',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if (!vodka.idIsNull()) {
-            vodka
-        }
-    }
-    def ingredientA
-    def createAIngredient = {
-        if ( !ingredientA ) {
-            ingredientA = new Ingredient([
-                    name: 'IngredientA',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if (!ingredientA.idIsNull()) {
-            ingredientA
-        }
-    }
-    def ingredientB
-    def createBIngredient = {
-        if ( !ingredientB ) {
-            ingredientB = new Ingredient([
-                    name: 'IngredientB',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientB.idIsNull()) {
-            ingredientB
-        }
-    }
-    def ingredientC
-    def createCIngredient = {
-        if ( !ingredientC ) {
-            ingredientC = new Ingredient([
-                    name: 'IngredientC',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientC.idIsNull() ) {
-            ingredientC
-        }
-    }
-    def ingredientD
-    def createDIngredient = {
-        if ( !ingredientD ) {
-            ingredientD = new Ingredient([
-                    name: 'IngredientD',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientD.idIsNull() ) {
-            ingredientD
-        }
-    }
-    def ingredientE
-    def createEIngredient = {
-        if ( !ingredientE ) {
-            ingredientE = new Ingredient([
-                    name: 'IngredientE',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientE.idIsNull() ) {
-            ingredientE
-        }
-    }
-    def defaultIngredient
-    def createDefaultIngredient = {
-        if ( !defaultIngredient ) {
-            defaultIngredient = new Ingredient([
-                    name: 'DefaultIngredient',
-                    unit: Unit.OZ,
-                    amount: 1.5,
-                    canBeDeleted: false,
-                    custom: false
-            ])
-        }
-        else if ( !defaultIngredient.idIsNull() ) {
-            defaultIngredient
-        }
     }
 
     def setup() {
@@ -185,27 +88,16 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
         // save all ingredients
         drink1.ingredients.each { ingredientService.save(it, false) }
         drink2.ingredients.each { ingredientService.save(it, false) }
-        def defaultIngredient = createDefaultIngredient()
         ingredientService.save(defaultIngredient, false)
         drinkService.save(drink1, false)
         drinkService.save(drink2, false)
 
         def roleAdmin = roleService.save(enums.Role.ADMIN.name)
-        adminUser = new User([
-                username: "adminuser@gmail.com",
-                firstName: "admin",
-                lastName: "user",
-                password: 'p@ssword1',
-                email: "adminuser@gmail.com"
-        ]).save(validate:false)
+        adminUser = createUser('admin')
         userRoleService.save(adminUser, roleAdmin)
 
         def roleUser = roleService.save(enums.Role.USER.name)
-        testUser = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
+        testUser = createUser('regular')
         userRoleService.save(testUser, roleUser)
 
         controller.ingredientService = ingredientService
@@ -782,7 +674,7 @@ class IngredientControllerSpec extends Specification implements ControllerUnitTe
     @Test
     void "test not found returns 404"() {
         when:
-        controller.notFound('','')
+        controller.notFound(flash,request,'','')
 
         then:
         response.status == 404

@@ -165,7 +165,7 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save() {
         if (!params) {
-            notFound('','')
+            notFound(flash, request,'','')
             return
         }
         if (request.method != 'POST') {
@@ -231,10 +231,10 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def update() {
         if (!params) {
-            return notFound('','')
+            return notFound(flash,request,'','')
         }
         if (request.method != 'PUT') {
-            return methodNotAllowed('','')
+            return methodNotAllowed(request,'','')
         }
         Drink drinkToUpdate = drinkService.get(params.id as Long)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
@@ -389,11 +389,11 @@ class DrinkController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def delete(Long id) {
         if (!id || !params) {
-            notFound('','')
+            notFound(flash,request,'','')
             return
         }
         if (request.method != 'DELETE') {
-            return methodNotAllowed('','')
+            return methodNotAllowed(request,'','')
         }
         Drink drink = drinkService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
@@ -752,9 +752,7 @@ class DrinkController extends BaseController {
         } else {
             withFormat {
                 flash.message = 'There was an error sending the email'
-                form multipartForm {
-                    redirect show(params.id as Long)
-                }
+                redirect action:'show', params:[id:drink.id], method: "GET", status: INTERNAL_SERVER_ERROR
             }
         }
     }
@@ -763,6 +761,7 @@ class DrinkController extends BaseController {
         String encodedString = ''
         if (!glassImage) return encodedString
         encodedString = Base64.getEncoder().encodeToString(new File("grails-app/assets/images/$glassImage").getBytes() as byte[])
+        encodedString
     }
 
     static boolean sendEmail(Session session, String toEmail, String subject, String body){

@@ -4,7 +4,7 @@ import grails.testing.web.controllers.ControllerUnitTest
 import mixology.LoginController
 import spock.lang.Specification
 
-class LoginControllerSpec extends Specification implements ControllerUnitTest<LoginController> {
+class LoginControllerSpec extends BaseController implements ControllerUnitTest<LoginController> {
 
     def setup() {
     }

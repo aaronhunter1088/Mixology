@@ -13,25 +13,20 @@ import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertFalse
 
-class UserRoleSpec extends Specification implements DomainUnitTest<UserRole> {
+class UserRoleSpec extends BaseController implements DomainUnitTest<UserRole> {
 
-    def user = new User([
-            firstName: 'Tobias',
-            lastName: 'Husky',
-            username: 'thusky@gmail.com',
-            email: 'thusky@gmail.com',
-            password: 'p@ssword1'
-    ])
-    def role_user = new Role([
-            authority: enums.Role.USER.name
-    ])
-    def role_admin = new Role([
-            authority: enums.Role.ADMIN.name
-    ])
+    def user
+    def role_user
+    def role_admin
 
     def setup() {
+        user = createUser('Tobias')
         user.save(failOnError:true)
+
+        role_user = new Role([authority:enums.Role.USER.name])
         role_user.save(failOnError:true)
+
+        role_admin = new Role([authority:enums.Role.ADMIN.name])
         role_admin.save(failOnError:true)
     }
 
@@ -42,16 +37,17 @@ class UserRoleSpec extends Specification implements DomainUnitTest<UserRole> {
     @Test
     void "test getting userrole assigned to user"(){
         when:
-        def userRole = UserRole.create(user, role_user)
+        def userRole = UserRole.create(user as User, role_user as Role)
+        userRole.save(failOnError:true)
 
         then:
-        userRole.save(failOnError:true)
+        assertNotNull userRole.id
 
         and: 'verify role can be retrieved'
         def retrievedUserRole = UserRole.get(user.id, role_user.id)
 
         and: 'retrieved userRole is same as saved userRole'
-        assertTrue retrievedUserRole.id.equals( userRole.id )
+        assertTrue retrievedUserRole.id == userRole.id
 
         and: 'retrieved userRole exists'
         assertTrue UserRole.exists(user.id, role_user.id)

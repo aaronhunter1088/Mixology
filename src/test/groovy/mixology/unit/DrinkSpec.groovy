@@ -13,7 +13,7 @@ import spock.lang.Unroll
 import static groovy.test.GroovyAssert.assertNotNull
 import static groovy.test.GroovyAssert.shouldFail
 
-class DrinkSpec extends Specification implements DomainUnitTest<Drink> {
+class DrinkSpec extends BaseController implements DomainUnitTest<Drink> {
 
     def setup() {
     }

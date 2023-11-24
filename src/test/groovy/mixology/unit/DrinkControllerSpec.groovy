@@ -3,7 +3,6 @@ package mixology.unit
 import enums.Alcohol
 import enums.GlassType
 import enums.Role
-import enums.Unit
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
@@ -20,17 +19,15 @@ import mixology.UserService
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.junit.Test
-import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
-import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.springframework.http.HttpStatus.*
 
 @ContextConfiguration
-class DrinkControllerSpec extends Specification implements ControllerUnitTest<DrinkController>, DataTest {
+class DrinkControllerSpec extends BaseController implements ControllerUnitTest<DrinkController> {
 
     private static final Logger logger = LogManager.getLogger(DrinkControllerSpec.class)
 
@@ -38,104 +35,21 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
 
     Drink drink1, drink2
     User adminUser, testUser
-    def drinkService = getDatastore().getService(DrinkService)
-    def ingredientService = getDatastore().getService(IngredientService)
-    def userService = getDatastore().getService(UserService)
-    def roleService = getDatastore().getService(RoleService)
-    def userRoleService = getDatastore().getService(UserRoleService)
 
-    Set<Ingredient> createIngredientsWithAAndBAndC() {
+    def vodka = createIngredient('Vodka')
+    def ingredientA = createIngredient('A')
+    def ingredientB = createIngredient('B')
+    def ingredientC = createIngredient('C')
+    def ingredientD = createIngredient('D')
+    def ingredientE = createIngredient('E')
+
+    Set<Ingredient> ingredientsAAndBAndC() {
         Set<Ingredient> ingredients = []
-        ingredientA = createAIngredient()
-        ingredientB = createBIngredient()
-        ingredientC = createCIngredient()
         return ingredients << ingredientA << ingredientB << ingredientC
     }
-    Set<Ingredient> createIngredientsWithVodkaAndDAndE() {
+    Set<Ingredient> ingredientsVodkaAndDAndE() {
         Set<Ingredient> ingredients = []
-        vodka = createVodkaIngredient()
-        ingredientD = createDIngredient()
-        ingredientE = createEIngredient()
         return ingredients << vodka << ingredientD << ingredientE
-    }
-
-    def vodka
-    def createVodkaIngredient = {
-        if ( !vodka ) {
-            vodka = new Ingredient([
-                    name: 'Vodka',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if (!vodka.idIsNull()) {
-            vodka
-        }
-    }
-    def ingredientA
-    def createAIngredient = {
-        if ( !ingredientA ) {
-            ingredientA = new Ingredient([
-                    name: 'IngredientA',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if (!ingredientA.idIsNull()) {
-            ingredientA
-        }
-    }
-    def ingredientB
-    def createBIngredient = {
-        if ( !ingredientB ) {
-            ingredientB = new Ingredient([
-                    name: 'IngredientB',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientB.idIsNull()) {
-            ingredientB
-        }
-    }
-    def ingredientC
-    def createCIngredient = {
-        if ( !ingredientC ) {
-            ingredientC = new Ingredient([
-                    name: 'IngredientC',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientC.idIsNull() ) {
-            ingredientC
-        }
-    }
-    def ingredientD
-    def createDIngredient = {
-        if ( !ingredientD ) {
-            ingredientD = new Ingredient([
-                    name: 'IngredientD',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientD.idIsNull() ) {
-            ingredientD
-        }
-    }
-    def ingredientE
-    def createEIngredient = {
-        if ( !ingredientE ) {
-            ingredientE = new Ingredient([
-                    name: 'IngredientE',
-                    unit: Unit.OZ,
-                    amount: 1.5
-            ])
-        }
-        else if ( !ingredientE.idIsNull() ) {
-            ingredientE
-        }
     }
 
     def setup() {
@@ -146,7 +60,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 suggestedGlass: GlassType.HURRICANE,
                 alcoholType: Alcohol.TEQUILA,
                 symbol: 'D1',
-                ingredients: createIngredientsWithAAndBAndC(),
+                ingredients: ingredientsAAndBAndC(),
                 canBeDeleted: true,
                 custom: true
         ])
@@ -157,7 +71,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
                 suggestedGlass: GlassType.SHOT,
                 alcoholType: Alcohol.TEQUILA,
                 symbol: 'D2',
-                ingredients: createIngredientsWithVodkaAndDAndE(),
+                ingredients: ingredientsVodkaAndDAndE(),
                 canBeDeleted: false,
                 custom: false
         ])
@@ -169,21 +83,11 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
         drinkService.save(drink2, false)
 
         def roleAdmin = roleService.save(Role.ADMIN.name)
-        adminUser = new User([
-                username: "adminuser@gmail.com",
-                firstName: "admin",
-                lastName: "user",
-                password: 'p@ssword1',
-                email: "adminuser@gmail.com"
-        ]).save(validate:false)
+        adminUser = createUser('admin')
         userRoleService.save(adminUser, roleAdmin)
 
         def roleUser = roleService.save(Role.USER.name)
-        testUser = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
+        testUser = createUser('regular')
         userRoleService.save(testUser, roleUser)
 
         controller.drinkService = drinkService
@@ -461,7 +365,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test edit action"() {
         given:
-        testUser.ingredients = createIngredientsWithAAndBAndC()
+        testUser.ingredients = ingredientsAAndBAndC()
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> testUser
         }
@@ -722,7 +626,7 @@ class DrinkControllerSpec extends Specification implements ControllerUnitTest<Dr
     @Test
     void "test not found returns 404"() {
         when:
-            controller.notFound('','')
+            controller.notFound(flash,request,'','')
 
         then:
             response.status == 404

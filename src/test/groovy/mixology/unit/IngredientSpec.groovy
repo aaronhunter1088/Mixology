@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
-class IngredientSpec extends Specification implements DomainUnitTest<Ingredient> {
+class IngredientSpec extends BaseController implements DomainUnitTest<Ingredient> {
 
     def setup() {
     }
@@ -21,15 +21,12 @@ class IngredientSpec extends Specification implements DomainUnitTest<Ingredient>
 
     @Test
     void "test creating a valid ingredient"() {
-        Ingredient i = new Ingredient([
-                name: 'Vodka',
-                unit: Unit.DASH,
-                amount: 1.0
-        ]).save(failOnError:true)
+        Ingredient i = createIngredient('Vodka')
+        i = ingredientService.save(i,true)
 
         expect: 'ingredient values are valid'
             assertNotNull i.id
-            assert i.prettyName() == '1 dash of Vodka'
+            assert i.prettyName() == '1.5 ounces of Vodka'
 
         Ingredient j = new Ingredient([
                 name: 'Strawberry',

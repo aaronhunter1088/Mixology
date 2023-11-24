@@ -44,20 +44,14 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
         name + " : " + amount + " : " + unit.getValue().toUpperCase()
     }
 
-    String prettyName() {
+    String prettyName(boolean displayWithName = true) {
         def unitToUse = this.amount == 1 ? this.unit.getValue().toLowerCase() : getPluralUnit(unit).getValue().toLowerCase()
         if (amount % 1 == 0) {
-            (int)amount + ' ' + unitToUse + ' of ' + name
+            if (displayWithName) (int)amount + ' ' + unitToUse + ' of ' + name
+            else (int)amount + ' ' + unitToUse + ' of '
         } else {
-            amount + ' ' + unitToUse + ' of ' + name
-        }
-    }
-
-    String prettyNameWithoutName() {
-        if (amount % 1 == 0) {
-            (int)amount + ' ' + unit.getValue().toUpperCase() + ' of '
-        } else {
-            amount + ' ' + unit.getValue().toUpperCase() + ' of '
+            if (displayWithName) amount + ' ' + unitToUse + ' of ' + name
+            else amount + ' ' + unitToUse + ' of '
         }
     }
 

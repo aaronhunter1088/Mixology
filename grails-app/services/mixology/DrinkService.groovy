@@ -38,7 +38,7 @@ class DrinkService {
      * @param args
      * @return
      */
-    List<Drink> list(Map args) {
+    List<Drink> list(Map args = null) {
         def returnList = Drink.list(args)
         returnList
     }

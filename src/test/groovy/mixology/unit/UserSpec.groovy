@@ -13,7 +13,7 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.assertNull
 
-class UserSpec extends Specification implements DomainUnitTest<User> {
+class UserSpec extends BaseController implements DomainUnitTest<User> {
 
     def setup() {
     }
@@ -24,18 +24,12 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
     @Test
     void "test creating a valid user"() {
         when:
-        User testMe = new User([
-                firstName: 'Tobias',
-                lastName: 'Husky',
-                username: 'thusky@gmail.com',
-                email: 'thusky@gmail.com',
-                password: 'p@ssword1',
-                passwordConfirm: 'p@ssword1'
-        ]).save(failOnError:true)
+        User testMe = createUser('Tobias')
+        testMe.save(failOnError:true)
 
         then:
-            assertNotNull(testMe.id)
-            assert testMe.toString() == 'Tobias Husky'
+        assertNotNull(testMe.id)
+        assertTrue testMe.toString() == 'Tobias Husky'
 
         and: 'user role is created'
         def role = new Role(authority: enums.Role.USER.name).save()

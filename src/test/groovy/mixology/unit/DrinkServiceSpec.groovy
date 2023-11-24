@@ -4,21 +4,18 @@ import enums.Alcohol
 import grails.testing.services.ServiceUnitTest
 import mixology.Drink
 import mixology.DrinkService
-import spock.lang.Specification
+import org.junit.Test
 
-class DrinkServiceSpec extends Specification implements ServiceUnitTest<DrinkService>{
+class DrinkServiceSpec extends BaseController implements ServiceUnitTest<DrinkService> {
 
-    def drinkService
-
-    def setup() {
-        drinkService = grailsApplication.mainContext.getBean('drinkService')
-    }
+    def setup() {}
 
     def cleanup() {
     }
 
+    @Test
     void "test getting all tequila drinks"() {
-        List<Drink> tequilaDrinks = drinkService.list().each { Drink d -> d.alcoholType == Alcohol.TEQUILA}
+        List<Drink> tequilaDrinks = drinkService.list(null).each { Drink d -> d.alcoholType == Alcohol.TEQUILA}
         tequilaDrinks.each {
             assert it.alcoholType == Alcohol.TEQUILA
         }

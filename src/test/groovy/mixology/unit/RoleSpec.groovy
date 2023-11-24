@@ -7,7 +7,7 @@ import spock.lang.Specification
 
 import static org.junit.Assert.assertNotNull
 
-class RoleSpec extends Specification implements DomainUnitTest<Role> {
+class RoleSpec extends BaseController implements DomainUnitTest<Role> {
 
     @Test
     void "test role is created"() {

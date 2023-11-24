@@ -21,80 +21,17 @@ import spock.lang.Specification
 import java.awt.image.BufferedImage
 
 @ContextConfiguration
-class UserControllerSpec extends Specification implements ControllerUnitTest<UserController>, DataTest {
+class UserControllerSpec extends BaseController implements ControllerUnitTest<UserController> {
 
     Class<?>[] getDomainClassesToMock(){
         return [Drink, Ingredient, User] as Class[]
     }
 
-    def userService = getDatastore().getService(UserService)
-    def roleService = getDatastore().getService(RoleService)
-    def userRoleService = getDatastore().getService(UserRoleService)
-
     User regularUser = createUser('regular')
     User adminUser = createUser('admin')
     User unsavedUser = createUser('unsaved')
-    User createUser(def type) {
-        if ('regular' == type) {
-            if (!regularUser) {
-                regularUser = new User([
-                        username: "testRegularUser@gmail.com",
-                        password: "testMe123\$",
-                        passwordConfirm: "testMe123\$",
-                        email: "testRegularUser@gmail.com",
-                        firstName: "regular",
-                        lastName: "user"
-                ])
-                regularUser = userService.save(regularUser, false)
-                Role regularRole = new Role(authority: enums.Role.USER.name)
-                UserRole.create(regularUser, regularRole)
-                regularUser
-            }
-            else {
-                regularUser
-            }
-        } else if ('admin' == type) {
-            if (!adminUser) {
-                adminUser = new User([
-                        username: "testAdminUser@gmail.com",
-                        email: "testAdminUser@gmail.com",
-                        password: "testMe123\$",
-                        passwordConfirm: "testMe123\$",
-                        firstName: "admin",
-                        lastName: "user"
-                ])
-                adminUser = userService.save(adminUser, false)
-                Role adminRole = new Role(authority: enums.Role.ADMIN.name)
-                UserRole.create(adminUser, adminRole)
-                adminUser
-            }
-            else {
-                adminUser
-            }
-        } else {
-            if (!unsavedUser) {
-                unsavedUser = new User([
-                        username: "testUnsavedUser@gmail.com",
-                        email: "testUnsavedUser@gmail.com",
-                        password: "testMe123\$",
-                        passwordConfirm: "testMe123\$",
-                        firstName: "unsavedRegular",
-                        lastName: "user"
-                ])
-                Role regularRole = new Role(authority: enums.Role.USER.name)
-                UserRole.create(unsavedUser, regularRole)
-                unsavedUser
-            }
-            else {
-                unsavedUser
-            }
-        }
-    }
 
     def setup() {
-        mockDomain Drink
-        mockDomain Ingredient
-        mockDomain User
         controller.userService = userService
         controller.roleService = roleService
         controller.userRoleService = userRoleService

@@ -20,32 +20,23 @@ import spock.lang.Specification
 import static org.springframework.http.HttpStatus.*
 
 @ContextConfiguration
-class LogoutControllerSpec extends Specification implements ControllerUnitTest<LogoutController>, DataTest {
-
-    private static final Logger logger = LogManager.getLogger(LogoutControllerSpec.class)
+class LogoutControllerSpec extends BaseController implements ControllerUnitTest<LogoutController> {
 
     Class<?>[] getDomainClassesToMock(){ return [Drink, Ingredient, User] as Class[] }
 
     User testUser
-    def userService = getDatastore().getService(UserService)
-    def roleService = getDatastore().getService(RoleService)
-    def userRoleService = getDatastore().getService(UserRoleService)
 
     def setup() {
         def roleUser = roleService.save(Role.USER.name)
-        testUser = new User([
-                username: "username@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ])
+        testUser = createUser('regular')
         testUser = userService.save(testUser, false)
         userRoleService.save(testUser, roleUser)
 
         controller.userService = userService
+        logger = LogManager.getLogger(LogoutControllerSpec.class)
     }
 
-    def cleanup() {
-    }
+    def cleanup() {}
 
     @Test
     void "test user is set up"() {

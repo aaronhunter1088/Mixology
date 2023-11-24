@@ -138,7 +138,7 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def save() {
         if (!params) {
-            return notFound('','')
+            return notFound(flash,request,'','')
         }
         if (request.method != 'POST') {
             return methodNotAllowed(request,'','')
