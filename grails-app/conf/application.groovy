@@ -1,4 +1,6 @@
 // Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.useBasicAuth = true
+grails.mime.use.accept.header = true
 grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'mixology.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'mixology.UserRole'
@@ -28,6 +30,8 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/css/**',      access: ['permitAll']],
 	[pattern: '/**/images/**',   access: ['permitAll']],
 	[pattern: '/**/favicon.ico', access: ['permitAll']],
+	[pattern: '/drinks',		 access: ['permitAll']],
+	[pattern: '/customDrinks',	 access: ['permitAll']],
 		/* Login Controller */
 	[pattern: '/login/auth', 	 access: ['permitAll']],
 		/* Drink Controller */

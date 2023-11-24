@@ -4,10 +4,12 @@ import enums.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
+import groovy.json.JsonBuilder
 import groovy.text.GStringTemplateEngine
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
 import org.grails.gsp.GroovyPagesTemplateEngine
+import org.h2.util.json.JSONString
 
 import javax.mail.Message
 import javax.mail.PasswordAuthentication
@@ -76,7 +78,9 @@ class DrinkController extends BaseController {
                                params:params
                        ]
             }
-            json { drinks as JSON }
+            json {
+                render drinks as JSON
+            }
         }
     }
 
@@ -119,7 +123,7 @@ class DrinkController extends BaseController {
                                params:params
                         ]
             }
-            json { userDrinks as JSON }
+            json { render userDrinks as JSON }
         }
 
     }
@@ -130,11 +134,24 @@ class DrinkController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
         def adminUser = userRoleService.getRoleIfExists(user as User, roleAdmin as Role)
-        render view:'show',
-               model:[user:user,
-                      drink:drink,
-                      adminIsLoggedIn:(adminUser?true:false)
-               ]
+        withFormat{
+            html {
+                if (!drink) { render status:404 }
+                else {
+                    render view:'show',
+                            model:[user:user,
+                                   drink:drink,
+                            ]
+                }
+            }
+            json {
+                if (drink) render (drink as JSON)
+                else {
+                    //response.status = 204
+                    render(status:204, text:'No drink found')
+                }
+            }
+        }
     }
 
     //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])

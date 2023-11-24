@@ -9,6 +9,11 @@ class UrlMappings {
             }
         }
 
+        "/customDrinks" {
+            controller = 'drink'
+            action = 'customIndex'
+        }
+
         "/mixology/drink/save" {
             controller = "drink"
             action = "save"
@@ -37,16 +42,6 @@ class UrlMappings {
             controller = "drink"
             action = "validateIngredients"
         }
-
-        "/mixology/search" {
-            controller = "search"
-            action = "index"
-        }
-        "/mixology/search/search" {
-            controller = "search"
-            action = "search"
-        }
-
         "/mixology/user/create" {
             controller = "user"
             action = "create"

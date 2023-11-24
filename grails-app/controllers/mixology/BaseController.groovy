@@ -1,6 +1,6 @@
 package mixology
 
-import javax.servlet.http.HttpServletRequest
+import org.apache.logging.log4j.Logger
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.CREATED
@@ -12,6 +12,13 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 abstract class BaseController implements IController {
 
+    def drinkService
+    def ingredientService
+    def userService
+    def roleService
+    def userRoleService
+
+    protected static Logger logger = null
 
 }
 
