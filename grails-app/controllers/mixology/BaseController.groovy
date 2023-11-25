@@ -78,7 +78,7 @@ interface IController {
             }
             '*'{ render status: FORBIDDEN }
         }
-    } // 403
+    } // 403, forbidden
     default void notFound(def flash, def request, def method, def message) {
         request.withFormat {
             form multipartForm {
@@ -87,7 +87,7 @@ interface IController {
             }
             '*'{ render status: NOT_FOUND }
         }
-    } // 404
+    } // 404, not found
     default void methodNotAllowed(def request, def method, def message) {
         flash.message = message ?: 'Check your request method!'
         request.withFormat {
@@ -97,6 +97,6 @@ interface IController {
             }
             '*'{ render status: METHOD_NOT_ALLOWED }
         }
-    } // 405
+    } // 405, method not allowed
 
 }

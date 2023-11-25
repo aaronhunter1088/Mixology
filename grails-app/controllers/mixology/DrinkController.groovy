@@ -136,7 +136,7 @@ class DrinkController extends BaseController {
         def adminUser = userRoleService.getRoleIfExists(user as User, roleAdmin as Role)
         withFormat{
             html {
-                if (!drink) { render status:404 }
+                if (!drink) { render view:'/notFound', model:[object:'Drink'] }
                 else {
                     render view:'show',
                             model:[user:user,
@@ -147,7 +147,6 @@ class DrinkController extends BaseController {
             json {
                 if (drink) render (drink as JSON)
                 else {
-                    //response.status = 204
                     render(status:204, text:'No drink found')
                 }
             }

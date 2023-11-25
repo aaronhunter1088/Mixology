@@ -67,11 +67,24 @@ class UserController extends BaseController {
         def userToDisplay = userService.get(id)
         def currentUser = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         boolean showPassword = currentUser.id == id
-        render view:'show',
-               model:[user:userToDisplay,
-                      currentUser:currentUser,
-                      showPassword:showPassword
-        ]
+        withFormat{
+            html {
+                if (!userToDisplay) render view:'/notFound', model:[object:'User']
+                else {
+                    render view:'show',
+                            model:[user:userToDisplay,
+                                   currentUser:currentUser,
+                                   showPassword:showPassword
+                            ]
+                }
+            }
+            json {
+                if (userToDisplay) render (userToDisplay as JSON)
+                else {
+                    render(status:204, text:'No user found')
+                }
+            }
+        }
     }
 
     def create() {
