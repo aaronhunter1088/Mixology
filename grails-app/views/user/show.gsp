@@ -68,17 +68,36 @@
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: gray;
+                background-color: rgb(128, 128, 128);
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            }
+            .buttons {
+                background-color: white;
+                overflow: hidden;
+                padding: 0.3em;
+                -moz-box-shadow: 0 0 3px 1px white;
+                -webkit-box-shadow: 0 0 3px 1px white;
+                box-shadow: 0 0 3px 1px white;
+                margin: 0.1em 0 0 0;
+                border: none;
+            }
+            .buttons > a:hover {
+                color: black;
+            }
+            .buttons > a::before {
+                color: black;
+            }
+            .buttons > a:visited {
+                color: black;
             }
             a {
                 color: black;
             }
             a:visited {
-                color: gray;
+                color: rgb(128, 128, 128);
             }
             a:hover {
-                color: gray;
+                color: black;
             }
             a:active {
                 color: coral;
@@ -94,6 +113,25 @@
             }
             a {
                 color: white;
+            }
+            .buttons > a::before {
+                color: white;
+            }
+            .buttons > a {
+                color: white;
+            }
+            .buttons > a:visited {
+                color: white;
+            }
+            .buttons {
+                background-color: black;
+                overflow: hidden;
+                padding: 0.3em;
+                -moz-box-shadow: 0 0 3px 1px black;
+                -webkit-box-shadow: 0 0 3px 1px black;
+                box-shadow: 0 0 3px 1px black;
+                margin: 0.1em 0 0 0;
+                border: none;
             }
         </style>
     </g:if>
