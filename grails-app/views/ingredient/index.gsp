@@ -116,9 +116,11 @@
                         <g:if test="${ingredientCount <= 0}">
                             <g:if test="${customIngredients}">
                                 <p>No custom ingredients found!</p>
-                            </g:if><g:else>
+                            </g:if><g:elseif test="${isOn(params.defaultIngredient as String)}">
                                 <p>No default ingredients found!</p>
-                        </g:else>
+                            </g:elseif><g:else>
+                                <p>No ingredients found!</p>
+                            </g:else>
                         </g:if><g:else>
                         <table>
                             <thead>

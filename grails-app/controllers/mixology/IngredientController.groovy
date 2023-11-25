@@ -43,7 +43,7 @@ class IngredientController extends BaseController {
             } else {
                 if (params.name) eq ('name', params.name as String)
                 if (params.unit) eq ( 'unit', Unit.valueOf(params.unit as String))
-                if (params.amount) eq ( 'amount', params.alcohol as double)
+                if (params.amount) eq ( 'amount', params.amount as double)
                 if (params.defaultIngredient && isOn(params.defaultIngredient as String)) eq ( 'custom', false)
                 else params.defaultIngredient = false
             }

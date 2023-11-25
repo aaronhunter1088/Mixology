@@ -98,14 +98,13 @@
         </style>
     </g:if>
     <body style="padding:50px;margin:0;background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};">
-        <div id="content" class="" style="background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};">
+        <div id="showUser" class="" style="background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};">
             <section style="background-color:${darkMode?'black':'white'};">
                 <div class="container">
                     <div id="navigation" style="display:flex;justify-content:center;">
                         <g:render template="../navigation" model="[user:user]"/>
                     </div>
                 </div>
-                <p></p>
                 <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
                 </g:if>

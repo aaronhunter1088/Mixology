@@ -507,12 +507,12 @@ th:hover, tr:hover {
 /* ACTION BUTTONS */
 
 .buttons {
-    background-color: #efefef;
+    background-color: ghostwhite;
     overflow: hidden;
     padding: 0.3em;
-    -moz-box-shadow: 0 0 3px 1px #aaaaaa;
-    -webkit-box-shadow: 0 0 3px 1px #aaaaaa;
-    box-shadow: 0 0 3px 1px #aaaaaa;
+    -moz-box-shadow: 0 0 3px 1px ghostwhite;
+    -webkit-box-shadow: 0 0 3px 1px ghostwhite;
+    box-shadow: 0 0 3px 1px ghostwhite;
     margin: 0.1em 0 0 0;
     border: none;
 }
@@ -521,7 +521,7 @@ th:hover, tr:hover {
 .buttons a {
     background-color: transparent;
     border: 0;
-    color: #666666;
+    color: black;
     cursor: pointer;
     display: inline-block;
     margin: 0 0.25em 0;
@@ -536,7 +536,7 @@ th:hover, tr:hover {
 
 .buttons input:hover, .buttons input:focus,
 .buttons a:hover, .buttons a:focus {
-    background-color: #999999;
+    background-color: ghostwhite;
     color: #ffffff;
     outline: none;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
