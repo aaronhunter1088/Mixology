@@ -76,9 +76,9 @@
                         <div id="navigation">
                             <g:render template="../navigation" model="[user:user]"/>
                         </div>
-                        <div style="margin:auto;padding-top:10px;vertical-align:middle;">
-                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="['Ingredient']" /></h1>
-                        </div>
+                        <!--<div style="margin:auto;padding-top:10px;vertical-align:middle;">
+                            <h1 style="color:$ {darkMode?'white':'black'};"><g :message code="default.list.label" args="['Ingredient']" /></h1>
+                        </div>-->
                     </div>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
@@ -86,6 +86,7 @@
                     <div id="list">
                         <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'customIndex'}"/>
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="['Ingredient']" /></h1>
                             <g:form action="${action}" controller="ingredient" name="filterIngredients" method="get">
                                 <div id="filterIngredientsFormDiv" style="display:flex;">
                                     <label for="id"></label>

@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Display All ${g.message(code:'drink.label', default:'Drink', args:"s")}</title>
+        <title>${g.message(code:'drink.index.display.all.drinks', default:'Display all Drinks')}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -90,9 +90,9 @@
                         <div>
                             <g:render template="../navigation" model="[user:user]"/>
                         </div>
-                        <div style="margin:auto;padding-top:10px;vertical-align:middle;">
-                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[drink]" /></h1>
-                        </div>
+                        <!--<div style="margin:auto;padding-top:10px;vertical-align:middle;">
+                            <h1 style="color:$ {darkMode?'white':'black'};"><g :message code="default.list.label" args="[drink]" /></h1>
+                        </div>-->
                     </div>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
@@ -100,6 +100,7 @@
                     <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
                     <div id="list" style="text-align:center;">
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[drink]" /></h1>
                             <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                 <div id="filterDrinksFormDiv" style="display:flex;">
                                     <label for="id"></label>
