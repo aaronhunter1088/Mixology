@@ -636,7 +636,7 @@ class DrinkController extends BaseController {
      */
     static boolean isOn(String checkbox) {
         boolean result = false
-        switch (checkbox.toLowerCase()) {
+        switch (checkbox?.toLowerCase()) {
             case "checked":
             case "on":
             case "true": {

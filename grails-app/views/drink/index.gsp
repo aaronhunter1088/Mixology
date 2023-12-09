@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>${g.message(code:'drink.index.display.all.drinks', default:'Display all Drinks')}</title>
+        <title><g:message code="drink.index.display.all.drinks" default="Display all drinks"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -51,7 +51,6 @@
     <g:set var="darkMode" value="${user.darkMode}"/>
     <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink', args:"")}" />
     <g:set var="drinks" value="${message(code: 'drink.label', default: 'Drink', args:"s")}" />
-    <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
     <g:if test="${darkMode}">
         <style>
             #filterDrinksFormDiv > a,
@@ -105,7 +104,7 @@
                                     <label for="id"></label>
                                     <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
                                     <label for="name"></label>
-                                    <input type="text" name="name" id="name" placeholder="name" value="${params.name}" style="text-align:center;" class="form-control" />
+                                    <input type="text" name="name" id="name" placeholder="drink name" value="${params.name}" style="text-align:center;" class="form-control" />
                                     <label for="number"></label>
                                     <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
                                     <label for="alcoholSelect"></label>
