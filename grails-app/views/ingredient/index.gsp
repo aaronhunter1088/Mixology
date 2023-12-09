@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Display All Ingredients</title>
+        <title><g:message code="ingredient.index.display.all.ingredients" default="Display all ingredients"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -35,7 +35,8 @@
         </style>
     </head>
     <g:set var="darkMode" value="${user.darkMode}"/>
-    <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
+    <g:set var="ingredient" value="${message(code: 'ingredient.label', args:'', default: 'Ingredient')}" />
+    <g:set var="ingredients" value="${message(code: 'ingredient.label', args:'s', default: 'Ingredients')}" />
     <g:if test="${darkMode}">
         <style>
             #filterIngredientsFormDiv > a,
@@ -83,16 +84,15 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <div id="list">
-                        <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'customIndex'}"/>
+                    <div id="list" style="text-align:center;">
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
-                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="['Ingredient']" /></h1>
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[ingredients]"/></h1>
                             <g:form action="${action}" controller="ingredient" name="filterIngredients" method="get">
                                 <div id="filterIngredientsFormDiv" style="display:flex;">
                                     <label for="id"></label>
                                     <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
                                     <label for="name"></label>
-                                    <input type="text" name="name" id="name" placeholder="ingredient name" value="${params.name}" style="text-align:center;width:200px;" class="form-control" />
+                                    <input type="text" name="name" id="name" placeholder="ingredient name" value="${params.name}" style="text-align:center;width:150px;" class="form-control" />
                                     <label for="unit"></label>
                                     <select id="unit" name="unit" style="width:100px;text-align:center;" class="form-control">
                                         <option label="units" <g:if test="${!params.unit}">selected</g:if> disabled>Units</option>
@@ -101,7 +101,7 @@
                                         </g:each>
                                     </select>
                                     <label for="amount"></label>
-                                    <input type="text" name="amount" id="amount" placeholder="amount" value="${params.amount}" style="text-align:center;width:200px;" class="form-control" />
+                                    <input type="text" name="amount" id="amount" placeholder="amount" value="${params.amount}" style="text-align:center;width:100px;" class="form-control" />
                                     <g:if test="${!customIngredients}">
                                         <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultIngredient">Default Ingredient? </label>
                                         <input type="checkbox" name="defaultIngredient" id="defaultIngredient"
@@ -122,58 +122,59 @@
                             </g:elseif><g:else>
                                 <p>No ingredients found!</p>
                             </g:else>
-                        </g:if><g:else>
-                        <table>
-                            <thead>
-                            <tr id="ingredientsHeaderRow">
-                                <th>Count (${ingredientCount})</th>
-                                <th>Name</th>
-                                <th>Unit</th>
-                                <th>Amount</th>
-                                <th>Drinks</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <g:if test="${ingredientCount > 0}">
-                                <% int index = 1; %>
-                                <g:each in="${ingredientList}" var="ingredient">
-                                    <g:if test="${params.offset && (params.offset as int) != 0}">
-                                        <g:set var="idx" value="${index + (params.offset as int)}"/>
+                        </g:if>
+                        <g:else>
+                            <table>
+                                <thead>
+                                <tr id="ingredientsHeaderRow">
+                                    <th>Count (${ingredientCount})</th>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Amount</th>
+                                    <th>Drinks</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <g:if test="${ingredientCount > 0}">
+                                    <% int index = 1; %>
+                                    <g:each in="${ingredientList}" var="ingredient">
+                                        <g:if test="${params.offset && (params.offset as int) != 0}">
+                                            <g:set var="idx" value="${index + (params.offset as int)}"/>
+                                        </g:if><g:else>
+                                            <g:set var="idx" value="${index}"/>
+                                        </g:else>
+                                        <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <td><g:link controller="ingredient" action="show" params='[id:"${((Ingredient)ingredient).id}"]'>${idx}</g:link></td>
+                                            <td>${((Ingredient)ingredient).name}</td>
+                                            <td>${((Ingredient)ingredient).unit}</td>
+                                            <td>${((Ingredient)ingredient).amount}</td>
+                                            <td>${((Ingredient)ingredient).drinks}</td>
+                                        </tr>
+                                        <% index++; %>
+                                    </g:each>
+                                </g:if>
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <g:paginate controller="ingredient"
+                                            action="${params.action}"
+                                            total="${ingredientCount}"
+                                            max="5"
+                                            params="${params}"/>
+                                <script type="text/javascript">
+                                    let paginationLinks = $(".pagination").find('a')
+                                    <g:if test="${darkMode}">
+                                    paginationLinks.each( function () {
+                                        $(this).css('color', 'black');
+                                    })
                                     </g:if><g:else>
-                                        <g:set var="idx" value="${index}"/>
+                                    paginationLinks.each( function () {
+                                        $(this).css('color', 'black');
+                                    })
                                     </g:else>
-                                    <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                        <td><g:link controller="ingredient" action="show" params='[id:"${ingredient.id}"]'>${idx}</g:link></td>
-                                        <td>${ingredient.name}</td>
-                                        <td>${ingredient.unit}</td>
-                                        <td>${ingredient.amount}</td>
-                                        <td>${ingredient.drinks}</td>
-                                    </tr>
-                                    <% index++; %>
-                                </g:each>
-                            </g:if>
-                            </tbody>
-                        </table>
-                        <div class="pagination">
-                            <g:paginate controller="ingredient"
-                                        action="${params.action}"
-                                        total="${ingredientCount}"
-                                        max="5"
-                                        params="${params}"/>
-                            <script type="text/javascript">
-                                let paginationLinks = $(".pagination").find('a')
-                                <g:if test="${darkMode}">
-                                paginationLinks.each( function () {
-                                    $(this).css('color', 'black');
-                                })
-                                </g:if><g:else>
-                                paginationLinks.each( function () {
-                                    $(this).css('color', 'black');
-                                })
-                                </g:else>
-                            </script>
-                        </div>
-                    </g:else>
+                                </script>
+                            </div>
+                        </g:else>
                     </div>
                 </div>
             </section>

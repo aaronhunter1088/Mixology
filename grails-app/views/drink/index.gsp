@@ -49,9 +49,9 @@
         def darkMode = user.darkMode
     %>
     <g:set var="darkMode" value="${user.darkMode}"/>
-    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink', args:"s")}" />
+    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink', args:"")}" />
+    <g:set var="drinks" value="${message(code: 'drink.label', default: 'Drink', args:"s")}" />
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
-
     <g:if test="${darkMode}">
         <style>
             #filterDrinksFormDiv > a,
@@ -87,7 +87,7 @@
             <section style="text-align:center;background-color:${darkMode?'black':'white'};">
                 <div id="list-drink">
                     <div style="display:inline-flex;vertical-align:middle;">
-                        <div>
+                        <div id="navigation">
                             <g:render template="../navigation" model="[user:user]"/>
                         </div>
                         <!--<div style="margin:auto;padding-top:10px;vertical-align:middle;">
@@ -97,10 +97,9 @@
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <g:set var="action" value="${adminIsLoggedIn ? 'index' : 'showCustomIndex'}"/>
                     <div id="list" style="text-align:center;">
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
-                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[drink]" /></h1>
+                            <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[drinks]" /></h1>
                             <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                 <div id="filterDrinksFormDiv" style="display:flex;">
                                     <label for="id"></label>
