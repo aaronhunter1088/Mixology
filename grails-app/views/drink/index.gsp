@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Display All Drinks</title>
+        <title>Display All ${g.message(code:'drink.label', default:'Drink', args:"s")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -49,7 +49,7 @@
         def darkMode = user.darkMode
     %>
     <g:set var="darkMode" value="${user.darkMode}"/>
-    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink')}" />
+    <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink', args:"s")}" />
     <g:set var="ingredient" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
 
     <g:if test="${darkMode}">
