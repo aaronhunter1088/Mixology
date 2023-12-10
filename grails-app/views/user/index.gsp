@@ -98,7 +98,7 @@
                 <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
                     <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[users]" /></h1>
                     <g:form action="${params.action}" controller="drink" name="filterUsers" method="get">
-                        <div id="filterUsersFormDiv" style="display:inline-flex;">
+                        <div id="filterUsersFormDiv" style="display:inline-flex;margin: auto 10px;">
                             <label for="id"></label>
                             <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
                             <label for="name"></label>

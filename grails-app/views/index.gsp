@@ -10,7 +10,6 @@
         <asset:javascript src="application.js"/>
         <g:include view="includeAll.gsp"/>
         <style>
-            html { visibility:hidden; }
             .arrow-right:after {
                 content: "";
                 display: inline-block !important;
@@ -72,7 +71,7 @@
     <g:set var="darkMode" value="${user?.darkMode ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="">
-            <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="navigation">
+            <div style="display:block;position:fixed;top:20px;z-index:100;" class="row" id="topBar">
                 <g:render template="/topBar"/>
             </div>
             <div style="padding-top:75px;text-align:center;">
@@ -294,6 +293,5 @@
         } else {
             console.log("not setting language");
         }
-        document.getElementsByTagName("html")[0].style.visibility = "visible";
     });
 </script>
