@@ -11,7 +11,7 @@ class LogoutController {
     def userService
 
     def index = {
-        logger.info("${springSecurityService.getPrincipal().fullname} is now logged out!")
+        logger.info("${springSecurityService.getPrincipal().fullName} is now logged out!")
         session.invalidate()
         redirect(uri:'/')
     }

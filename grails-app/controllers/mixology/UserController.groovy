@@ -54,7 +54,7 @@ class UserController extends BaseController {
                 render view:'index',
                        model:[userList:users,
                               userCount:users.totalCount,
-                              user:user,
+                              user:user as User,
                               params:params
                        ]
             }
@@ -159,7 +159,9 @@ class UserController extends BaseController {
             return
         }
         MultipartRequest multipartRequest =  request as MultipartRequest
-        MultipartFile file = multipartRequest.getFile('photo')
+        MultipartFile file
+        try { file = multipartRequest?.getFile('photo') }
+        catch (MissingMethodException mme) { logger.error('Request is not MultipartRequest. Fine. No file') }
         String reduced
         // if file is present and they cleared the current image
         // only encode if file is present. will set to empty string
@@ -188,6 +190,7 @@ class UserController extends BaseController {
             user.password = params.password
             user.passwordConfirm = params.passwordConfirm
         }
+        user.language = params?.language ?: 'en'
         // update photo if photo was cleared. photo may not exist anymore
         // and so user photo may be set to empty string
         user.clearErrors()
@@ -225,7 +228,8 @@ class UserController extends BaseController {
                 password: params.password,
                 passwordConfirm: params.passwordConfirm,
                 mobileNumber: params.cellphone,
-                photo: reduced ?: ''
+                photo: reduced ?: '',
+                language: params.chosenLanguage ?: 'en'
         ])
         user
     }

@@ -38,9 +38,8 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
             new SimpleGrantedAuthority(it.authority)
         }
 
-        return new CustomUserDetails(user.username, user.password, user.enabled,
-                !user.accountExpired, !user.passwordExpired,
-                !user.accountLocked, authorities ?: NO_ROLES, user.id,
-                (user.firstName + ' ' + user.lastName), user.mobileNumber, user.photo)
+        return new CustomUserDetails(user.username, user.password, user.enabled, !user.accountExpired,
+                !user.passwordExpired, !user.accountLocked, authorities ?: NO_ROLES, user.id,
+                (user.firstName + ' ' + user.lastName), user.mobileNumber, user.photo, user.language)
     }
 }

@@ -72,6 +72,7 @@ class UserPasswordEncoderListener {
     private static final String ALGO = "AES"
 
     private static final byte[] keyValue = new byte[16];
+
     /**
      * Encrypt a string using AES encryption algorithm.
      *

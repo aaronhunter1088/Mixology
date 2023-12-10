@@ -1,10 +1,10 @@
-<%@ page import="enums.*; mixology.*;" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; enums.*; mixology.*;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Create User</title>
+        <title><g:message code="user.create.user" default="Create a user"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -42,7 +42,9 @@
                 width:500px;
             }
             fieldset::before {
-                content: "Use this form to create a new user";
+                content: "${g.message(code:'user.create.fieldset.message',default:'Use this form to create a new user')}";
+                width:250px;
+                text-align:right;
                 position: absolute;
                 margin-top: -45px;
                 right: 10px;
@@ -92,6 +94,7 @@
             }
         </style>
     </head>
+    <g:set var="user" value="${g.message(code:'user.label', args:" ", default:'User')}" />
     <g:set var="darkMode" value="${currentUser.darkMode}"/>
     <g:if test="${darkMode}">
         <style>
@@ -128,59 +131,59 @@
                     <div style="display:flex;justify-content:center;">
                         <fieldset style="border:thick solid #007bff;">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
-                                &emsp14;<g:message code="default.create.label" args="['User']" />&emsp14;
+                                &emsp14;<g:message code="default.create.label" args="[user]" />&emsp14;
                                 <hr style="height:1px;background-color:#007bff">
                             </legend>
                             <g:form url="[controller:'user', action:'save']" id="newUser" name="newUser" enctype="multipart/form-data" onsubmit="return isValid();">
                                 <g:hiddenField id="passwordsMatch" name="passwordsMatch" value="false" />
                                 <div id="create-user" style="text-align:left;float:left;">
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='firstName'><span class='required-indicator'>*</span> First Name</label>
+                                        <label for='firstName'><span class='required-indicator'>*</span>&nbsp;<g:message code="user.create.first.name" default="First Name"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="firstName" value="" required="" id="firstName" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='lastName'><span class='required-indicator'>*</span> Last Name</label>
+                                        <label for='lastName'><span class='required-indicator'>*</span> <g:message code="user.create.last.name" default="Last Name"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="lastName" value="" required="" id="lastName" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='email'><span class='required-indicator'>*</span> Email</label>
+                                        <label for='email'><span class='required-indicator'>*</span> <g:message code="user.create.email" default="Email"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="email" value="" required="" id="email" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='cellphone'><span class='required-indicator'>*</span> Cellphone</label>
+                                        <label for='cellphone'><span class='required-indicator'>*</span> <g:message code="user.create.cellphone" default="Cellphone"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="cellphone" value="" required="" id="cellphone" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='password'><span class='required-indicator'>*</span> Password</label>
+                                        <label for='password'><span class='required-indicator'>*</span> <g:message code="springSecurity.login.password.label" default="Password"/></label>
                                         <div class="input-wrapper">
                                             <input type="password" name="password" value="" required="" id="password" />
                                             <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='passwordConfirm'><span class='required-indicator'>*</span> Confirm Password</label>
+                                        <label for='passwordConfirm'><span class='required-indicator'>*</span> <g:message code="springSecurity.login.confirm.password.label" default="Confirm Password"/></label>
                                         <div class="input-wrapper">
                                             <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
-                                            <span id="togglepasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                            <span id="togglePasswordConfirm" onclick="showPassword('PasswordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
+                                        <label for='photo'><span>&nbsp;&nbsp;</span> <g:message code="user.create.photo" default="Photo"/></label>
                                         <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
-                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
+                                            <span id="uploadSpan" style="margin-top:5px;"><g:message code="default.button.update.label" default="Upload"/></span>
                                             <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
                                         </div>
                                     </div>
-                                    <div class="formfield" style="margin-top:25px;padding-left:50%;color:${darkMode?'white':'black'};">
-                                        <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser">Create</button>
+                                    <div class="formfield" style="text-align:center;margin-top:25px;padding-left:50%;color:${darkMode?'white':'black'};">
+                                        <button id="createUser" class="btn btn-outline-primary" type="submit" form="newUser"><g:message code="default.button.create.label" default="Create"/></button>
                                     </div>
                                 </div>
                             </g:form>
@@ -192,6 +195,18 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("create-user page loaded");
+                $('#togglepassword').hide();
+                $('#togglePasswordConfirm').hide();
+
+                $('#password').on('keyup',function(){
+                    if ($('#password').val() === '') $('#togglepassword').hide();
+                    else $('#togglepassword').show();
+                });
+                $('#passwordConfirm').on('keyup',function(){
+                    if ($('#passwordConfirm').val() === '') $('#togglePasswordConfirm').hide();
+                    else $('#togglePasswordConfirm').show();
+                });
+
             });
             function upload() {
                 document.getElementById('photo').click();

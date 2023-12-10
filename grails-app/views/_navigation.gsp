@@ -35,9 +35,9 @@
                         </sec:ifAnyGranted>
                         <g:link class="fa fa-circle-info" controller="user" action="show" params="[id:user.id]">&nbsp;<g:message code="navigation.user.details" default="User Details"/></g:link>
                         <g:if test="${user.darkMode}">
-                            <g:link class="fa-solid fa-lightbulb" controller="user" action="darkMode" params="[uri:request.requestURI]">&nbsp;<g:message code="navigation.enable.light.mode" default="Enable Light Mode"/></g:link>
+                            <g:link class="fa-solid fa-lightbulb" controller="user" action="darkMode" params="[uri:request.requestURI]">&nbsp;<g:message code="navigation.enable.dark.mode" default="Enable Dark Mode"/></g:link>
                         </g:if><g:else>
-                            <g:link class="fa-regular fa-lightbulb" controller="user" action="darkMode" params="[uri:request.requestURI]">&nbsp;<g:message code="navigation.enable.dark.mode" default="Enable Dark Mode"/></g:link>
+                            <g:link class="fa-regular fa-lightbulb" controller="user" action="darkMode" params="[uri:request.requestURI]">&nbsp;<g:message code="navigation.enable.light.mode" default="Enable Light Mode"/></g:link>
                         </g:else>
                         <g:link class="fa fa-light fa-arrow-right-from-bracket" controller="logout" action="index">&nbsp;<g:message code="springSecurity.logout" default="Logout"/></g:link>
                     </ul>

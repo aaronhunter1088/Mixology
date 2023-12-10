@@ -21,6 +21,7 @@ class User implements Serializable {
     String mobileNumber
     String photo
     boolean darkMode
+    String language
 
     def springSecurityService
 
@@ -43,6 +44,7 @@ class User implements Serializable {
         accountLocked(default:0)
         passwordExpired(default:0, nullable:true)
         darkMode(default:0)
+        language(default:'en',nullable:false,blank:true)
     }
 
     static mapping = {

@@ -1,13 +1,14 @@
 package mixology
 
 import groovy.transform.CompileStatic
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UserDetails
 
-@CompileStatic
+//@CompileStatic
 class AuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override

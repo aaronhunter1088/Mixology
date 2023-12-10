@@ -4,12 +4,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>Mixology</title>
+        <title><g:message code="default.mixology.title" default="Mixology"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
         <g:include view="includeAll.gsp"/>
         <style>
+            html { visibility:hidden; }
             .arrow-right:after {
                 content: "";
                 display: inline-block !important;
@@ -57,7 +58,7 @@
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: gray;
+                background-color: rgb(128, 128, 128);
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
             }
         </style>
@@ -67,6 +68,7 @@
         def userService = grailsApplication.mainContext.getBean('userService')
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
     %>
+    <g:set var="language" value="${user?.language ?: null}"/>
     <g:set var="darkMode" value="${user?.darkMode ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="">
@@ -264,9 +266,6 @@
             </div>
         </div>
         <script type="text/javascript">
-            $(document).ready(function() {
-                console.log("index loaded");
-            });
             function makeSuggestedGlassesBigger(darkMode) {
                 let newWindow = window.open("", "glasses", "width=1000,height=800");
                 newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
@@ -284,3 +283,17 @@
         </script>
     </body>
 </html>
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.log("index loaded");
+        //console.log("language: '$ {language}'");
+        //console.log("href: " + location.href.split('lang=').length);
+        if ("${language}" !== '' && location.href.split('lang=').length === 1) {
+            console.log("resetting language to ${language}");
+            window.location.href = location.href + '?lang=' + "${language ?: 'en'}";
+        } else {
+            console.log("not setting language");
+        }
+        document.getElementsByTagName("html")[0].style.visibility = "visible";
+    });
+</script>

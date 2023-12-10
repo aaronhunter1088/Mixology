@@ -4,7 +4,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Show User</title>
+        <title><g:message code="user.show.user" default="Show User"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -51,6 +51,10 @@
             }
             fieldset .no-before::before {
                 content: "";
+            }
+            .input-wrapper > input,select {
+                background-color:white;
+                color:black;
             }
             /* th {text-align: center;} */
             /* Fix table head */
@@ -107,7 +111,8 @@
     <g:set var="darkMode" value="${currentUser.darkMode}"/>
     <g:if test="${darkMode}">
         <style>
-            .input-wrapper > input {
+            .input-wrapper > input,
+            .input-wrapper > select,option {
                 background-color:black;
                 color:white;
             }
@@ -158,42 +163,47 @@
                                     <div style="display:inline-flex;justify-content:center;">
                                         <div id="user" style="width:auto;color:${darkMode?'white':'black'};">
                                             <div class="formfield" id="firstName">
-                                                <label for='firstName'>First Name</label>
+                                                <label for='firstName'><g:message code="user.show.first.name" default="First Name"/></label>
                                                 <div class="input-wrapper">
                                                     <input type="text" disabled name="firstName" value="${user.firstName}"/>
                                                 </div>
                                             </div>
                                             <div class="formfield" id="lastName">
-                                                <label for='lastName'>LastName</label>
+                                                <label for='lastName'><g:message code="user.show.last.name" default="LastName"/></label>
                                                 <div class="input-wrapper">
                                                     <input type="text" disabled name="lastName" value="${user.lastName}"/>
                                                 </div>
                                             </div>
                                             <div class="formfield" id="email">
-                                                <label for='email'>Email</label>
+                                                <label for='email'><g:message code="user.show.email" default="Email"/></label>
                                                 <div class="input-wrapper">
                                                     <input type="text" disabled name="email" value="${user.email}"/>
                                                 </div>
                                             </div>
                                             <div class="formfield" id="cellphone">
-                                                <label for='cellphone'>Cellphone</label>
+                                                <label for='cellphone'><g:message code="user.show.cellphone" default="Cellphone"/></label>
                                                 <div class="input-wrapper">
                                                     <input type="text" disabled name="cellphone" value="${user.mobileNumber}"/>
                                                 </div>
                                             </div>
                                             <div class="formfield">
-                                                <label for='password'>Password</label>
+                                                <label for='password'><g:message code="springSecurity.login.password.label" default="Password"/></label>
                                                 <div class="input-wrapper">
-                                                    <div class="input-wrapper">
-                                                        <input type="password" disabled name="password"
-                                                            <g:if test="${showPassword}">
-                                                                value="${UserPasswordEncoderListener.decodePasswordConfirm(user.passwordConfirm)}"
-                                                            </g:if><g:else>
-                                                                value="${user.passwordConfirm}"
-                                                            </g:else>
-                                                               id="password" />
-                                                        <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
-                                                    </div>
+                                                    <input type="password" disabled name="password"
+                                                        <g:if test="${showPassword}">
+                                                            value="${UserPasswordEncoderListener.decodePasswordConfirm(user.passwordConfirm)}"
+                                                        </g:if><g:else>
+                                                        value="${user.passwordConfirm}"
+                                                    </g:else>
+                                                           id="password" />
+                                                    <span id="togglepassword" onclick="showPassword('password');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                                </div>
+                                            </div>
+                                            <div class="formfield">
+                                                <label for="languages"><g:message code="user.show.language" default="Language"/></label>
+                                                <div class="input-wrapper" style="width:174px;">
+                                                    <g:select id="languages" name="languages" from="${['en','fr']}" value="${user?.language}"
+                                                              noSelection="['':'-Choose a language-']"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -209,7 +219,7 @@
                                     <div style="display:inline-flex;justify-content:center;">
                                         <div id="userDrinks" style="float:left;padding:10px 10px 0 10px;width:300px;color:${darkMode?'white':'black'};">
                                             <g:if test="${user.drinks.size() > 0}">
-                                                <label>Users Drinks</label><br>
+                                                <label><g:message code="user.show.drinks" default="Users Drinks"/></label><br>
                                                 <div style="height:100px;overflow-y:auto;">
                                                     <g:each in="${user.drinks.sort{ it.id } }" var="drink" status="i">
                                                         <div style="display:block;">
@@ -228,7 +238,7 @@
                                         </div>
                                         <div id="userIngredients" style="float:right;padding:10px;text-align:right;color:${darkMode?'white':'black'};">
                                             <g:if test="${user.ingredients.size() > 0}">
-                                                <label>Users Ingredients</label><br>
+                                                <label><g:message code="user.show.ingredients" default="Users Ingredients"/></label><br>
                                                 <div style="height:100px;overflow-y:auto;text-align:right;">
                                                     <g:each in="${user.ingredients.sort{ it.id } }" var="ingredient" status="i">
                                                         <div style="display:block;padding-right:5px;">
@@ -260,6 +270,53 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("show-user page loaded");
+
+                $('#languages').on('change', function(){
+                    let chosenLanguage = $(this).val();
+                    console.log("chosenLanguage: "+chosenLanguage);
+                    let hrefParts = location.href.split('lang=')
+                    console.log("href[0]: "+hrefParts[0]);
+                    console.log("href[1]: "+hrefParts[1]);
+                    let newUrl = "";
+                    if (hrefParts[1] !== undefined) newUrl = hrefParts[0] + 'lang=' + chosenLanguage
+                    else newUrl = hrefParts[0] + '?lang=' + chosenLanguage;
+                    $.ajax({
+                        headers: {
+                            accept: "application/json",
+                            contentType: "application/json"
+                        },
+                        async: false,
+                        type: "PUT",
+                        url: "${createLink(controller:'user', action:'update')}",
+                        data: {
+                            id:"${user.id}",
+                            language:chosenLanguage
+                        },
+                        statusCode: {
+                            200: function(data) {
+                                console.log(JSON.stringify(data));
+                                //$('#languages').val(chosenLanguage);
+                                window.location.href = newUrl;
+                            },
+                            400: function(data) {
+                                console.log(JSON.stringify(data));
+                                window.location.href = location.href
+                            },
+                            403: function(data) {
+                                console.log(JSON.stringify(data));
+                                window.location.href = location.href
+                            },
+                            404: function(data) {
+                                console.log(JSON.stringify(data));
+                                window.location.href = location.href
+                            },
+                            500: function(data) {
+                                console.log(JSON.stringify(data));
+                                window.location.href = location.href
+                            }
+                        }
+                    });
+                });
             });
             function showPassword(inputField) {
                 let passwordField = document.getElementById(inputField);

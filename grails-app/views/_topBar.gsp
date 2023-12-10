@@ -29,10 +29,10 @@
     def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
     def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
     int hour = LocalTime.now().getHour()
-    String greeting = 'Good ';
-    if (0 <= hour && hour < 12 ) greeting += 'morning, ';
-    else if (12 <= hour && hour < 17) greeting += 'afternoon, ';
-    else greeting += 'evening, ';
+    String greeting = g.message(code:'default.greeting.good', default:'Good ')
+    if (0 <= hour && hour < 12 ) greeting += g.message(code:'default.greeting.morning', default:'morning, ')
+    else if (12 <= hour && hour < 17) greeting += g.message(code:'default.greeting.afternoon', default:'afternoon, ')
+    else greeting += g.message(code:'default.greeting.evening', default:'evening, ')
 %>
 <g:set var="user" value="${user}"/>
 <g:set var="greet" value="${greeting}"/>

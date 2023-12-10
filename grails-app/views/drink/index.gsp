@@ -1,4 +1,4 @@
-<%@ page import="enums.*; mixology.*; static mixology.DrinkController.isOn;" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; enums.*; mixology.*; static mixology.DrinkController.isOn;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -48,6 +48,7 @@
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def darkMode = user.darkMode
     %>
+    <g:set var="language" value="${user.language}"/>
     <g:set var="darkMode" value="${user.darkMode}"/>
     <g:set var="drink" value="${message(code: 'drink.label', default: 'Drink', args:"")}" />
     <g:set var="drinks" value="${message(code: 'drink.label', default: 'Drink', args:"s")}" />
@@ -214,3 +215,8 @@
         </script>
     </body>
 </html>
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.log("drink index loaded");
+    });
+</script>
