@@ -28,6 +28,7 @@ repositories {
     maven { url "https://repo.grails.org/grails/core" }
     maven { url "https://repo.grails.org/ui/native/plugins" }
     maven { url "https://maven.restlet.talend.com" }
+    maven { url "https://maven.restlet.com" }
 }
 
 
@@ -44,9 +45,10 @@ configurations {
 }
 
 dependencies {
+    compileOnly "org.grails.plugins:jaxrs-restlet:3.1.0"
     // javax
-    implementation 'org.jboss.resteasy:jaxrs-api:3.0.12.Final'
-    implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.15.2'
+    //implementation 'org.jboss.resteasy:jaxrs-api:3.0.12.Final'
+    //implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.15.2'
     // mail
     implementation 'com.sun.activation:javax.activation:1.2.0'
     implementation 'com.sun.mail:javax.mail:1.6.2'

@@ -24,7 +24,7 @@ class AuthenticationProvider extends DaoAuthenticationProvider {
             logger.debug("Authentication failed: authenticationToken principal is not a Principal");
             throw new BadCredentialsException(messages.getMessage(
                     "AbstractUserDetailsAuthenticationProvider.badCredentials",
-                    "Bad credentials"));
+                    "Bad credentials"))
         }
     }
 

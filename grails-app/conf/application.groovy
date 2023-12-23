@@ -1,10 +1,20 @@
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.useBasicAuth = true
+grails.plugin.springsecurity.basic.realmName = 'Mixology'
+grails.plugin.springsecurity.basic.credentialsCharset = 'UTF-8'
 grails.mime.use.accept.header = true
 grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'mixology.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'mixology.UserRole'
 grails.plugin.springsecurity.authority.className = 'mixology.Role'
+
+grails.plugin.springsecurity.rest.login.useJsonCredentials = true
+grails.plugin.springsecurity.rest.login.usernamePropertyName = 'username'
+grails.plugin.springsecurity.rest.login.passwordPropertyName = 'password'
+grails.plugin.springsecurity.rest.token.validation.useBearerToken = false
+grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
+grails.plugin.springsecurity.rest.token.storage.useGorm = true
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'mixology.AuthenticationToken'
 
 grails.plugin.springsecurity.providerNames = [
 		'daoAuthenticationProvider',
@@ -63,13 +73,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/darkMode',       access: ['permitAll']],
 		/* More ... */
 
+	[pattern: '/v1/**',		  access: ['ROLE_ADMIN','ROLE_USER']],
 
 ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 	/* Resources */
 	/* Drink Resource */
-	[pattern: '/v1/**',		  		  access: ['permitAll']]
+	[pattern: '/v1/**',		  access: ['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_ANONYMOUSLY']],
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
@@ -78,5 +89,17 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 	[pattern: '/**/css/**',      filters: 'none'],
 	[pattern: '/**/images/**',   filters: 'none'],
 	[pattern: '/**/favicon.ico', filters: 'none'],
-	[pattern: '/**',             filters: 'JOINED_FILTERS']
+
+	//[pattern: '/**',             filters: 'JOINED_FILTERS'],
+	[pattern:'/auth/**',
+	 filters:'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter'
+	],
+	//Stateless chain
+	[pattern: '/v1/**',
+	 filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter'
+	],
+	//Traditional, stateful chain
+	[pattern: '/**',
+	 filters: 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'
+	]
 ]

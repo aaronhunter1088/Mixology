@@ -61,6 +61,13 @@ server:
         timeout: 3600  #seconds
 ---
 grails:
+    cors:
+        enabled: true
+        allowedOrigins: ['*']
+        mappings:
+            '[/v1/**]':
+                allowedOrigins:
+                    - http://localhost:5009
     mime:
         #disable:
             #accept:
