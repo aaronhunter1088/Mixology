@@ -32,6 +32,11 @@ class IngredientService {
         returnList
     }
 
+    List<Ingredient> findAll(Map args = null) {
+        def returnList = args ? Ingredient.findAll(args) : Ingredient.findAll()
+        returnList
+    }
+
     /**
      * Returns all total count of all ingredients
      * @return

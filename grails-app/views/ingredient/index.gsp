@@ -99,7 +99,7 @@
                     <div id="list" style="text-align:center;">
                         <div id="filter" style="text-align:center;padding:10px;display:flex;justify-content:center;">
                             <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.list.label" args="[ingredients]" /></h1>
-                            <g:form action="${params.action}" controller="drink" name="filterIngredients" method="get">
+                            <g:form action="${params.action}" controller="ingredient" name="filterIngredients" method="get">
                                 <div id="filterIngredientsFormDiv" style="display:flex;">
                                     <label for="id"></label>
                                     <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
@@ -156,7 +156,7 @@
                                         <g:set var="idx" value="${index}"/>
                                     </g:else>
                                         <tr style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <td><g:link controller="drink" action="show" params='[id:"${((Ingredient)ingredient).id}"]'>${idx}</g:link></td>
+                                            <td><g:link controller="ingredient" action="show" params='[id:"${((Ingredient)ingredient).id}"]'>${idx}</g:link></td>
                                             <td>${((Ingredient)ingredient).name}</td>
                                             <td>${((Ingredient)ingredient).unit}</td>
                                             <td>${((Ingredient)ingredient).amount}</td>

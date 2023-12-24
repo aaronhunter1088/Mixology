@@ -2,13 +2,11 @@ package api.v1
 
 import grails.converters.JSON
 import mixology.Drink
-import mixology.DrinkController
 import mixology.DrinkService
 import mixology.User
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.ws.rs.GET
-import javax.ws.rs.NotFoundException
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
@@ -45,7 +43,6 @@ class DrinkResource extends BaseResource {
             logger.error("There was an error finding the drink. Reason: ${e.getMessage()}")
             Response.serverError().build()
         }
-
     }
 
     @Produces('application/json')
