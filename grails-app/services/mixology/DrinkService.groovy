@@ -33,6 +33,11 @@ class DrinkService {
         drink
     }
 
+    List<Drink> findAll(Map args = null) {
+        def returnList = args ? Drink.findAll(args) : Drink.findAll()
+        returnList
+    }
+
     /**
      * Returns all the Drinks as a List
      * @param args

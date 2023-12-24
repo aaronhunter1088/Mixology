@@ -31,7 +31,6 @@ repositories {
     maven { url "https://maven.restlet.com" }
 }
 
-
 configurations {
     developmentOnly
     runtimeClasspath {
@@ -45,7 +44,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly "org.grails.plugins:jaxrs-restlet:3.1.0"
+    // https://mvnrepository.com/artifact/org.grails.plugins/jaxrs
+    implementation 'org.grails.plugins:jaxrs:0.6'
+    implementation 'org.grails.plugins:jaxrs-restlet:3.1.0'
     // javax
     //implementation 'org.jboss.resteasy:jaxrs-api:3.0.12.Final'
     //implementation 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.15.2'
@@ -125,8 +126,6 @@ dependencies {
     testRuntimeOnly "org.seleniumhq.selenium:selenium-firefox-driver:4.0.0"
 }
 
-
-
 bootJar {
     manifest {
         attributes 'Main-Class': 'init.mixology.Application'
@@ -182,4 +181,3 @@ assets {
     minifyJs = true
     minifyCss = true
 }
-

@@ -72,15 +72,13 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/delete',         access: ['ROLE_ADMIN']],
 	[pattern: '/user/darkMode',       access: ['permitAll']],
 		/* More ... */
-
-	[pattern: '/v1/**',		  access: ['ROLE_ADMIN','ROLE_USER']],
+	[pattern: '/v1/**',		  access: ['permitAll']],
 
 ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 	/* Resources */
-	/* Drink Resource */
-	[pattern: '/v1/**',		  access: ['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/v1/**',		  access: ['permitAll']],
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [

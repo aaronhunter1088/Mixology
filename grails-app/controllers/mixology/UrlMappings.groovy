@@ -48,6 +48,7 @@ class UrlMappings {
         }
 
         "/"(view:"/index")
+        "/v1/**" {controller = 'jaxRs'}
         "500"(view:'/error')
         "404"(view:'/notFound')
     }

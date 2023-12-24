@@ -42,6 +42,7 @@ spring:
                 - '**/*.gson'
                 - 'logback.groovy'
                 - '*.properties'
+                - '*Resource.groovy'
 environments:
     development:
         management:
