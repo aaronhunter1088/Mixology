@@ -52,7 +52,7 @@ class User implements Serializable {
         password column: '`password`'
         autowire true
     }
-    static transients = ['springSecurityService']
+    static transients = ['springSecurityService', 'authorities']
 
     @Override
     String toString() { "$firstName $lastName" }
@@ -65,5 +65,12 @@ class User implements Serializable {
         UserRole.findAllByUser(this)*.role
     }
 
+    boolean isAdmin() {
+        boolean result = false
+        this.authorities?.each {role ->
+            if (role.authority == enums.Role.ADMIN.name) result = true; return
+        }
+        result
+    }
 }
 

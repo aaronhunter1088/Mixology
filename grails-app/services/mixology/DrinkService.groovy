@@ -114,7 +114,7 @@ class DrinkService {
      * @param id
      */
     void delete(def id, def user, def flush) {
-        Drink drink = get(id)
+        Drink drink = get(id as Long)
         if (!drink) {
             logger.error("Drink not found with id:: $id")
         }
