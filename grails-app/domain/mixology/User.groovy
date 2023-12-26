@@ -21,7 +21,7 @@ class User implements Serializable {
     String mobileNumber
     String photo
     boolean darkMode
-    String language
+    String language = 'en'
 
     def springSecurityService
 

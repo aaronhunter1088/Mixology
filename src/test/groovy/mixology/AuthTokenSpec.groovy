@@ -11,8 +11,4 @@ class AuthTokenSpec extends Specification implements DomainUnitTest<AuthToken> {
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }
