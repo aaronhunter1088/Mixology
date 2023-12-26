@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager
 class DrinkResource extends BaseResource {
 
     private static Logger logger = LogManager.getLogger(DrinkResource.class)
+
     @Autowired
     DrinkService drinkService
 
@@ -44,8 +45,8 @@ class DrinkResource extends BaseResource {
             if (!drink) badRequest("Drink not found using id: $drinkId")
             else Response.ok(drink).build()
         } catch (Exception e) {
-            logger.error("There was an error finding the drink. Reason: ${e.getMessage()}")
-            Response.serverError().build()
+            logger.error("There was an error finding the drink. Reason: ${e.message}")
+            badRequest("There was an error finding the drink. Reason: ${e.message}")
         }
     }
 
@@ -65,8 +66,8 @@ class DrinkResource extends BaseResource {
                 Response.ok(message).build()
             } else badRequest("Invalid drink")
         } catch (Exception e) {
-            logger.error("There was an exception while creating a new drink")
-            Response.serverError().build()
+            logger.error("There was an exception while creating a new drink: ${e.message}")
+            badRequest("There was an exception while creating a new drink: ${e.message}")
         }
     }
 
@@ -76,7 +77,7 @@ class DrinkResource extends BaseResource {
     public Response updateADrink(@PathParam('drinkId') Long drinkId, Map params) {
         User user = getAuthenticatedUser()
         Drink updateDrink
-        def message = """"""
+        def message = ''
         try {
             updateDrink = Drink.findById(drinkId)
             params.keySet().each { String prop ->
@@ -85,15 +86,20 @@ class DrinkResource extends BaseResource {
                 if ( !ignoreSpecificProperties(prop) || user.isAdmin() ) {
                     def value = params."$prop"
                     println "params.$prop = $value"
-                    updateDrink."$prop" = value
+                    try {
+                        updateDrink."$prop" = value
+                    } catch (MissingPropertyException mpe) {
+                        logger.info("${mpe.class.simpleName} for Drink, property:$prop")
+                        message += "$prop is not a property of the Drink object.\n"
+                    }
                 } else {
                     message += "Cannot update property: $prop\n"
                 }
             }
             if (!updateDrink) {
-                Response.ok("No drink was found using the id: $drinkId").build()
+                badRequest("No drink was found using the id: $drinkId")
             } else if ( !user.drinks*.id.contains(drinkId) ) {
-                Response.ok("User does not have a drink using the id: $drinkId").build()
+                badRequest("User does not have a drink using the id: $drinkId")
             }
             if (updateDrink.validate() && message == '') {
                 drinkService.save(updateDrink, user, false)
@@ -101,7 +107,8 @@ class DrinkResource extends BaseResource {
                     User ${user.firstName} ${user.lastName} updated their drink.
                     Drink ${updateDrink as JSON}
                 """
-                Response.ok(message).build()
+                logger.info(message)
+                Response.ok(updateDrink).build()
             }
             else if (message != '') {
                 message += "Please fix all errors to update your drink"
@@ -110,17 +117,8 @@ class DrinkResource extends BaseResource {
             else throw new Exception("Invalid drink")
         } catch (Exception e) {
             logger.error("There was an exception while updating a drink: ${e.message}")
-            Response.serverError().build()
+            badRequest("There was an exception while updating a drink: ${e.message}")
         }
-    }
-
-    public static boolean ignoreSpecificProperties(String property) {
-        List<String> ignoreTheseProperties = [
-                'custom', 'canBeDeleted', 'id', 'userId'
-        ]
-        boolean result = ignoreTheseProperties.contains(property)
-        logger.info("ignore specific property:: $result")
-        return result
     }
 
     @Produces('application/json')
@@ -150,7 +148,7 @@ class DrinkResource extends BaseResource {
             }
         } catch (Exception e2) {
             logger.error("There was an exception while trying to delete a drink:: ${e2.message}")
-            Response.serverError().build()
+            badRequest("There was an exception while trying to delete a drink:: ${e2.message}")
         }
     }
 }
