@@ -33,8 +33,8 @@ class DrinkService {
         drink
     }
 
-    List<Drink> findAll(Map args = null) {
-        def returnList = args ? Drink.findAll(args) : Drink.findAll()
+    List<Drink> findAll(User user = null) {
+        def returnList = user ? Drink.findAll("from Drink where user_id=:userId",[userId:user.id]) : Drink.findAll()
         returnList
     }
 

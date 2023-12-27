@@ -7,7 +7,8 @@ import java.security.SecureRandom
 class AuthToken {
 
     enum AuthTokenType {
-        API;
+        API,
+        BASIC;
         AuthTokenType(){}
     }
 

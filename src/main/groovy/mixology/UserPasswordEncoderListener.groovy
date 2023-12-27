@@ -8,22 +8,21 @@ import org.grails.datastore.mapping.engine.event.PreInsertEvent
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent
 import org.springframework.beans.factory.annotation.Autowired
 import grails.events.annotation.gorm.Listener
-import groovy.transform.CompileStatic
+import org.springframework.security.crypto.password.PasswordEncoder
 
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
-import java.security.Key
-import javax.crypto.KeyGenerator
-import java.security.SecureRandom;
 
-@CompileStatic
+//@CompileStatic
 class UserPasswordEncoderListener {
 
     static final Logger logger = LogManager.getLogger(UserPasswordEncoderListener.class)
 
     @Autowired
     SpringSecurityService springSecurityService
+    @Autowired
+    PasswordEncoder passwordEncoder
 
     @Listener(User)
     void onPreInsertEvent(PreInsertEvent event) {
@@ -137,7 +136,11 @@ class UserPasswordEncoderListener {
     }
 
     private String encodePassword(String password) {
-        springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
+        if (passwordEncoder) passwordEncoder.encode(password)
+        else if (springSecurityService?.passwordEncoder) {
+            springSecurityService.encodePassword(password)
+        }
+        else password
     }
 }
 

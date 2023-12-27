@@ -1,6 +1,9 @@
 // Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.active = true
+grails.plugin.springsecurity.formTokensEnabled = true
+grails.plugin.springsecurity.rejectIfNoRule = false
 grails.plugin.springsecurity.useBasicAuth = true
-grails.plugin.springsecurity.basic.realmName = 'Mixology'
+grails.plugin.springsecurity.basic.realmName = 'Grails Realm'
 grails.plugin.springsecurity.basic.credentialsCharset = 'UTF-8'
 grails.mime.use.accept.header = true
 grails.plugin.springsecurity.logout.postOnly = false
@@ -9,24 +12,47 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'mixology.UserR
 grails.plugin.springsecurity.authority.className = 'mixology.Role'
 
 grails.plugin.springsecurity.rest.login.useJsonCredentials = true
+grails.plugin.springsecurity.rest.login.endpointUrl =   '/login/auth'
+grails.plugin.springsecurity.rest.logout.endpointUrl =  '/logout'
 grails.plugin.springsecurity.rest.login.usernamePropertyName = 'username'
 grails.plugin.springsecurity.rest.login.passwordPropertyName = 'password'
 grails.plugin.springsecurity.rest.token.validation.useBearerToken = false
 grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
 grails.plugin.springsecurity.rest.token.storage.useGorm = true
-grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'mixology.AuthenticationToken'
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenDomainClassName = 'mixology.AuthToken'
+grails.plugin.springsecurity.rest.token.storage.gorm.tokenValuePropertyName = 'tokenValue'
+grails.plugin.springsecurity.rest.token.storage.gorm.usernamePropertyName = 'username'
 
 grails.plugin.springsecurity.providerNames = [
-		'daoAuthenticationProvider',
-		'anonymousAuthenticationProvider',
-		'rememberMeAuthenticationProvider']
+		'daoAuthenticationProvider'
+		,'anonymousAuthenticationProvider'
+		//,'rememberMeAuthenticationProvider'
+]
 
 grails.plugins.springsecurity.filterChain.filterNames = [
-		'filterInvocationInterceptor'
-		//,'securityContextPersistenceFilter', 'logoutFilter',
-		//   'authenticationProcessingFilter', 'myCustomProcessingFilter',
-		//   'rememberMeAuthenticationFilter', 'anonymousAuthenticationFilter',
-		//   'exceptionTranslationFilter',
+		'filterInvocationInterceptor','authenticationFilter'
+		,'securityContextPersistenceFilter', 'logoutFilter'
+		//,'anonymousAuthenticationFilter' //,'authenticationProcessingFilter'
+		//   ,'rememberMeAuthenticationFilter', 'myCustomProcessingFilter'
+		//   ,'exceptionTranslationFilter',
+]
+
+grails.plugin.springsecurity.filterChain.chainMap = [
+		[pattern: '/assets/**',      filters: 'none'],
+		[pattern: '/**/js/**',       filters: 'none'],
+		[pattern: '/**/css/**',      filters: 'none'],
+		[pattern: '/**/images/**',   filters: 'none'],
+		[pattern: '/**/favicon.ico', filters: 'none'],
+		[pattern:'/auth/**',
+		 filters:'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationFilter,-securityContextPersistenceFilter'
+		],
+		//Stateless chain
+		[pattern: '/v1/**', filters: 'none'],
+		 //filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-authenticationFilter,''-exceptionTranslationFilter,-securityContextPersistenceFilter'],
+		//Traditional, stateful chain //[pattern: '/**',             filters: 'JOINED_FILTERS'],
+		[pattern: '/**',
+		 filters: 'JOINED_FILTERS'//,-restTokenValidationFilter,-restExceptionTranslationFilter'
+		]
 ]
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
@@ -71,33 +97,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/user/delete',         access: ['ROLE_ADMIN']],
 	[pattern: '/user/darkMode',       access: ['permitAll']],
-		/* More ... */
-	[pattern: '/v1/**',		  access: ['permitAll']],
-
+	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
+	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']]
 ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 	/* Resources */
-	[pattern: '/v1/**',		  access: ['permitAll']],
-]
-
-grails.plugin.springsecurity.filterChain.chainMap = [
-	[pattern: '/assets/**',      filters: 'none'],
-	[pattern: '/**/js/**',       filters: 'none'],
-	[pattern: '/**/css/**',      filters: 'none'],
-	[pattern: '/**/images/**',   filters: 'none'],
-	[pattern: '/**/favicon.ico', filters: 'none'],
-
-	//[pattern: '/**',             filters: 'JOINED_FILTERS'],
-	[pattern:'/auth/**',
-	 filters:'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter'
-	],
-	//Stateless chain
-	[pattern: '/v1/**',
-	 filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter'
-	],
-	//Traditional, stateful chain
-	[pattern: '/**',
-	 filters: 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'
-	]
+	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
+	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
 ]

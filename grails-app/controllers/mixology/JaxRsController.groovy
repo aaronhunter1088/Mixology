@@ -1,12 +1,10 @@
 package mixology
 
-import grails.plugin.springsecurity.annotation.Secured
 import org.grails.plugins.jaxrs.core.JaxrsRequestWrapper
 
 import javax.servlet.ServletResponse
 import javax.servlet.ServletResponseWrapper
 
-@Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
 class JaxRsController {
 
     static defaultAction = "handle"

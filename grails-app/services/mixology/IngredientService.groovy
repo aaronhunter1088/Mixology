@@ -32,8 +32,8 @@ class IngredientService {
         returnList
     }
 
-    List<Ingredient> findAll(Map args = null) {
-        def returnList = args ? Ingredient.findAll(args) : Ingredient.findAll()
+    List<Ingredient> findAll(User user = null) {
+        def returnList = user ? Ingredient.findAll("from Ingredient where user_id=:userId", [userId:user.id]) : Ingredient.findAll()
         returnList
     }
 

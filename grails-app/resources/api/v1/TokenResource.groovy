@@ -1,6 +1,7 @@
 package api.v1
 
 import grails.plugin.springsecurity.SpringSecurityService
+import mixology.AuthTokenService
 import mixology.AuthToken
 import mixology.User
 import org.apache.logging.log4j.LogManager
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 
-import javax.transaction.Transactional
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -25,13 +25,14 @@ class TokenResource extends BaseResource {
     AuthenticationManager authManager
     @Autowired
     SpringSecurityService springSecurityService
+    @Autowired
+    AuthTokenService authTokenService
 
     @Produces('application/json')
     @GET
     public Response getAllTokens() {
         User user = getAuthenticatedUser()
-        def usersTokens = AuthToken.findAllByUsername(user.username)
-
+        def usersTokens = (user) ? AuthToken.findAllByUsername(user.username) : AuthToken.findAll()
         if (usersTokens.isEmpty()) {
             logger.info('No tokens found for user. Returning empty list')
             Response.ok([]).build()
@@ -40,9 +41,7 @@ class TokenResource extends BaseResource {
         }
     }
 
-    @Transactional
     @Produces('application/json')
-    @Path('/create')
     @POST
     public Response createAToken(Map params) {
         def username = params.username
@@ -62,10 +61,10 @@ class TokenResource extends BaseResource {
                 throw new Exception("There was an error creating the AuthToken")
             }
         } catch (AuthenticationException ae) {
-            logger.error("Auth Manager did not authenticate token")
+            logger.error("Auth Manager did not authenticate token: ${ae.message}")
             Response.serverError().build()
         } catch (Exception e) {
-            logger.error("There was an exception creating the auth token")
+            logger.error("There was an exception creating the auth token: ${e.message}")
             Response.serverError().build()
         }
 

@@ -28,8 +28,9 @@ class DrinkResource extends BaseResource {
     @Produces('application/json')
     @GET
     public Response getAllDrinks() {
+        User user = getAuthenticatedUser()
         try {
-            def list = drinkService.findAll()
+            def list = (user) ? drinkService.findAll(user) : drinkService.findAll()
             Response.ok( list ).build()
         } catch (Exception e) {
             Response.serverError().build()
@@ -40,10 +41,19 @@ class DrinkResource extends BaseResource {
     @Path('/{drinkId}')
     @GET
     public Response getADrink(@PathParam('drinkId') Long drinkId) {
+        User user = getAuthenticatedUser()
         try {
             def drink = Drink.findById(drinkId)
             if (!drink) badRequest("Drink not found using id: $drinkId")
-            else Response.ok(drink).build()
+            else {
+                if (!user) Response.ok(drink).build()
+                else {
+                    if (!user.drinks.contains(drink)) badRequest("The user you provided does not have the drink you are inquiring about.")
+                    else {
+                        Response.ok(drink).build()
+                    }
+                }
+            }
         } catch (Exception e) {
             logger.error("There was an error finding the drink. Reason: ${e.message}")
             badRequest("There was an error finding the drink. Reason: ${e.message}")
@@ -54,20 +64,23 @@ class DrinkResource extends BaseResource {
     @POST
     public Response createADrink(Map params) {
         User user = getAuthenticatedUser()
-        Drink newDrink
-        try {
-            newDrink = new Drink(params)
-            if (newDrink.validate()) {
-                drinkService.save(newDrink, user, false)
-                def message = """
+        if (!user) badRequest("A user must be provided")
+        else {
+            Drink newDrink
+            try {
+                newDrink = new Drink(params)
+                if (newDrink.validate()) {
+                    drinkService.save(newDrink, user, false)
+                    def message = """
                     User ${user.firstName} ${user.lastName} added a new drink.
                     Drink ${newDrink as JSON}
                 """
-                Response.ok(message).build()
-            } else badRequest("Invalid drink")
-        } catch (Exception e) {
-            logger.error("There was an exception while creating a new drink: ${e.message}")
-            badRequest("There was an exception while creating a new drink: ${e.message}")
+                    Response.ok(message).build()
+                } else badRequest("Invalid drink")
+            } catch (Exception e) {
+                logger.error("There was an exception while creating a new drink: ${e.message}")
+                badRequest("There was an exception while creating a new drink: ${e.message}")
+            }
         }
     }
 
@@ -76,48 +89,52 @@ class DrinkResource extends BaseResource {
     @PUT
     public Response updateADrink(@PathParam('drinkId') Long drinkId, Map params) {
         User user = getAuthenticatedUser()
-        Drink updateDrink
-        def message = ''
-        try {
-            updateDrink = Drink.findById(drinkId)
-            params.keySet().each { String prop ->
-                // only update property if not in list
-                // if user is admin user, we can update any value we wish
-                if ( !ignoreSpecificProperties(prop) || user.isAdmin() ) {
-                    def value = params."$prop"
-                    println "params.$prop = $value"
-                    try {
-                        updateDrink."$prop" = value
-                    } catch (MissingPropertyException mpe) {
-                        logger.info("${mpe.class.simpleName} for Drink, property:$prop")
-                        message += "$prop is not a property of the Drink object.\n"
+        if (!user) badRequest("A user must be provided")
+        else {
+            Drink updateDrink
+            def message = ''
+            try {
+                updateDrink = Drink.findById(drinkId)
+                params.keySet().each { String prop ->
+                    // only update property if not in list
+                    // if user is admin user, we can update any value we wish
+                    if ( !ignoreSpecificProperties(prop) || user.isAdmin() ) {
+                        def value = params."$prop"
+                        println "params.$prop = $value"
+                        try {
+                            updateDrink."$prop" = value
+                        } catch (MissingPropertyException mpe) {
+                            logger.info("${mpe.class.simpleName} for Drink, property:$prop")
+                            message += "$prop is not a property of the Drink object.\n"
+                        }
+                    } else {
+                        message += "Cannot update property: $prop\n"
                     }
-                } else {
-                    message += "Cannot update property: $prop\n"
                 }
-            }
-            if (!updateDrink) {
-                badRequest("No drink was found using the id: $drinkId")
-            } else if ( !user.drinks*.id.contains(drinkId) ) {
-                badRequest("User does not have a drink using the id: $drinkId")
-            }
-            if (updateDrink.validate() && message == '') {
-                drinkService.save(updateDrink, user, false)
-                message = """
+                if (!updateDrink) {
+                    badRequest("No drink was found using the id: $drinkId")
+                } else if ( !user.drinks*.id.contains(drinkId) ) {
+                    badRequest("User does not have a drink using the id: $drinkId")
+                }
+                if (updateDrink.validate() && message == '') {
+                    drinkService.save(updateDrink, user, false)
+                    message = """
                     User ${user.firstName} ${user.lastName} updated their drink.
                     Drink ${updateDrink as JSON}
                 """
-                logger.info(message)
-                Response.ok(updateDrink).build()
+                    logger.info(message)
+                    Response.ok(updateDrink).build()
+                }
+                else if (message != '') {
+                    message += "Please fix all errors to update your drink"
+                    badRequest(message)
+                }
+                else throw new Exception("Invalid drink")
             }
-            else if (message != '') {
-                message += "Please fix all errors to update your drink"
-                badRequest(message)
+            catch (Exception e) {
+                logger.error("There was an exception while updating a drink: ${e.message}")
+                badRequest("There was an exception while updating a drink: ${e.message}")
             }
-            else throw new Exception("Invalid drink")
-        } catch (Exception e) {
-            logger.error("There was an exception while updating a drink: ${e.message}")
-            badRequest("There was an exception while updating a drink: ${e.message}")
         }
     }
 
@@ -126,29 +143,32 @@ class DrinkResource extends BaseResource {
     @DELETE
     public Response deleteADrink(@PathParam('drinkId') Long drinkId, Map params) {
         User user = getAuthenticatedUser()
-        Drink deleteDrink
-        try {
-            def confirm
+        if (!user) badRequest("A user must be provided")
+        else {
+            Drink deleteDrink
             try {
-                confirm = params?.Confirm
-            } catch (Exception e1) {
-                logger.error("There was an error while retrieving params value for Confirm: ${e1.message}")
-                confirm = 'No'
-            }
-            if (confirm != 'Yes') {
-                badRequest("Pass in Confirm:Yes to delete")
-            } else {
-                deleteDrink = Drink.findById(drinkId)
-                if (!deleteDrink) {
-                    badRequest("There was no drink found with id: $drinkId")
-                } else {
-                    drinkService.delete(deleteDrink.id, user, true)
-                    Response.ok("User ${user.firstName} ${user.lastName} deleted their drink.").build()
+                def confirm
+                try {
+                    confirm = params?.Confirm
+                } catch (Exception e1) {
+                    logger.error("There was an error while retrieving params value for Confirm: ${e1.message}")
+                    confirm = 'No'
                 }
+                if (confirm != 'Yes') {
+                    badRequest("Pass in Confirm:Yes to delete")
+                } else {
+                    deleteDrink = Drink.findById(drinkId)
+                    if (!deleteDrink) {
+                        badRequest("There was no drink found with id: $drinkId")
+                    } else {
+                        drinkService.delete(deleteDrink.id, user, true)
+                        Response.ok("User ${user.firstName} ${user.lastName} deleted their drink.").build()
+                    }
+                }
+            } catch (Exception e2) {
+                logger.error("There was an exception while trying to delete a drink:: ${e2.message}")
+                badRequest("There was an exception while trying to delete a drink:: ${e2.message}")
             }
-        } catch (Exception e2) {
-            logger.error("There was an exception while trying to delete a drink:: ${e2.message}")
-            badRequest("There was an exception while trying to delete a drink:: ${e2.message}")
         }
     }
 }

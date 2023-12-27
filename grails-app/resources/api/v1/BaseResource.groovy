@@ -22,7 +22,7 @@ class BaseResource {
         if ("anonymousUser" == SecurityContextHolder?.context?.authentication?.principal ) {
             throw new NotAuthorizedException("Not Authorized")
         }
-        User.findByUsername( SecurityContextHolder.context.authentication.principal.username as String )
+        User.findByUsername( SecurityContextHolder?.context?.authentication?.principal?.username as String )
     }
 
     protected static boolean isAuthenticated() {
