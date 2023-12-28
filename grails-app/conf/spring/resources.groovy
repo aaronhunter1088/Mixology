@@ -2,7 +2,6 @@ package spring
 
 import mixology.AuthenticationFilter
 import mixology.AuthenticationService
-//import mixology.AuthenticationSuccessListener
 import mixology.UserPasswordEncoderListener
 import mixology.AuthenticationProvider
 import mixology.CustomUserDetailsService
@@ -31,15 +30,5 @@ beans = {
         bean.autowire = 'byName'
         authenticationService = ref('authenticationService')
     }
-
-//    authenticationSuccessListener(AuthenticationSuccessListener) { bean ->
-//        bean.autowire = 'byName'
-//    }
-
-//    customFilterChain(CompositeFilter) {
-//        filters = [
-//                ref('authenticationFilter')
-//        ]
-//    }
 
 }

@@ -22,6 +22,7 @@ class AuthenticationFilter extends GenericFilterBean {
             }
             catch (Exception e) {
                 logger.error("There was an exception while checking trusted token: ${e.message}")
+                request.setAttribute("error", "${e.message}")
                 chain.doFilter(request, response)
             }
         } else {

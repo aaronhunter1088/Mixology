@@ -1,5 +1,6 @@
 package api.v1
 
+import mixology.BaseController
 import mixology.User
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -11,14 +12,14 @@ import javax.ws.rs.NotAuthorizedException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-class BaseResource {
+abstract class BaseResource extends BaseController {
 
     private static Logger logger = LogManager.getLogger(BaseResource.class)
 
     SessionLocaleResolver localeResolver
     MessageSource messageSource
 
-    protected static User getAuthenticatedUser() {
+    public static User getAuthenticatedUser() {
         if ("anonymousUser" == SecurityContextHolder?.context?.authentication?.principal ) {
             throw new NotAuthorizedException("Not Authorized")
         }
@@ -41,6 +42,13 @@ class BaseResource {
 
     public static Response badRequest(String message) {
         Response.status(Response.Status.BAD_REQUEST)
+                .entity(message)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build()
+    }
+
+    public static Response notAuthorized(String message) {
+        Response.status(Response.Status.UNAUTHORIZED)
                 .entity(message)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build()

@@ -6,6 +6,7 @@ import mixology.DrinkService
 import mixology.User
 import org.springframework.beans.factory.annotation.Autowired
 
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -28,7 +29,7 @@ class DrinkResource extends BaseResource {
     @Produces('application/json')
     @GET
     public Response getAllDrinks() {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         try {
             def list = (user) ? drinkService.findAll(user) : drinkService.findAll()
             Response.ok( list ).build()
@@ -41,16 +42,20 @@ class DrinkResource extends BaseResource {
     @Path('/{drinkId}')
     @GET
     public Response getADrink(@PathParam('drinkId') Long drinkId) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         try {
-            def drink = Drink.findById(drinkId)
-            if (!drink) badRequest("Drink not found using id: $drinkId")
+            def errorMessage = request.getAttribute("error") as String ?: ''
+            if (request.getAttribute("error")) badRequest(errorMessage)
             else {
-                if (!user) Response.ok(drink).build()
+                def drink = Drink.findById(drinkId)
+                if (!drink) badRequest("Drink not found using id: $drinkId")
                 else {
-                    if (!user.drinks.contains(drink)) badRequest("The user you provided does not have the drink you are inquiring about.")
+                    if (!user) Response.ok(drink).build()
                     else {
-                        Response.ok(drink).build()
+                        if (!user.drinks.contains(drink)) badRequest("The user you provided does not have the drink you are inquiring about.")
+                        else {
+                            Response.ok(drink).build()
+                        }
                     }
                 }
             }
@@ -63,7 +68,7 @@ class DrinkResource extends BaseResource {
     @Produces('application/json')
     @POST
     public Response createADrink(Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Drink newDrink
@@ -88,13 +93,18 @@ class DrinkResource extends BaseResource {
     @Path('/{drinkId}')
     @PUT
     public Response updateADrink(@PathParam('drinkId') Long drinkId, Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Drink updateDrink
             def message = ''
             try {
                 updateDrink = Drink.findById(drinkId)
+                if (!updateDrink) {
+                    badRequest("No drink was found using the id: $drinkId")
+                } else if ( !user.drinks*.id.contains(drinkId) ) {
+                    badRequest("User does not have a drink using the id: $drinkId")
+                }
                 params.keySet().each { String prop ->
                     // only update property if not in list
                     // if user is admin user, we can update any value we wish
@@ -111,17 +121,12 @@ class DrinkResource extends BaseResource {
                         message += "Cannot update property: $prop\n"
                     }
                 }
-                if (!updateDrink) {
-                    badRequest("No drink was found using the id: $drinkId")
-                } else if ( !user.drinks*.id.contains(drinkId) ) {
-                    badRequest("User does not have a drink using the id: $drinkId")
-                }
                 if (updateDrink.validate() && message == '') {
                     drinkService.save(updateDrink, user, false)
                     message = """
-                    User ${user.firstName} ${user.lastName} updated their drink.
-                    Drink ${updateDrink as JSON}
-                """
+                        User ${user.firstName} ${user.lastName} updated their drink.
+                        Drink ${updateDrink as JSON}
+                    """
                     logger.info(message)
                     Response.ok(updateDrink).build()
                 }
@@ -142,7 +147,7 @@ class DrinkResource extends BaseResource {
     @Path('/{drinkId}')
     @DELETE
     public Response deleteADrink(@PathParam('drinkId') Long drinkId, Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Drink deleteDrink

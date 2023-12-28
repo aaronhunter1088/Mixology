@@ -43,27 +43,29 @@
                     </ul>
                 </li> <!-- Users -->
                 <li class="dropdown-btn dropdown">
-                    <a href="#" class="fa-solid fa-martini-glass-empty dropdown-toggle" data-toggle="dropdown" data-target="#drinkMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="drink.label" args="s" default="Drinks"/> <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="drinkMgmt" style="background-color:<g:if test="${user.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                    <a href="#" class="fa-solid fa-object-group dropdown-toggle" data-toggle="dropdown" data-target="#objectMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="default.objects.label" args="s" default="Objects"/> <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="objectMgmt" style="background-color:<g:if test="${user.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                        <!-- Drink -->
                         <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.drink.management" default="Drink Mgmt"/></li><br/>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <g:link class="fa-solid fa-list" controller="drink" action="index">&nbsp;<g:message code="drink.label" args="s" default="Drinks"/></g:link>
                         </sec:ifAnyGranted>
                         <g:link class="fa-solid fa-list" controller="drink" action="customIndex">&nbsp;<g:message code="navigation.your.drinks" default="Your Drinks"/></g:link>
                         <g:link class="fa-solid fa-martini-glass-empty" controller="drink" action="create">&nbsp;<g:message code="navigation.new.drink" default="New Drink"/></g:link>
-                    </ul>
-                </li> <!-- Drinks -->
-                <li class="dropdown-btn dropdown">
-                    <a href="#" class="fa-solid fa-jar-wheat dropdown-toggle" data-toggle="dropdown" data-target="#ingredientMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="ingredient.label" args="s" default="Ingredients"/><span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="ingredientMgmt" style="background-color:<g:if test="${user.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                        <!-- Ingredient -->
                         <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.ingredient.management" default="Ingredient Mgmt"/></li><br/>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;<g:message code="ingredient.label" args="s" default="Ingredients"/></g:link>
                         </sec:ifAnyGranted>
                         <g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;<g:message code="navigation.your.ingredients" default="Your Ingredients"/></g:link>
                         <g:link class="fa fa-light fa-jar" controller="ingredient" action="create">&nbsp;<g:message code="navigation.new.ingredient" default="New Ingredient"/></g:link>
+                        <!-- Auth Token -->
+                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                            <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.authToken.management" default="AuthToken Mgmt"/></li><br/>
+                            <g:link class="fa-solid fa-list" controller="authToken" action="index">&nbsp;<g:message code="authToken.label" args="s" default="AuthTokens"/></g:link>
+                        </sec:ifAnyGranted>
                     </ul>
-                </li> <!-- Ingredients -->
+                </li> <!-- Domain Objects -->
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <li class="dropdown-btn dropdown">
                         <a href="#" class="fa fa-circle-info dropdown-toggle" data-toggle="dropdown" data-target="#appStatus" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="navigation.app.status" default="App Status"/><span class="caret"></span></a>
@@ -81,7 +83,7 @@
                             <g:link class="fa fa-circle-info" controller="mixology" action="servicesActive">&nbsp;<g:message code="navigation.service" args="s" default="Services"/>: ${grailsApplication.serviceClasses.size()}</g:link>
                             <g:link class="fa fa-circle-info" controller="mixology" action="tagLibsActive">&nbsp;<g:message code="navigation.tag.libraries" default="Tag Libraries"/>: ${grailsApplication.tagLibClasses.size()}</g:link>
                         </ul>
-                    </li>
+                    </li> <!-- App Status -->
                     <li class="dropdown-btn dropdown">
                         <a href="#" class="fa fa-light fa-plug-circle-plus dropdown-toggle" data-toggle="dropdown" data-target="#plugins" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="navigation.plugin" args="s" default="Plugins"/></a>
                         <ul class="dropdown-menu dropdown-menu-right" id="plugins" style="background-color:#000000;">
@@ -89,7 +91,7 @@
                                 <g:link class="fa fa-solid fa-plus" controller="mixology" action="plugin">&nbsp;${plugin.name} - ${plugin.version}</g:link>
                             </g:each>
                         </ul>
-                    </li>
+                    </li> <!-- Plugins -->
                 </sec:ifAnyGranted>
             </div>
         </ul>

@@ -28,7 +28,7 @@ class IngredientResource extends BaseResource {
     @Produces('application/json')
     @GET
     public Response getAllIngredients() {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         try {
             def list = (user) ? ingredientService.findAll(user) : ingredientService.findAll()
             Response.ok( list ).build()
@@ -41,7 +41,7 @@ class IngredientResource extends BaseResource {
     @Path('/{ingredientId}')
     @GET
     public Response getAnIngredient(@PathParam('ingredientId') Long ingredientId) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         try {
             def ingredient = Ingredient.findById(ingredientId)
             if (!ingredient) badRequest("Ingredient not found using $ingredientId")
@@ -63,7 +63,7 @@ class IngredientResource extends BaseResource {
     @Produces('application/json')
     @POST
     public Response createAnIngredient(Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Ingredient newIngredient
@@ -88,7 +88,7 @@ class IngredientResource extends BaseResource {
     @Path('/{ingredientId}')
     @PUT
     public Response updateAnIngredient(@PathParam('ingredientId') Long ingredientId, Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Ingredient updateIngredient
@@ -142,7 +142,7 @@ class IngredientResource extends BaseResource {
     @Path('/{ingredientId}')
     @DELETE
     public Response deleteAnIngredient(@PathParam('ingredientId') Long ingredientId, Map params) {
-        User user = getAuthenticatedUser()
+        User user = BaseResource.getAuthenticatedUser()
         if (!user) badRequest("A user must be provided")
         else {
             Ingredient deleteIngredient

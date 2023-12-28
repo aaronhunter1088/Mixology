@@ -75,7 +75,43 @@ class AuthTokenService {
      * @param id
      */
     void delete(def id, def user, def flush) {
-        //TODO: Implement
+        AuthToken token = null
+        Map<Long,AuthToken> tokens = [:]
+        if (id instanceof Long) token = get(id as Long)
+        else if (id instanceof Collection<Long>) {
+            id.each {
+                tokens.put(it, get(it as Long))
+            }
+        }
+        try {
+            if (!token && tokens.size() == 0) {
+                logger.error("Token not found with id:: $id")
+                throw new Exception("Token not found with id:: $id")
+            }
+            // TODO determine how to cycle through tokens to do this if check
+            if (token && user.username != token?.username) {
+                logger.warn("A user, id:: ${user.id} is deleting a token they did not create.")
+                logger.warn("Token belongs to user, id:: ${User.findByUsername(token.username).id}")
+            }
+            if (token) {
+                AuthToken.withNewTransaction {
+                    token.delete(flush:flush)
+                }
+                logger.info("Token: ${token.toPrettyString()} deleted!")
+            } else if (tokens) {
+                AuthToken.withNewTransaction {
+                    tokens.keySet().each { key ->
+                        def keyToken = tokens.get(key)
+                        keyToken.delete(flush:flush)
+                        logger.info("Token: ${keyToken.toPrettyString()} deleted!")
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.error("Could not delete token:: ${token.toPrettyString()}, ${e.message}")
+            e
+        }
     }
 }
 
