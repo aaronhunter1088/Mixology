@@ -30,8 +30,12 @@ class IngredientResource extends BaseResource {
     public Response getAllIngredients() {
         User user = BaseResource.getAuthenticatedUser()
         try {
-            def list = (user) ? ingredientService.findAll(user) : ingredientService.findAll()
-            Response.ok( list ).build()
+            def errorMessage = request.getAttribute("error") as String ?: ''
+            if (errorMessage) badRequest(errorMessage)
+            else {
+                def list = (user) ? ingredientService.findAll(user) : ingredientService.findAll()
+                Response.ok( list ).build()
+            }
         } catch (Exception e) {
             Response.serverError().build()
         }
@@ -44,7 +48,9 @@ class IngredientResource extends BaseResource {
         User user = BaseResource.getAuthenticatedUser()
         try {
             def ingredient = Ingredient.findById(ingredientId)
-            if (!ingredient) badRequest("Ingredient not found using $ingredientId")
+            def errorMessage = request.getAttribute("error") as String ?: ''
+            if (errorMessage) badRequest(errorMessage)
+            else if (!ingredient) badRequest("Ingredient not found using $ingredientId")
             else {
                 if (!user) Response.ok(ingredient).build()
                 else {
@@ -64,7 +70,9 @@ class IngredientResource extends BaseResource {
     @POST
     public Response createAnIngredient(Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Ingredient newIngredient
             try {
@@ -89,7 +97,9 @@ class IngredientResource extends BaseResource {
     @PUT
     public Response updateAnIngredient(@PathParam('ingredientId') Long ingredientId, Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Ingredient updateIngredient
             def message = ''
@@ -143,7 +153,9 @@ class IngredientResource extends BaseResource {
     @DELETE
     public Response deleteAnIngredient(@PathParam('ingredientId') Long ingredientId, Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Ingredient deleteIngredient
             try {

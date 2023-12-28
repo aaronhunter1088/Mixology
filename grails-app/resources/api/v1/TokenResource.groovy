@@ -39,7 +39,9 @@ class TokenResource extends BaseResource {
     public Response getAllTokens() {
         User user = BaseResource.getAuthenticatedUser()
         def usersTokens = (user) ? AuthToken.findAllByUsername(user.username) : AuthToken.findAll()
-        if (usersTokens.isEmpty()) {
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (usersTokens.isEmpty()) {
             logger.info('No tokens found for user. Returning empty list')
             Response.ok([]).build()
         } else {
@@ -53,7 +55,9 @@ class TokenResource extends BaseResource {
     public Response getAToken(@PathParam('authTokenId') Long authTokenId) {
         User user = BaseResource.getAuthenticatedUser()
         AuthToken token = AuthToken.findById(authTokenId)
-        if (!token) badRequest("No token was found using the id: $authTokenId")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!token) badRequest("No token was found using the id: $authTokenId")
         else if (!user) badRequest("A user is required to view their AuthToken")
         else if (user.username != token.username) badRequest("You cannot view a token not belonging to the user, $user")
         else {
@@ -78,16 +82,15 @@ class TokenResource extends BaseResource {
                 else { throw new Exception("Auth Token was not created") }
                 Response.ok( authToken ).build()
             } else {
-                throw new Exception("There was an error creating the AuthToken")
+                badRequest("There was an error authenticating the AuthToken")
             }
         } catch (AuthenticationException ae) {
             logger.error("Auth Manager did not authenticate token: ${ae.message}")
-            Response.serverError().build()
+            badRequest("Auth Manager did not authenticate token: ${ae.message}")
         } catch (Exception e) {
             logger.error("There was an exception creating the auth token: ${e.message}")
-            Response.serverError().build()
+            badRequest("There was an exception creating the auth token: ${e.message}")
         }
-
     }
 
     @Produces('application/json')
@@ -96,13 +99,15 @@ class TokenResource extends BaseResource {
     public Response updateAToken(@PathParam('authTokenId') Long authTokenId, Map params) {
         User user = BaseResource.getAuthenticatedUser()
         def message = ''
-        if (!user || !user.isAdmin()) badRequest("An admin user is required to update any AuthToken")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user || !user.isAdmin()) badRequest("An admin user is required to update any AuthToken")
         else {
             AuthToken token = authTokenService.get(authTokenId)
             params.keySet().each { prop ->
                 // only update property if not in list
                 // if user is admin user, we can update any value we wish
-                if ( !ignoreSpecificProperties(prop) || user.isAdmin() ) {
+                if ( !ignoreSpecificProperties(prop as String) || user.isAdmin() ) {
                     def value = params."$prop"
                     println "params.$prop = $value"
                     try {
@@ -111,13 +116,14 @@ class TokenResource extends BaseResource {
                         logger.info("${mpe.class.simpleName} for AuthToken, property:$prop")
                         message += "$prop is not a property of the AuthToken object.\n"
                     } catch (GroovyCastException gce) {
+                        logger.error("${gce.message}")
                         logger.error("Could not set value on $prop. Trying first Cast to Date")
                         try {
                             def date = LocalDateTime.parse((value as String).replace('Z',''))
                             token."$prop" = date
                         } catch (GroovyCastException gce2) {
-                            logger.error("Could not set value on $prop.")
-                            message += "Could not set value on $prop because ${e.message}\n"
+                            logger.error("Could not set value on $prop because ${gce2.message}")
+                            message += "Could not set value on $prop because ${gce2.message}\n"
                         }
                     }
                 } else {
@@ -144,7 +150,9 @@ class TokenResource extends BaseResource {
     public Response removeExpiredTokens() {
         List<Long> expiredIds = []
         User user = BaseResource.getAuthenticatedUser()
-        if (!user.isAdmin()) notAuthorized("You are not authorized to call this endpoint")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user.isAdmin()) notAuthorized("You are not authorized to call this endpoint")
         else {
             def expiredTokens = AuthToken.findAll("from AuthToken where expiresDate < :now",[now:LocalDateTime.now()]) as List<AuthToken>
             if (expiredTokens.isEmpty()) {

@@ -24,7 +24,9 @@ class UserResource extends BaseResource {
     @GET
     public Response getUserDetails() {
         User loggedInUser = BaseResource.getAuthenticatedUser()
-        if (!loggedInUser) badRequest("You must authenticate yourself for this request.")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!loggedInUser) badRequest("You must authenticate yourself for this request.")
         else {
             Response.ok(loggedInUser).build()
         }
@@ -35,7 +37,9 @@ class UserResource extends BaseResource {
     @GET
     public Response getUserDetails(@PathParam('userId') Long userId) {
         User loggedInUser = BaseResource.getAuthenticatedUser()
-        if (!loggedInUser) badRequest("You must be logged in to retrieve specific user credentials")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!loggedInUser) badRequest("You must be logged in to retrieve specific user credentials")
         else {
             User userToObtain = userService.get(userId)
             if (loggedInUser.isAdmin()) {

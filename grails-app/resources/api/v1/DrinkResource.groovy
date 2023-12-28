@@ -31,8 +31,12 @@ class DrinkResource extends BaseResource {
     public Response getAllDrinks() {
         User user = BaseResource.getAuthenticatedUser()
         try {
-            def list = (user) ? drinkService.findAll(user) : drinkService.findAll()
-            Response.ok( list ).build()
+            def errorMessage = request.getAttribute("error") as String ?: ''
+            if (errorMessage) badRequest(errorMessage)
+            else {
+                def list = (user) ? drinkService.findAll(user) : drinkService.findAll()
+                Response.ok( list ).build()
+            }
         } catch (Exception e) {
             Response.serverError().build()
         }
@@ -45,7 +49,7 @@ class DrinkResource extends BaseResource {
         User user = BaseResource.getAuthenticatedUser()
         try {
             def errorMessage = request.getAttribute("error") as String ?: ''
-            if (request.getAttribute("error")) badRequest(errorMessage)
+            if (errorMessage) badRequest(errorMessage)
             else {
                 def drink = Drink.findById(drinkId)
                 if (!drink) badRequest("Drink not found using id: $drinkId")
@@ -69,7 +73,9 @@ class DrinkResource extends BaseResource {
     @POST
     public Response createADrink(Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Drink newDrink
             try {
@@ -94,7 +100,9 @@ class DrinkResource extends BaseResource {
     @PUT
     public Response updateADrink(@PathParam('drinkId') Long drinkId, Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Drink updateDrink
             def message = ''
@@ -148,7 +156,9 @@ class DrinkResource extends BaseResource {
     @DELETE
     public Response deleteADrink(@PathParam('drinkId') Long drinkId, Map params) {
         User user = BaseResource.getAuthenticatedUser()
-        if (!user) badRequest("A user must be provided")
+        def errorMessage = request.getAttribute("error") as String ?: ''
+        if (errorMessage) badRequest(errorMessage)
+        else if (!user) badRequest("A user must be provided")
         else {
             Drink deleteDrink
             try {
