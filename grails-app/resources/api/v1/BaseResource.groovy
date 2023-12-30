@@ -1,17 +1,20 @@
 package api.v1
 
+import io.swagger.annotations.Api
 import mixology.BaseController
 import mixology.User
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.context.MessageSource
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.i18n.SessionLocaleResolver
 
 import javax.ws.rs.NotAuthorizedException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
+@Api
 abstract class BaseResource extends BaseController {
 
     private static Logger logger = LogManager.getLogger(BaseResource.class)

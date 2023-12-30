@@ -44,6 +44,15 @@ configurations {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.openapitools/openapi-generator
+    implementation 'org.openapitools:openapi-generator:7.2.0'
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-api
+    testImplementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.3.0'
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest
+    implementation 'org.springdoc:springdoc-openapi-data-rest:1.7.0'
+
     // https://mvnrepository.com/artifact/org.grails.plugins/jaxrs
     implementation 'org.grails.plugins:jaxrs:0.6'
     implementation 'org.grails.plugins:jaxrs-restlet:3.1.0'

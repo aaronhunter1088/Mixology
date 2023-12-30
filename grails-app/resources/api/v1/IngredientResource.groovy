@@ -1,6 +1,7 @@
 package api.v1
 
 import grails.converters.JSON
+import io.swagger.annotations.Api
 import mixology.Ingredient
 import mixology.IngredientService
 import mixology.User
@@ -17,6 +18,7 @@ import javax.ws.rs.PathParam
 import javax.ws.rs.Produces
 import javax.ws.rs.core.Response
 
+@Api
 @Path('/v1/ingredients')
 class IngredientResource extends BaseResource {
 

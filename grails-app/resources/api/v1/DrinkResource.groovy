@@ -1,6 +1,7 @@
 package api.v1
 
 import grails.converters.JSON
+import io.swagger.annotations.Api
 import mixology.Drink
 import mixology.DrinkService
 import mixology.User
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Response
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.LogManager
 
+@Api
 @Path('/v1/drinks')
 class DrinkResource extends BaseResource {
 
