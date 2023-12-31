@@ -6,6 +6,7 @@ import mixology.Drink
 import mixology.DrinkService
 import mixology.User
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.CrossOrigin
 
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.DELETE
@@ -19,7 +20,6 @@ import javax.ws.rs.core.Response
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.LogManager
 
-@Api
 @Path('/v1/drinks')
 class DrinkResource extends BaseResource {
 

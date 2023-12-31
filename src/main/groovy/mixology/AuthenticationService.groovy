@@ -55,7 +55,7 @@ class AuthenticationService  {
         }
         else {
             User.withTransaction {
-                User user = User.withTransaction {User.findByUsername( trustedToken.username,[cache:true] )}
+                User user = User.withTransaction {User.findByUsername( trustedToken.username )}
                 login(user, trustedToken.httpServletRequest)
                 authToken.lastUsedDate = LocalDateTime.now()
                 authToken.save(flush:true)

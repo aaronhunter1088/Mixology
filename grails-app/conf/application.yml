@@ -70,14 +70,14 @@ grails:
                 allowedOrigins:
                     - http://localhost:5009
     mime:
-        #disable:
-            #accept:
-                #header:
-                    #userAgents:
-                        #- Gecko
-                        #- WebKit
-                        #- Presto
-                        #- Trident
+        disable:
+            accept:
+                header:
+                    userAgents:
+                        - Gecko
+                        - WebKit
+                        - Presto
+                        - Trident
         types:
             all: '*/*'
             atom: application/atom+xml

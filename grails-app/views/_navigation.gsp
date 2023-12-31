@@ -66,6 +66,14 @@
                         </sec:ifAnyGranted>
                     </ul>
                 </li> <!-- Domain Objects -->
+                <li class="dropdown-btn dropdown">
+                    <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#api" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="default.swagger.label" default="API & Swagger"/></a>
+                    <ul class="dropdown-menu" id="api" style="background-color:<g:if test="${user.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                        <li class="dropdown-header" style="padding-left:10px;"><g:message code="default.swagger.label" default="API & Swagger"/></li><br/>
+                        <g:link class="fa fa-home" url="${createLink(uri: '/swagger-ui/index.html')}">&nbsp;<g:message code="navigation.default.swagger" default="API Swagger UI"/> </g:link>
+                        <g:link class="fa fa-home" url="${createLink(uri: '/v3/api-docs')}">&nbsp;<g:message code="navigation.default.apidocs" default="OpenAPI Documentation"/></g:link>
+                    </ul>
+                </li>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <li class="dropdown-btn dropdown">
                         <a href="#" class="fa fa-circle-info dropdown-toggle" data-toggle="dropdown" data-target="#appStatus" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="navigation.app.status" default="App Status"/><span class="caret"></span></a>

@@ -1,5 +1,7 @@
 package mixology
 
+import enums.Alcohol
+import enums.GlassType
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 
@@ -21,21 +23,41 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.parameters.RequestBody
 import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
+import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.servers.Server
 import io.swagger.v3.oas.models.tags.Tag
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
+import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @EnableAutoConfiguration
 @CompileStatic
 class Application extends GrailsAutoConfiguration {
+
+    @Autowired
+    static MessageSource messageSource
     static Logger logger = LogManager.getLogger(Application.class)
 
     static void main(String[] args) {
         logger.info("Starting app Mixology")
         GrailsApp.run(Application, args)
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*")
+            }
+        };
     }
 
     @Bean
@@ -48,6 +70,7 @@ class Application extends GrailsAutoConfiguration {
                 .servers(getApiServers())
                 .paths(apiPaths())
                 .tags(apiTags())
+                //.security(apiSecurity())
         api
     }
 
@@ -69,32 +92,66 @@ class Application extends GrailsAutoConfiguration {
                     .properties(
                         [Confirm:new Schema()
                             .type('string')
-                            .example(new Example().value('Yes'))
+                            .example('Yes')
                         ]))
+        mediaType
+    }
+
+    private static MediaType createDrinkMediaType() {
+        MediaType mediaType = new MediaType()
+        mediaType.setSchema(
+            new Schema()
+                .type('object')
+                .properties([
+                    alcoholType:new Schema()
+                        .type('string')
+                        .example(Alcohol.randomAlcohol),
+                    ingredients:new Schema()
+                       .type('array')
+                       .items(new Schema().type('number').example(Integer.valueOf(15)))
+                       .example([15,30,65]),
+                    mixingInstruction:new Schema()
+                       .type('string')
+                       .example('Write in your instructions here.'),
+                    name:new Schema()
+                        .type('string')
+                        .example('OpenAPI Drink'),
+                    number:new Schema()
+                        .type('integer')
+                        .example(07),
+                    suggestedGlass:new Schema()
+                        .type('string')
+                        .example(GlassType.randomGlass),
+                    symbol:new Schema()
+                        .type('string')
+                        .example('OD')
+                    ]
+                )
+            )
         mediaType
     }
 
     private static Info apiInfo() {
         return new Info()
-                .title ("My REST API")
-                .description("Some custom description of API.")
-                .summary("API TOS")
-                .termsOfService("Terms of service")
+                .title ('Mixology Application Programming Interface')
+                .description("Endpoints configured to work with the Mixology application")
+                .summary("*SUMMARY*")
+                .termsOfService("*Terms of service*")
                 .contact(getInfoContact())
                 .license(new License())
     }
 
     private static Contact getInfoContact() {
         Contact contact = new Contact()
-        contact.name("John Doe")
-        contact.email("myeaddress@company.com")
-        contact.url("www.example.com")
+        contact.name("Michael (Aaron Hunter) Ball")
+        contact.email("hidden@gmail.com")
+        contact.url("hiddenwebsite.com")
     }
 
     private static Paths apiPaths() {
         Paths mapOfPaths = new Paths()
         mapOfPaths.addPathItem('/v1/drinks', pathItem('drinks'))
-        mapOfPaths.addPathItem('/v1/drinks/{drinkId}', pathItem('drinks/{drinkId}'))
+        mapOfPaths.addPathItem('/v1/drinks/{drinkId}', pathItem('drinks/drinksId'))
         mapOfPaths
     }
 
@@ -106,28 +163,46 @@ class Application extends GrailsAutoConfiguration {
                 pathItem.description('Drinks API Description')
                 pathItem.setGet(new Operation()
                     .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
-                    .responses(['200':new ApiResponse().description('')] as ApiResponses)
+                    .responses([
+                            '200':new ApiResponse().description('Ok'),
+                            '400':new ApiResponse().description('AuthToken has expired')
+                    ] as ApiResponses)
                     .tags(['Drink'])
                     .description("View all the drinks for a single user. If you do not pass in any AUTH token, then ALL drinks are returned.")
                     .operationId('viewAllDrinksUsingToken')
                     .summary('View All Drinks')
                 )
+                RequestBody body = new RequestBody()
+                        .description('Create a drink body')
+                body.setContent(new Content().addMediaType('application/json', createDrinkMediaType()))
+                pathItem.setPost(new Operation()
+                        .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
+                        .requestBody(body)
+                        .tags(['Drink'])
+                        .description('Create a new drink for a user.')
+                        .operationId('createADrinkUsingToken')
+                        .summary('Create A Drink')
+                )
                 break
             }
-            case 'drinks/{drinkId}' : {
+            case 'drinks/drinksId': {
                 pathItem.summary('Drinks API Summary')
                 pathItem.description('Drinks API Description')
                 pathItem.setGet(new Operation()
-                        .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
-                        .responses(['200':new ApiResponse().description('')] as ApiResponses)
+                        .parameters([
+                                new Parameter().in('header').name('AUTH').schema(new Schema().type('string')),
+                                new Parameter().in('path').name('drinkId').schema(new Schema().type('integer')).required(true).description('The ID of the drink')
+                        ])
+                        .responses([
+                                '200':new ApiResponse().description('Ok'),
+                                '400':new ApiResponse().description('AuthToken has expired, or the ID provided is not an ID in the users list of drinks.')
+                        ] as ApiResponses)
                         .tags(['Drink'])
-                        .description("""View a single drink for a user. 
-If you pass in an AUTH token, and that user does not have any relation to the drink you are 
-trying to view, then a 400 will be returned. If the user does have a relationship to the drink, 
-a 200 will be returned. If you do not pass in any AUTH token, the drink will be returned, if one exists.""")
-                        .operationId('viewAllDrinksUsingToken')
-                        .summary('View A Drink')
-                )
+                        .description("View a single drink for a user. If you pass in authorization, and that user does not have any relation to the drink you are trying to view, then a 400 will be returned. If the user does have a relationship to the drink, a 200 will be returned. If you do not pass in authorization, the drink will be returned, if one exists.")
+                        .operationId('viewADrink')
+                        .summary('View A Drinks'))
+                pathItem.setPut(new Operation())
+                pathItem.setDelete(new Operation())
                 break
             }
             default: throw new RuntimeException("Path, $path, not defined in openAPI!")
@@ -140,11 +215,11 @@ a 200 will be returned. If you do not pass in any AUTH token, the drink will be 
         tags.add(
             new Tag().name('Drink')
                      .description("""
-The drink resource files allows for the following: 
-a GET /drinks, to return all drinks for a user, 
-a GET /drinks/id, to return a single drink for a user, 
-a POST /drinks/id, to create a single drink for a user, 
-a PUT /drinks/id, to update a single drink for a user, and finally, 
+The drink resource files allows for the following:\n\n
+a GET /drinks, to return all drinks for a user,\n 
+a GET /drinks/id, to return a single drink for a user,\n
+a POST /drinks/id, to create a single drink for a user,\n
+a PUT /drinks/id, to update a single drink for a user, and finally,\n
 a DELETE /drinks/id, to delete a single drink, from the user and the application itself.""")
             // TODO: add more tags here
         )
@@ -153,7 +228,15 @@ a DELETE /drinks/id, to delete a single drink, from the user and the application
 
     private static List<Server> getApiServers() {
         [
-        new Server().url('http://localhost')
+        //new Server().url('/').description('Default Server URL') /* Needed for resolving cors issue on swagger ui */
+        new Server().url('http://localhost:5009').description('Default Server URL') /* Needed for resolving cors issue on swagger ui */
         ]
     }
+
+    private static List<SecurityRequirement> apiSecurity() {
+        List<SecurityRequirement> securities = []
+        //securities << new SecurityRequirement().addList('basicAuth', '[]')
+        securities << new SecurityRequirement().addList('auth', '')
+    }
+
 }

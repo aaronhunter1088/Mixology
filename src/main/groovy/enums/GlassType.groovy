@@ -36,4 +36,11 @@ enum GlassType {
     GlassType(glassName) {
         this.glassName = glassName
     }
+
+    public static GlassType getRandomGlass() {
+        List<GlassType> glasses = Collections.unmodifiableList(Arrays.asList(values()))
+        Random random = new Random()
+        def randomGlass = glasses.get(random.nextInt(glasses.size()))
+        randomGlass
+    }
 }
