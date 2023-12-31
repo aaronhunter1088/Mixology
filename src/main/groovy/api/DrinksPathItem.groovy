@@ -43,6 +43,10 @@ class DrinksPathItem {
                 pathItem.setPost(new Operation()
                         .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
                         .requestBody(postBody)
+                        .responses([
+                                '200':new ApiResponse().description('Ok'),
+                                '400':new ApiResponse().description('AuthToken has expired.')
+                        ] as ApiResponses)
                         .tags(['Drink'])
                         .description('Create a new drink for a user.')
                         .operationId('createADrink')
@@ -67,7 +71,7 @@ class DrinksPathItem {
                         .operationId('viewADrink')
                         .summary('View A Drink'))
                 RequestBody putBody = new RequestBody()
-                        .description('Create a drink body')
+                        .description('Update a drink body')
                 putBody.setContent(new Content().addMediaType('application/json', createDrinkPutMediaType()))
                 pathItem.setPut(new Operation()
                         .parameters([

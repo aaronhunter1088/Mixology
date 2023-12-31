@@ -41,6 +41,7 @@ class TokenResource extends BaseResource {
         def usersTokens = (user) ? AuthToken.findAllByUsername(user.username) : AuthToken.findAll()
         def errorMessage = request.getAttribute("error") as String ?: ''
         if (errorMessage) badRequest(errorMessage)
+        else if (!user.isAdmin()) badRequest('You must have admin privileges to view all AuthTokens')
         else if (usersTokens.isEmpty()) {
             logger.info('No tokens found for user. Returning empty list')
             Response.ok([]).build()
