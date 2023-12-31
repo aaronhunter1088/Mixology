@@ -51,6 +51,13 @@ abstract class BaseResource extends BaseController {
                 .build()
     }
 
+    public static Response okResponse(String msg) {
+        Response.status(Response.Status.OK)
+                .entity(buildSuccessJson(msg))
+                .type(MediaType.APPLICATION_JSON)
+                .build()
+    }
+
     public def static buildErrorJson(String message, int statusCode) {
         def obj = new JsonBuilder()
         obj = {
@@ -59,6 +66,15 @@ abstract class BaseResource extends BaseController {
                 code:"$statusCode"
                 message:"$message"
             }
+        }
+        obj
+    }
+
+    public def static buildSuccessJson(String message) {
+        def obj = new JsonBuilder()
+        obj = {
+            success:true
+            message:"$message"
         }
         obj
     }

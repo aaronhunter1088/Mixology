@@ -54,8 +54,6 @@ class User implements Serializable {
     }
     static transients = ['springSecurityService', 'authorities']
 
-    @Override
-    String toString() { "$firstName $lastName" }
 
     /**
      * Get roles of user
@@ -71,6 +69,31 @@ class User implements Serializable {
             if (role.authority == enums.Role.ADMIN.name) result = true; return
         }
         result
+    }
+
+    @Override
+    String toString() { "$firstName $lastName" }
+
+    public String toJsonString() {
+        boolean hasPhoto = photo ? true : false
+        return "{" +
+                "enabled=" + enabled +
+                ", accountExpired=" + accountExpired +
+                ", accountLocked=" + accountLocked +
+                ", passwordExpired=" + passwordExpired +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", mobileNumber='" + mobileNumber + '\'' +
+                ", hasPhoto='$hasPhoto\'" +
+                ", darkMode=" + darkMode +
+                ", language='" + language + '\'' +
+                ", id=" + id +
+                ", drinks=" + drinks +
+                ", ingredients=" + ingredients +
+                '}'
     }
 }
 

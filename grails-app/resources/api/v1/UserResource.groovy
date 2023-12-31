@@ -50,7 +50,7 @@ class UserResource extends BaseResource {
                     logger.info("The loggedInUser attempted to retrieve details other than themself. Not allowing")
                     badRequest("You cannot retrieve user details that are not yours. Try with id=${loggedInUser.id}")
                 } else {
-                    Response.ok(userToObtain).build()
+                    okResponse(userToObtain.toJsonString())
                 }
             }
         }

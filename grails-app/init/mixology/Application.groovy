@@ -3,6 +3,7 @@ package mixology
 import api.DrinksPathItem
 import api.IngredientsPathItem
 import api.TokensPathItem
+import api.UsersPathItem
 import enums.Alcohol
 import enums.GlassType
 import grails.boot.GrailsApp
@@ -127,6 +128,9 @@ class Application extends GrailsAutoConfiguration {
         mapOfPaths.addPathItem('/v1/tokens', TokensPathItem.pathItem('tokens'))
         mapOfPaths.addPathItem('/v1/tokens/{tokenId}', TokensPathItem.pathItem('tokens/tokensId'))
         mapOfPaths.addPathItem('v1/tokens/removeExpiredTokens', TokensPathItem.pathItem('tokens/removeExpiredTokens'))
+        //Users
+        mapOfPaths.addPathItem('/v1/users', UsersPathItem.pathItem('users'))
+        mapOfPaths.addPathItem('/v1/users/{userId}', UsersPathItem.pathItem('users/userId'))
         mapOfPaths
     }
 
@@ -135,8 +139,8 @@ class Application extends GrailsAutoConfiguration {
         tags.addAll(// add more tags here
             DrinksPathItem.tag,
             IngredientsPathItem.tag,
-            TokensPathItem.tag
-                //new Tag().name('User').description('The endpoints configured to work with the User object')
+            TokensPathItem.tag,
+            UsersPathItem.tag
         )
         tags
     }
