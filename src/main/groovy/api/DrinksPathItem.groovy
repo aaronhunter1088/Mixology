@@ -15,9 +15,11 @@ import io.swagger.v3.oas.models.tags.Tag
 
 class DrinksPathItem {
 
+    static final String TAG_NAME = 'Drink'
+
     static Tag getTag() {
         new Tag()
-            .name('Drink')
+            .name(TAG_NAME)
             .description('The endpoints configured to work with the Drink object')
     }
 
@@ -33,7 +35,7 @@ class DrinksPathItem {
                             '200':new ApiResponse().description('Ok'),
                             '400':new ApiResponse().description('AuthToken has expired')
                         ] as ApiResponses)
-                        .tags(['Drink'])
+                        .tags([TAG_NAME])
                         .description("View all the drinks for a single user. If you do not pass in any AUTH token, then ALL drinks are returned.")
                         .operationId('viewAllDrinks')
                         .summary('View All Drinks'))
@@ -47,7 +49,7 @@ class DrinksPathItem {
                                 '200':new ApiResponse().description('Ok'),
                                 '400':new ApiResponse().description('AuthToken has expired.')
                         ] as ApiResponses)
-                        .tags(['Drink'])
+                        .tags([TAG_NAME])
                         .description('Create a new drink for a user.')
                         .operationId('createADrink')
                         .summary('Create A Drink')
@@ -66,7 +68,7 @@ class DrinksPathItem {
                             '200':new ApiResponse().description('Ok'),
                             '400':new ApiResponse().description('AuthToken has expired, or the ID provided is not an ID in the users list of drinks.')
                         ] as ApiResponses)
-                        .tags(['Drink'])
+                        .tags([TAG_NAME])
                         .description("View a single drink for a user. If you pass in authorization, and that user does not have any relation to the drink you are trying to view, then a 400 will be returned. If the user does have a relationship to the drink, a 200 will be returned. If you do not pass in authorization, the drink will be returned, if one exists.")
                         .operationId('viewADrink')
                         .summary('View A Drink'))
@@ -83,7 +85,7 @@ class DrinksPathItem {
                             '200':new ApiResponse().description('Ok'),
                             '400':new ApiResponse().description('AuthToken has expired, or the ID provided is not an ID in the users list of drinks.')
                         ] as ApiResponses)
-                        .tags(['Drink'])
+                        .tags([TAG_NAME])
                         .description("Update an existing drink for a user. If you pass in authorization, and that user does not have any relation to the drink you are trying to view, then a 400 will be returned. If the user does have a relationship to the drink, a 200 will be returned. If you do not pass in authorization, a 400 will be returned.")
                         .operationId('updateADrink')
                         .summary('Update A Drink'))
@@ -100,7 +102,7 @@ class DrinksPathItem {
                             '200':new ApiResponse().description('Ok'),
                             '400':new ApiResponse().description('AuthToken has expired, or the ID provided is not an ID in the users list of drinks.')
                         ] as ApiResponses)
-                        .tags(['Drink'])
+                        .tags([TAG_NAME])
                         .description('Delete a single drink from a user and the application itself.')
                         .operationId('deleteADrink')
                         .summary('Delete A Drink'))

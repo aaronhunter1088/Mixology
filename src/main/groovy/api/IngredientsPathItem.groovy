@@ -1,7 +1,5 @@
 package api
 
-import enums.Alcohol
-import enums.GlassType
 import enums.Unit
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem
