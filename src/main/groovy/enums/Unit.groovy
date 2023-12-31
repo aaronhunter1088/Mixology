@@ -8,8 +8,8 @@ import java.security.SecureRandom
 enum Unit {
 
     // second value used for printing to screen only
-    OZ("oz"), OZS("ounces"),
-    FLUID_OZ("fluid_oz"), FL_OZS("fluid_ounces"),
+    OZ("oz"), OZS("ozs"),
+    FLUID_OZ("fluid_oz"), FL_OZS("fluid_ozs"),
     SPLASH("splash"), SPLASHES("slashes"),
     DASH("dash"), DASHES("dashes"),
     SODA_CAN("soda_can"), SODA_CANS("soda_cans"),

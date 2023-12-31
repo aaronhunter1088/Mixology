@@ -99,7 +99,9 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/darkMode',       access: ['permitAll']],
 	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
 	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
-	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']]
+	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
+	[pattern: '/swagger-ui/**',       access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/v3/api-docs',         access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
@@ -107,4 +109,6 @@ grails.plugins.springsecurity.interceptUrlMap = [
 	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
 	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
+	[pattern: '/swagger-ui/**',       access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/v3/api-docs',         access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 ]

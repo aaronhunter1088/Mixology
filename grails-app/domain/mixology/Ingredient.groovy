@@ -46,6 +46,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
 
     String prettyName(boolean displayWithName = true) {
         def unitToUse = this.amount == 1 ? this.unit.getValue().toLowerCase() : getPluralUnit(unit).getValue().toLowerCase()
+        unitToUse = unitToUse.replace('_',' ')
         if (amount % 1 == 0) {
             if (displayWithName) (int)amount + ' ' + unitToUse + ' of ' + name
             else (int)amount + ' ' + unitToUse + ' of '
