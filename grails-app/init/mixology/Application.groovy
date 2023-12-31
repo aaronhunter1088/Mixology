@@ -1,5 +1,7 @@
 package mixology
 
+import api.DrinksPathItem
+import api.IngredientsPathItem
 import enums.Alcohol
 import enums.GlassType
 import grails.boot.GrailsApp
@@ -12,7 +14,6 @@ import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.Paths
 import io.swagger.v3.oas.models.SpecVersion
-import io.swagger.v3.oas.models.examples.Example
 import io.swagger.v3.oas.models.info.Contact
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
@@ -32,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
@@ -97,40 +97,6 @@ class Application extends GrailsAutoConfiguration {
         mediaType
     }
 
-    private static MediaType createDrinkMediaType() {
-        MediaType mediaType = new MediaType()
-        mediaType.setSchema(
-            new Schema()
-                .type('object')
-                .properties([
-                    alcoholType:new Schema()
-                        .type('string')
-                        .example(Alcohol.randomAlcohol),
-                    ingredients:new Schema()
-                       .type('array')
-                       .items(new Schema().type('number').example(Integer.valueOf(15)))
-                       .example([15,30,65]),
-                    mixingInstruction:new Schema()
-                       .type('string')
-                       .example('Write in your instructions here.'),
-                    name:new Schema()
-                        .type('string')
-                        .example('OpenAPI Drink'),
-                    number:new Schema()
-                        .type('integer')
-                        .example(07),
-                    suggestedGlass:new Schema()
-                        .type('string')
-                        .example(GlassType.randomGlass),
-                    symbol:new Schema()
-                        .type('string')
-                        .example('OD')
-                    ]
-                )
-            )
-        mediaType
-    }
-
     private static Info apiInfo() {
         return new Info()
                 .title ('Mixology Application Programming Interface')
@@ -150,78 +116,22 @@ class Application extends GrailsAutoConfiguration {
 
     private static Paths apiPaths() {
         Paths mapOfPaths = new Paths()
-        mapOfPaths.addPathItem('/v1/drinks', pathItem('drinks'))
-        mapOfPaths.addPathItem('/v1/drinks/{drinkId}', pathItem('drinks/drinksId'))
+        //Drinks
+        mapOfPaths.addPathItem('/v1/drinks', DrinksPathItem.pathItem('drinks'))
+        mapOfPaths.addPathItem('/v1/drinks/{drinkId}', DrinksPathItem.pathItem('drinks/drinksId'))
+        //Ingredients
+        mapOfPaths.addPathItem('/v1/ingredients', IngredientsPathItem.pathItem('ingredients'))
+        mapOfPaths.addPathItem('/v1/ingredients/{ingredientId}', IngredientsPathItem.pathItem('ingredients/ingredientId'))
         mapOfPaths
-    }
-
-    private static PathItem pathItem(String path) {
-        PathItem pathItem = new PathItem()
-        switch (path) {
-            case 'drinks': {
-                pathItem.summary('Drinks API Summary')
-                pathItem.description('Drinks API Description')
-                pathItem.setGet(new Operation()
-                    .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
-                    .responses([
-                            '200':new ApiResponse().description('Ok'),
-                            '400':new ApiResponse().description('AuthToken has expired')
-                    ] as ApiResponses)
-                    .tags(['Drink'])
-                    .description("View all the drinks for a single user. If you do not pass in any AUTH token, then ALL drinks are returned.")
-                    .operationId('viewAllDrinksUsingToken')
-                    .summary('View All Drinks')
-                )
-                RequestBody body = new RequestBody()
-                        .description('Create a drink body')
-                body.setContent(new Content().addMediaType('application/json', createDrinkMediaType()))
-                pathItem.setPost(new Operation()
-                        .parameters([new Parameter().in('header').name('AUTH').schema(new Schema().type('string'))])
-                        .requestBody(body)
-                        .tags(['Drink'])
-                        .description('Create a new drink for a user.')
-                        .operationId('createADrinkUsingToken')
-                        .summary('Create A Drink')
-                )
-                break
-            }
-            case 'drinks/drinksId': {
-                pathItem.summary('Drinks API Summary')
-                pathItem.description('Drinks API Description')
-                pathItem.setGet(new Operation()
-                        .parameters([
-                                new Parameter().in('header').name('AUTH').schema(new Schema().type('string')),
-                                new Parameter().in('path').name('drinkId').schema(new Schema().type('integer')).required(true).description('The ID of the drink')
-                        ])
-                        .responses([
-                                '200':new ApiResponse().description('Ok'),
-                                '400':new ApiResponse().description('AuthToken has expired, or the ID provided is not an ID in the users list of drinks.')
-                        ] as ApiResponses)
-                        .tags(['Drink'])
-                        .description("View a single drink for a user. If you pass in authorization, and that user does not have any relation to the drink you are trying to view, then a 400 will be returned. If the user does have a relationship to the drink, a 200 will be returned. If you do not pass in authorization, the drink will be returned, if one exists.")
-                        .operationId('viewADrink')
-                        .summary('View A Drinks'))
-                pathItem.setPut(new Operation())
-                pathItem.setDelete(new Operation())
-                break
-            }
-            default: throw new RuntimeException("Path, $path, not defined in openAPI!")
-        }
-        pathItem
     }
 
     private static List<Tag> apiTags() {
         List<Tag> tags = []
-        tags.add(
-            new Tag().name('Drink')
-                     .description("""
-The drink resource files allows for the following:\n\n
-a GET /drinks, to return all drinks for a user,\n 
-a GET /drinks/id, to return a single drink for a user,\n
-a POST /drinks/id, to create a single drink for a user,\n
-a PUT /drinks/id, to update a single drink for a user, and finally,\n
-a DELETE /drinks/id, to delete a single drink, from the user and the application itself.""")
-            // TODO: add more tags here
+        tags.addAll(// add more tags here
+            DrinksPathItem.tag,
+            IngredientsPathItem.tag
+            //new Tag().name('Token').description('The endpoints configured to work with the AuthToken object'),
+            //new Tag().name('User').description('The endpoints configured to work with the User object')
         )
         tags
     }
