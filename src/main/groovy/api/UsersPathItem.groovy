@@ -31,7 +31,7 @@ class UsersPathItem {
                                 '400':new ApiResponse().description('AuthToken has expired')
                         ] as ApiResponses)
                         .tags([TAG_NAME])
-                        .description("View all the users.")
+                        .description("View all the users. *For Admin Users only*")
                         .operationId('viewAllUsers')
                         .summary('View All Users'))
                 break
