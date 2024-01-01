@@ -54,7 +54,6 @@ class User implements Serializable {
     }
     static transients = ['springSecurityService', 'authorities']
 
-
     /**
      * Get roles of user
      * @return
@@ -87,13 +86,45 @@ class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", mobileNumber='" + mobileNumber + '\'' +
-                ", hasPhoto='$hasPhoto\'" +
+                ", hasPhoto=$hasPhoto" +
                 ", darkMode=" + darkMode +
                 ", language='" + language + '\'' +
                 ", id=" + id +
-                ", drinks=" + drinks +
-                ", ingredients=" + ingredients +
+                ", drinks=" + drinks*.id +
+                ", ingredients=" + ingredients*.id +
                 '}'
+    }
+
+    public String properJsonString() {
+        boolean hasPhoto = photo ? true : false
+        String drinkIdsAsString = ''
+        String ingredientIdsAsString = ''
+        drinks*.id.each {id ->
+            drinkIdsAsString += "$id,"
+        }
+        ingredients*.id.each { id ->
+            ingredientIdsAsString += "$id,"
+        }
+        drinkIdsAsString = drinkIdsAsString.substring(0,drinkIdsAsString.length()-1)
+        ingredientIdsAsString = ingredientIdsAsString.substring(0,ingredientIdsAsString.length()-1)
+        return """{
+            \"enabled\":$enabled,
+            \"accountExpired\":$accountExpired,
+            \"accountLocked\":$accountLocked,
+            \"passwordExpired\":$passwordExpired,
+            \"firstName\":\"$firstName\",
+            \"lastName\":\"$lastName\",
+            \"username\":\"$username\",
+            \"email\":\"$email\",
+            \"password\":\"$password\",
+            \"mobileNumber\":\"$mobileNumber\",
+            \"hasPhoto\":$hasPhoto,
+            \"darkMode\":$darkMode,
+            \"language\":\"$language\",
+            \"id\":$id,
+            \"drinks\":\"$drinkIdsAsString\",
+            \"ingredients\":\"$ingredientIdsAsString\"
+            }"""
     }
 }
 

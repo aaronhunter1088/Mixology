@@ -67,7 +67,7 @@ class TokensPathItem {
                                 '400':new ApiResponse().description('AuthToken has expired')
                         ] as ApiResponses)
                         .tags([TAG_NAME])
-                        .description("View a single token for a user. If you pass in authorization, and that user does not have any relation to the token you are trying to view, then a 400 will be returned. If the user does have a relationship to the token, a 200 will be returned. If you do not pass in authorization, then a 400 is returned.")
+                        .description("View a single token for a user.")
                         .operationId('viewAToken')
                         .summary('View A Token'))
                 RequestBody putBody = new RequestBody()
@@ -84,7 +84,7 @@ class TokensPathItem {
                                 '400':new ApiResponse().description('AuthToken is invalid, or TokenId is invalid.')
                         ] as ApiResponses)
                         .tags([TAG_NAME])
-                        .description("Update an existing token for a user. If you pass in authorization, and that user does not have any relation to the token you are trying to view, then a 400 will be returned. If the user does have a relationship to the token, a 200 will be returned. If you do not pass in authorization, a 400 will be returned. *For Admin Users only*")
+                        .description("Update an existing token for a user. *For Admin Users only*")
                         .operationId('updateAToken')
                         .summary('Update A Token'))
                 break

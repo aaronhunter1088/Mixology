@@ -79,6 +79,15 @@ abstract class BaseResource extends BaseController {
         obj
     }
 
+    public def static buildSuccessJson(def message) {
+        def obj = new JsonBuilder()
+        obj = {
+            success:true
+            message:"$message"
+        }
+        obj
+    }
+
     public static Response notAuthorized(String message) {
         Response.status(Response.Status.UNAUTHORIZED)
                 .entity(message)

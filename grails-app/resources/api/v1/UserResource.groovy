@@ -1,5 +1,8 @@
 package api.v1
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import mixology.User
 import mixology.UserService
 import org.apache.logging.log4j.LogManager
@@ -27,8 +30,16 @@ class UserResource extends BaseResource {
         def errorMessage = request.getAttribute("error") as String ?: ''
         if (errorMessage) badRequest(errorMessage)
         else if (!loggedInUser) badRequest("You must authenticate yourself for this request.")
+        else if (!loggedInUser.isAdmin()) { Response.ok(userService.list(loggedInUser)).build() }
         else {
-            Response.ok(loggedInUser).build()
+            def list = userService.list()
+            def jsonSlurper = new JsonSlurper()
+            def jsonList = []
+            list.each{ user ->
+                def userObj = jsonSlurper.parseText(user.properJsonString())
+                jsonList << userObj
+            }
+            Response.ok(jsonList).build()
         }
     }
 
@@ -41,16 +52,20 @@ class UserResource extends BaseResource {
         if (errorMessage) badRequest(errorMessage)
         else if (!loggedInUser) badRequest("You must be logged in to retrieve specific user credentials")
         else {
-            User userToObtain = userService.get(userId)
+            def userToObtain = userService.get(userId)
             if (loggedInUser.isAdmin()) {
                 if (!userToObtain) badRequest("No user found using id:$userId")
-                else Response.ok(userToObtain).build()
+                else {
+                    def jsonSlurper = new JsonSlurper()
+                    def userObj = jsonSlurper.parseText(userToObtain.properJsonString())
+                    Response.ok(userObj).build()
+                }
             } else {
                 if (userToObtain?.id != loggedInUser.id) {
                     logger.info("The loggedInUser attempted to retrieve details other than themself. Not allowing")
                     badRequest("You cannot retrieve user details that are not yours. Try with id=${loggedInUser.id}")
                 } else {
-                    okResponse(userToObtain.toJsonString())
+                    Response.ok(userToObtain.toJsonString()).build()
                 }
             }
         }

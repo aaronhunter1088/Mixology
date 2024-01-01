@@ -37,7 +37,8 @@ class IngredientResource extends BaseResource {
                 Response.ok( list ).build()
             }
         } catch (Exception e) {
-            Response.serverError().build()
+            logger.error("There was an exception getting the ingredients because ${e.message}")
+            badRequest("There was an exception getting the ingredients because ${e.message}")
         }
     }
 
@@ -47,7 +48,7 @@ class IngredientResource extends BaseResource {
     public Response getAnIngredient(@PathParam('ingredientId') Long ingredientId) {
         User user = BaseResource.getAuthenticatedUser()
         try {
-            def ingredient = Ingredient.findById(ingredientId)
+            def ingredient = ingredientService.get(ingredientId)
             def errorMessage = request.getAttribute("error") as String ?: ''
             if (errorMessage) badRequest(errorMessage)
             else if (!ingredient) badRequest("Ingredient not found using $ingredientId")

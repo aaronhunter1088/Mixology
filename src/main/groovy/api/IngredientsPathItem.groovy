@@ -66,7 +66,7 @@ class IngredientsPathItem {
                         .tags([TAG_NAME])
                         .description("View a single ingredient for a user. If you pass in authorization, and that user does not have any relation to the ingredient you are trying to view, then a 400 will be returned. If the user does have a relationship to the ingredient, a 200 will be returned. If you do not pass in authorization, the ingredient will be returned, if one exists.")
                         .operationId('viewAnIngredient')
-                        .summary('View A Drink'))
+                        .summary('View An Ingredient'))
                 RequestBody putBody = new RequestBody()
                         .description('Create an ingredient body')
                 putBody.setContent(new Content().addMediaType('application/json', createIngredientPutMediaType()))

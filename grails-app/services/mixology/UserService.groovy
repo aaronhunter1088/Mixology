@@ -11,7 +11,7 @@ class UserService {
     private static Logger logger = LogManager.getLogger(UserService.class)
 
     User get(Long id) {
-        User user = User.findById(id as Long)
+        User user = User.findById(id)
         logger.info("get($id) ==> ${user?'found':'not found'}")
         user
     }
@@ -22,8 +22,9 @@ class UserService {
         user
     }
 
-    List<User> list(Map args) {
-        User.list(args)
+    List<User> list(User user = null) {
+        List<User> users = user ? User.findAll("from User where id=:id", [id:user.id]) : User.findAll()
+        users
     }
 
     Long count() {
