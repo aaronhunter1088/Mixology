@@ -176,13 +176,13 @@ class Drink implements Serializable{
                 name: 'FillerDrink',
                 number: 0,
                 mixingInstructions: 'Filler instructions',
-                suggestedGlass: GlassType.BRANDY,
+                suggestedGlass: GlassType.getRandomGlass(),
                 alcoholType: alcoholType,
                 symbol: 'Fd',
                 ingredients: Ingredient.createFillerIngredients(3),
                 canBeDeleted: true,
                 custom: true
-                ,fillerDrink: true
+                ,fillerDrink: true /* transient */
         ])
     }
 
