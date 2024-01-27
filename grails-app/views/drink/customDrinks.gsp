@@ -55,7 +55,7 @@
             }
             ::-webkit-scrollbar-thumb {
                 border-radius: 4px;
-                background-color: gray;
+                background-color: rgb(128, 128, 128);
                 box-shadow: 0 0 1px rgba(255, 255, 255, .5);
             }
         </style>
@@ -147,22 +147,50 @@
                                         def vodkaDrinks = drinkList.findAll { it.alcoholType == Alcohol.VODKA}
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
                                         for (int i=0; i<12; i+=4) {
-                                            Drink drink1 = null, drink2 = null, drink3 = null, drink4 = null;
-                                            if (i < 12) {
-                                                try { drink1 = (Drink)vodkaDrinks.get(i); if (!drink1) {drink1 = Drink.createFillerDrink(Alcohol.VODKA); drink1.id = i+1;} }
-                                                catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.VODKA); drink1.id = i+1;}
+                                            Drink drink1 = null, drink2 = null, drink3 = null, drink4 = null
+                                            try {
+                                                drink1 = (Drink) vodkaDrinks[i];
+                                                if (!drink1) {
+                                                    drink1 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                    drink1.id = i + 1;
+                                                }
                                             }
-                                            if (i+1 < 12) {
-                                                try { drink2 = (Drink)vodkaDrinks.get(i+1); if (!drink2) {drink2 = Drink.createFillerDrink(Alcohol.VODKA); drink2.id = i+2;} }
-                                                catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.VODKA); drink2.id = i+2;}
+                                            catch (Exception e) {
+                                                drink1 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                drink1.id = i + 1;
                                             }
-                                            if (i+2 < 12) {
-                                                try { drink3 = (Drink)vodkaDrinks.get(i+2); if (!drink3) {drink3 = Drink.createFillerDrink(Alcohol.VODKA); drink3.id = i+3;} }
-                                                catch (Exception e) { drink3 = Drink.createFillerDrink(Alcohol.VODKA); drink3.id = i+3;}
+                                            try {
+                                                drink2 = (Drink) vodkaDrinks[i+1];
+                                                if (!drink2) {
+                                                    drink2 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                    drink2.id = i + 2;
+                                                }
                                             }
-                                            if (i+3 < 12) {
-                                                try { drink4 = (Drink)vodkaDrinks.get(i+3); if (!drink4) {drink4 = Drink.createFillerDrink(Alcohol.VODKA); drink4.id = i+4;} }
-                                                catch (Exception e) { drink4 = Drink.createFillerDrink(Alcohol.VODKA); drink4.id = i+4;}
+                                            catch (Exception e) {
+                                                drink2 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                drink2.id = i + 2;
+                                            }
+                                            try {
+                                                drink3 = (Drink) vodkaDrinks[i+2];
+                                                if (!drink3) {
+                                                    drink3 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                    drink3.id = i + 3;
+                                                }
+                                            }
+                                            catch (Exception e) {
+                                                drink3 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                drink3.id = i + 3;
+                                            }
+                                            try {
+                                                drink4 = (Drink) vodkaDrinks[i+3];
+                                                if (!drink4) {
+                                                    drink4 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                    drink4.id = i + 4;
+                                                }
+                                            }
+                                            catch (Exception e) {
+                                                drink4 = Drink.createFillerDrink(Alcohol.VODKA);
+                                                drink4.id = i + 4;
                                             }
                                     %>
                                     <div style="display:inline-flex;">

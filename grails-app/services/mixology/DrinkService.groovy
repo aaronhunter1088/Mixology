@@ -92,7 +92,7 @@ class DrinkService {
     Drink save(Drink drink, User user, boolean validate = false) {
         if (!drink || !user) null
         try {
-            Drink.withNewTransaction {
+            Drink.withTransaction {
                 drink.save(validate:validate, flush:true, failOnError:validate)
                 // user is not validated here. we are saving drink (mainly)
                 user.addToDrinks(drink).save(flush:true, failOnError:false, validate:false)
@@ -100,8 +100,8 @@ class DrinkService {
             logger.info("Drink saved to user (${user.username}) : (${user.id})!")
             drink
         } catch (Exception e) {
-            logger.error("Could not save drink:: $drink", e)
-            null
+            logger.error("Could not save drink:: $drink because ${e.message}")
+            throw e
         }
     }
 

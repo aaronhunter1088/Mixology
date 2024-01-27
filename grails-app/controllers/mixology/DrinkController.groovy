@@ -258,45 +258,17 @@ class DrinkController extends BaseController {
         def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         try {
             drinkToUpdate.clearErrors()
-            // if not a custom drink and user has adminRole
-            if (!drinkToUpdate.isCustom() && adminRole) {
-                drinkToUpdate.name = params?.name ?: drinkToUpdate.name
-                drinkToUpdate.number = params?.number ? Integer.valueOf(params.number as String) : drinkToUpdate.number
-                drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params.alcoholType as String) : drinkToUpdate.alcoholType
-                drinkToUpdate.symbol = params?.symbol ?: drinkToUpdate.symbol
-                drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
-                drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
-                drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
-                validIngredients = obtainFromParams(params)
-                validIngredients.each{
-                    drinkToUpdate.ingredients.add(it as Ingredient)
-                }
-                drinkToUpdate.ingredients.each { Ingredient i ->
-                    if (!i.drinks) i.drinks = new HashSet<Drink>()
-                    if (!i.drinks.contains(drinkToUpdate)) i.addToDrinks(drinkToUpdate as Drink)
-                }
-                // Find all ingredients currently associated with drink
-                List<Long> associatedIngredientIds = drinkToUpdate.ingredients*.id as List<Long>
-                logger.info("${associatedIngredientIds}")
-                for(Long id : associatedIngredientIds) {
-                    if ( !(id in drinkToUpdate.ingredients*.id)) {
-                        logger.info("id ${id} not found in drinkToUpdate.ingredients. removing ${id} from drink: ${drinkToUpdate.name}")
-                        Ingredient i = Ingredient.findById(id)
-                        i.removeFromDrinks(drinkToUpdate)
-                    }
-                }
-                drinkService.save(drinkToUpdate, user, false)
-                logger.info("default drink saved")
-            }
+            // if is not a custom drink and user has adminRole OR
             // if is a custom drink and user has either role
-            else if (drinkToUpdate.isCustom() && (!adminRole || !userRole)) {
+            if ( (!drinkToUpdate.isCustom() && adminRole) ||
+                   drinkToUpdate.isCustom() && (!adminRole || !userRole) ) {
                 drinkToUpdate.name = params?.drinkName ?: drinkToUpdate.name
                 drinkToUpdate.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drinkToUpdate.number
                 drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcoholType
                 drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
-                drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
+                drinkToUpdate.suggestedGlass = params.suggestedGlass ? GlassType.valueOf(params.suggestedGlass as String) : drinkToUpdate.suggestedGlass
                 drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
-                drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
+                //drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
                 validIngredients = obtainFromParams(params)
                 validIngredients.each{
                     drinkToUpdate.addToIngredients(it as Ingredient)
@@ -327,24 +299,21 @@ class DrinkController extends BaseController {
         }
 
         if (drinkToUpdate.errors.hasErrors()) {
-            Set<Ingredient> ingredients = Ingredient.findAllByDrinksInList(drinkToUpdate.ingredients as List)
+            user.attach()
+            Set<Ingredient> ingredients = Ingredient.findAllByIdInList(drinkToUpdate.ingredients*.id)
             drinkToUpdate.ingredients = ingredients
-            request.withFormat {
-                form multipartForm {
-                    respond drinkToUpdate.errors, view:'edit', status:BAD_REQUEST
-                }
-                '*' { respond drinkToUpdate.errors, view:'edit', status:BAD_REQUEST }
-            }
+            def drinkIngredients = drinkToUpdate.ingredients
+            def customIngredients = user.ingredients
+            render view:'edit',
+                    model:[errors:drinkToUpdate.errors,
+                           drink:drinkToUpdate,
+                           user:user,
+                           drinkIngredients:drinkIngredients.sort{it.id},
+                           ingredients:customIngredients.sort{it.id}],
+                    status:BAD_REQUEST
         } else {
-            request.withFormat {
-                form multipartForm {
-                    flash.message = message(code: 'default.updated.message', args: [message(code: 'drink.label', default: 'Drink'), drinkToUpdate.name])
-                    //render view:'show', model:[drink:drinkToUpdate,user:user,adminIsLoggedIn:(adminRole?true:false)], status:OK
-                    //return show(drinkToUpdate.id)
-                    redirect action:'show', params: [id:drinkToUpdate.id], method:'GET'
-                }
-                '*'{ respond drinkToUpdate, view:'show', status: OK }
-            }
+            flash.message = message(code: 'default.updated.message', args:[message(code: 'drink.label', default: 'Drink', args:" "), drinkToUpdate.name])
+            show(drinkToUpdate.id)
         }
     }
 

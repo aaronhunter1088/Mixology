@@ -105,13 +105,13 @@
                                     <div class="formfield">
                                         <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="name" value="${drink.name}" required="" id="name" />
+                                            <input type="text" name="drinkName" value="${drink.name}" required="" id="name" />
                                         </div>
                                     </div>
                                     <div class="formfield">
                                         <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="number" value="${drink.number}" required="" id="number" />
+                                            <input type="text" name="drinkNumber" value="${drink.number}" required="" id="number" />
                                         </div>
                                     </div>
                                     <div class="formfield">
@@ -133,15 +133,15 @@
                                     <div class="formfield">
                                         <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="symbol" value="${drink.symbol}" required="" id="symbol" />
+                                            <input type="text" name="drinkSymbol" value="${drink.symbol}" required="" id="symbol" />
                                         </div>
                                     </div>
                                     <div class="formfield">
-                                        <label for="glass"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                        <label for="suggestedGlass"><span class='required-indicator'>*</span> Suggested Glass</label>
                                         <div class="input-wrapper">
                                             <select name="glass" class="form-control" style="width:42%;">
                                                 <option label="Select One" selected disabled>Select One</option>
-                                                <g:each in="${GlassType.values()}" var="glass" name="glass">
+                                                <g:each in="${GlassType.values()}" var="glass" name="suggestedGlass">
                                                     <g:if test="${drink.suggestedGlass == glass}">
                                                         <option value="${glass}" selected>${glass}</option>
                                                     </g:if>
@@ -160,16 +160,12 @@
                                     </div>
                                     <div style="display:inline-flex;">
                                         <div class="formfield">
-                                            <label for='custom'>Default Drink?&nbsp;</label>
-                                            <div class="input-wrapper">
-                                                <input type="checkbox" disabled name="custom" value="${!drink.custom}" <g:if test="${!drink.custom}"> checked="checked" </g:if> id="custom" />
-                                            </div>
+                                            <g:if test="${drink.custom}"><label>Custom Drink</label></g:if>
+                                            <g:if test="${!drink.custom}"><label>Default Drink</label></g:if>
                                         </div>
                                         <div class="formfield">
-                                            <label for='deletable'>Deletable?&nbsp;</label>
-                                            <div class="input-wrapper">
-                                                <input type="checkbox" disabled name="deletable" value="${drink.canBeDeleted}" <g:if test="${drink.canBeDeleted}"> checked="checked" </g:if> id="deletable" />
-                                            </div>
+                                            <g:if test="${drink.canBeDeleted}"><label>Deletable</label></g:if>
+                                            <g:if test="${!drink.canBeDeleted}"><label>Not Deletable</label></g:if>
                                         </div>
                                     </div>
                                 </div>
@@ -177,7 +173,7 @@
                                     <div class="formfield">
                                         <div style="margin-top:-25px;height:419px;overflow-y:auto;">
                                             <p style="text-align:left;">Ingredients</p>
-                                            <g:each in="${user.ingredients.sort{it.id}}" var="ingredient" status="i">
+                                            <g:each in="${ingredients}" var="ingredient" status="i">
                                                 <g:if test="${drinkIngredients.contains(ingredient)}">
                                                     <div style="display:block;">
                                                         <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-success btn-xs" onclick="addIngredient('${ingredient.id}');">Added</button>
