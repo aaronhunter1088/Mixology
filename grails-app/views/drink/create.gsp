@@ -204,7 +204,7 @@
                                         <div id="ingredientErrorMessagesDiv">
                                             <h3 id="ingredientErrorMessage" role="alert">${errorMessage}</h3>
                                         </div>
-                                        <div id="ingredientTableDiv" class="tableFixHead" style="">
+                                        <div id="ingredientTableDiv" class="tableFixHead" style="height:525px;">
                                             <!--
                                             New rows will be added here
                                             -->
@@ -212,7 +212,7 @@
                                                 function addRow(tbody, prefix, ingredient) {
                                                     console.log("clicked +... adding row")
                                                     // increase field set size as table grows until 10 rows. then it stops and table is scrollable
-                                                    if (rowId <= 10) {
+                                                    if (rowId <= 7) {
                                                         let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                                         tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                                         let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + 70;
@@ -233,7 +233,7 @@
                                                     let div = document.createElement('div');
                                                     div.setAttribute('id', prefix + 'Row' + rowId)
                                                     div.setAttribute('class', 'input-wrapper');
-                                                    div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;padding:0 5px;');
+                                                    div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;padding:0 5px;height:70px;');
                                                     let div1 = document.createElement('div');
                                                     div1.setAttribute('id', prefix + 'Id' + rowId);
                                                     div1.setAttribute('name', prefix + 'Name' + rowId);
@@ -309,7 +309,7 @@
                                                     let div4 = document.createElement('div');
                                                     div4.setAttribute('id', prefix + 'CancelRow' + rowId);
                                                     div4.setAttribute('name', prefix + 'CancelRow' + rowId);
-                                                    div4.setAttribute('style', 'padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                                    div4.setAttribute('style', 'padding:5px;position:relative;display:block;margin-top:22px;margin-bottom:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                                     let a = document.createElement('a');
                                                     a.setAttribute('class', 'btn btn-outline-danger btn-xs');
                                                     a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
@@ -332,7 +332,7 @@
                                                     $('#'+trId).remove();
                                                     rowId--;
                                                     // decrease field set size as table shrinks until 0 rows. then it returns to original height
-                                                    if (rowId <= 10) {
+                                                    if (rowId <= 7) {
                                                         let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                                         tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                                         let newFieldSetHeight = rowId === 0 ? 75 : Number.parseInt(tableFieldSetHeight) - 70;

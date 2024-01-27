@@ -105,7 +105,7 @@
                             <h1 id="chartTitle" style="width:2100px;font-size:180px;padding-left:35px;color:${darkMode?'white':'black'};">Periodic Table of Mixology</h1>
                             <div id="reference" style="display:inline-flex;">
                                 <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
-                                    <g:render template="customReferenceChart" model="[drinks:drinkList.sort{it.number},darkMode:darkMode]"/>
+                                    <g:render template="customReferenceChart" model="[drinks:drinkList,darkMode:darkMode]"/>
                                 </div>
                                 <div id="measurements" style="margin-left:50px;margin-right:50px;">
                                     <g:render template="../measurementsCard"/>

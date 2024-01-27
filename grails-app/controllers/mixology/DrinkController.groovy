@@ -156,7 +156,7 @@ class DrinkController extends BaseController {
     def showCustomDrinks() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         render view:'customDrinks',
-               model:[drinkList:user.drinks,
+               model:[drinkList:user.drinks.sort{a,b -> a.number <=> b.number ?: a.symbol <=> b.symbol ?: a.name <=> b.name},
                       darkMode:user.darkMode,
                       params:params
                ]
