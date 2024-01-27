@@ -75,36 +75,33 @@
                 <div id="periodicTable" style="justify-content:center;display:inline-flex;padding:2em;margin:0;">
                     <div id="column1" style="margin:0;padding:0;width:600px;">
                         <div id="tequilaDrinks" style="margin:0;padding:0;">
-                            <div class="card" style="">
+                            <div class="card" style="overflow-y:auto;height:1821px;">
                                 <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                                 <%
                                     List tequilaDrinks = drinkList.findAll { it.alcoholType == Alcohol.TEQUILA}
                                             .sort((d1, d2) -> d1.number <=> d2.number).collect()
-                                    for (int i=0; i<12; i+=2) {
-                                        Drink drink1 = null
-                                        if (i < 12) {
-                                            try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1) {drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1;} }
-                                            catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1;}
-                                        }
-                                        Drink drink2 = null
-                                        if (i+1 < 12) {
-                                            try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2) {drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2;} }
-                                            catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2;}
-                                        }
+                                    for (int i=0; i<tequilaDrinks.size(); i+=2) {
+                                        Drink drink1, drink2 = null
+                                        try { drink1 = (Drink)tequilaDrinks.get(i); if (!drink1) {drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1;} }
+                                        catch (Exception e) { drink1 = Drink.createFillerDrink(Alcohol.TEQUILA); drink1.id = i+1;}
+                                        try { drink2 = (Drink)tequilaDrinks.get(i+1); if (!drink2) {drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2;} }
+                                        catch (Exception e) { drink2 = Drink.createFillerDrink(Alcohol.TEQUILA); drink2.id = i+2;}
                                 %>
                                 <div style="display:inline-flex;">
                                     <g:if test="${drink1.number != 0}">
                                         <g:link controller="drink" action="show" params="[id:drink1.id]">
                                             <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e',opacity:drink1.number == 0 ? 0.5 : 1]"/>
                                         </g:link>
-                                    </g:if><g:else>
+                                    </g:if>
+                                    <g:else>
                                         <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e',opacity:drink1.number == 0 ? 0.5 : 1]"/>
                                     </g:else>
                                     <g:if test="${drink2.number != 0}">
                                         <g:link controller="drink" action="show" params="[id:drink2.id]">
                                             <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e',opacity:drink2.number == 0 ? 0.5 : 1]"/>
                                         </g:link>
-                                    </g:if><g:else>
+                                    </g:if>
+                                    <g:else>
                                         <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ed969e',opacity:drink2.number == 0 ? 0.5 : 1]"/>
                                     </g:else>
                                 </div>
@@ -141,12 +138,12 @@
                         </div>
                         <div id="vodkaAndGin" style="display:inline-flex;">
                             <div id="vodkaDrinks" style="margin:0;padding:0;width:1200px;">
-                                <div class="card" style="">
+                                <div class="card" style="overflow-y:auto;height:921px;">
                                     <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                                     <%
                                         def vodkaDrinks = drinkList.findAll { it.alcoholType == Alcohol.VODKA}
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
-                                        for (int i=0; i<12; i+=4) {
+                                        for (int i=0; i<vodkaDrinks.size(); i+=4) {
                                             Drink drink1 = null, drink2 = null, drink3 = null, drink4 = null
                                             try {
                                                 drink1 = (Drink) vodkaDrinks[i];
@@ -226,8 +223,8 @@
                                     <% } %>
                                 </div>
                             </div>
-                            <div id="gin" style="margin:0;padding:0;width:905px;">
-                                <div class="card">
+                            <div id="gin" style="padding-right:5px;width:905px;">
+                                <div class="card" style="overflow-y:auto;height:921px;">
                                     <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                                     <%
                                         def ginDrinks = drinkList.findAll { it.alcoholType == Alcohol.GIN }
@@ -277,7 +274,7 @@
                             </div>
                         </div>
                         <div id="shooterDrinks" style="width:2500px;padding:5em;">
-                            <div class="card">
+                            <div class="card" style="overflow-y:auto;height:621px;">
                                 <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                                 <%
                                     List shooterDrinks = drinkList.findAll { it.alcoholType == Alcohol.SHOOTER }
@@ -388,7 +385,7 @@
                     </div>
                     <div id="column3" style="margin:0;padding:0;width:600px;">
                         <div id="frozenDrinks" style="">
-                            <div class="card">
+                            <div class="card" style="overflow-y:auto;height:1521px;">
                                 <p style="text-align:center;margin-bottom:0;">Custom  Frozen Drinks</p>
                                 <div style="display:inline-flex;">
                                     <div style="width:300px;height:300px;background-color:${darkMode?'black':'white'};">
