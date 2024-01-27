@@ -83,8 +83,8 @@
                                 <%
                                     def tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).take(12)
                                     for (int i=0; i<tequilaDrinks.size(); i+=2) {
-                                        Drink drink1 = (Drink) tequilaDrinks.get(i)
-                                        Drink drink2 = (Drink) tequilaDrinks.get(i+1)
+                                        Drink drink1 = tequilaDrinks.get(i)
+                                        Drink drink2 = tequilaDrinks.get(i+1)
                                 %>
                                 <div style="display:inline-flex;">
                                     <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ed969e']"/>
@@ -126,26 +126,18 @@
                                 <div class="card">
                                     <p style="text-align:center;margin-bottom:0;">Vodka Drinks</p>
                                     <%
-                                        List vodkaDrinks = Drink.findAllByAlcoholType(Alcohol.VODKA).stream().limit(12).collect()
+                                        def vodkaDrinks = Drink.findAllByAlcoholType(Alcohol.VODKA).take(12)
                                         for (int i=0; i<vodkaDrinks.size(); i+=4) {
-                                            Drink drink1 = (Drink) vodkaDrinks.get(i)
-                                            Drink drink2 = (Drink) vodkaDrinks.get(i+1)
-                                            Drink drink3 = (Drink) vodkaDrinks.get(i+2)
-                                            Drink drink4 = (Drink) vodkaDrinks.get(i+3)
+                                            Drink drink1 = vodkaDrinks.get(i)
+                                            Drink drink2 = vodkaDrinks.get(i+1)
+                                            Drink drink3 = vodkaDrinks.get(i+2)
+                                            Drink drink4 = vodkaDrinks.get(i+3)
                                     %>
                                     <div style="display:inline-flex;">
-                                        <g:link controller="drink" action="show" params="[id:drink1.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ffdf7e']"/>
-                                        </g:link>
-                                        <g:link controller="drink" action="show" params="[id:drink2.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ffdf7e']"/>
-                                        </g:link>
-                                        <g:link controller="drink" action="show" params="[id:drink3.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#ffdf7e']"/>
-                                        </g:link>
-                                        <g:link controller="drink" action="show" params="[id:drink4.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'#ffdf7e']"/>
-                                        </g:link>
+                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#ffdf7e']"/>
+                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#ffdf7e']"/>
+                                        <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#ffdf7e']"/>
+                                        <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'#ffdf7e']"/>
                                     </div>
                                     <% } // end for loop %>
                                 </div>
@@ -154,22 +146,16 @@
                                 <div class="card">
                                     <p style="text-align:center;margin-bottom:0;">Gin Drinks</p>
                                     <%
-                                        List ginDrinks = Drink.findAllByAlcoholType(Alcohol.GIN).stream().limit(9).collect()
+                                        def ginDrinks = Drink.findAllByAlcoholType(Alcohol.GIN).take(9)
                                         for (int i=0; i<ginDrinks.size(); i+=3) {
-                                            Drink drink1 = (Drink) ginDrinks.get(i)
-                                            Drink drink2 = (Drink) ginDrinks.get(i+1)
-                                            Drink drink3 = (Drink) ginDrinks.get(i+2)
+                                            Drink drink1 = ginDrinks.get(i)
+                                            Drink drink2 = ginDrinks.get(i+1)
+                                            Drink drink3 = ginDrinks.get(i+2)
                                     %>
                                     <div style="display:inline-flex;">
-                                        <g:link controller="drink" action="show" params="[id:drink1.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#46a5c8']"/>
-                                        </g:link>
-                                        <g:link controller="drink" action="show" params="[id:drink2.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#46a5c8']"/>
-                                        </g:link>
-                                        <g:link controller="drink" action="show" params="[id:drink3.id]">
-                                            <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#46a5c8']"/>
-                                        </g:link>
+                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'#46a5c8']"/>
+                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'#46a5c8']"/>
+                                        <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'#46a5c8']"/>
                                     </div>
                                     <% } %>
                                 </div>
@@ -179,42 +165,26 @@
                             <div class="card">
                                 <p style="text-align:center;margin-bottom:0;">Shooter Drinks</p>
                                 <%
-                                    List shooterDrinks = Drink.findAllByAlcoholType(Alcohol.SHOOTER).stream().limit(16).collect()
+                                    def shooterDrinks = Drink.findAllByAlcoholType(Alcohol.SHOOTER).take(16)
                                     for (int i=0; i<shooterDrinks.size(); i+=8) {
-                                        Drink drink1 = (Drink) shooterDrinks.get(i)
-                                        Drink drink2 = (Drink) shooterDrinks.get(i+1)
-                                        Drink drink3 = (Drink) shooterDrinks.get(i+2)
-                                        Drink drink4 = (Drink) shooterDrinks.get(i+3)
-                                        Drink drink5 = (Drink) shooterDrinks.get(i+4)
-                                        Drink drink6 = (Drink) shooterDrinks.get(i+5)
-                                        Drink drink7 = (Drink) shooterDrinks.get(i+6)
-                                        Drink drink8 = (Drink) shooterDrinks.get(i+7)
+                                        Drink drink1 = shooterDrinks.get(i)
+                                        Drink drink2 = shooterDrinks.get(i+1)
+                                        Drink drink3 = shooterDrinks.get(i+2)
+                                        Drink drink4 = shooterDrinks.get(i+3)
+                                        Drink drink5 = shooterDrinks.get(i+4)
+                                        Drink drink6 = shooterDrinks.get(i+5)
+                                        Drink drink7 = shooterDrinks.get(i+6)
+                                        Drink drink8 = shooterDrinks.get(i+7)
                                 %>
                                 <div style="display:inline-flex;">
-                                    <g:link controller="drink" action="show" params="[id:drink1.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink2.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink3.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink4.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink5.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink5,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink6.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink6,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink7.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink7,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink8.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink8,backgroundColor:'mediumpurple']"/>
-                                    </g:link>
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink3,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink4,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink5,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink6,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink7,backgroundColor:'mediumpurple']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink8,backgroundColor:'mediumpurple']"/>
                                 </div>
                                 <% } // end for loop %>
                             </div>
@@ -235,27 +205,19 @@
                                         />
                                     </div>
                                     <%
-                                        List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).collect()
-                                        frozenDrinks.stream().limit(1).collect()
-                                        Drink drink1 = (Drink) frozenDrinks.get(0)
+                                        List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).take(9)
+                                        Drink drink1 = frozenDrinks.get(0)
                                     %>
-                                    <g:link controller="drink" action="show" params="[id:drink1.id]">
                                         <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen']"/>
-                                    </g:link>
                                 </div>
                                 <%
-                                    frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).stream().limit(9).collect()
-                                    for (int i=1; i<9; i+=2) {
-                                        drink1 = (Drink) frozenDrinks.get(i)
-                                        Drink drink2 = (Drink) frozenDrinks.get(i+1)
+                                    for (int i=1; i<frozenDrinks.size(); i+=2) {
+                                        drink1 = frozenDrinks.get(i)
+                                        Drink drink2 = frozenDrinks.get(i+1)
                                 %>
                                 <div style="display:inline-flex;">
-                                    <g:link controller="drink" action="show" params="[id:drink1?.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen']"/>
-                                    </g:link>
-                                    <g:link controller="drink" action="show" params="[id:drink2?.id]">
-                                        <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumseagreen']"/>
-                                    </g:link>
+                                    <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen']"/>
+                                    <g:render template="/drinkCard" model="[drink:drink2,backgroundColor:'mediumseagreen']"/>
                                 </div>
                                 <% } // end for loop %>
                             </div>
