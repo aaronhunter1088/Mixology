@@ -16,7 +16,7 @@ class UserRoleService {
         UserRole.create(user, roleOfUser, flush)
     }
 
-    UserRole getRoleIfExists(User user, Role role) {
+    UserRole getUserRoleIfExists(User user, Role role) {
         UserRole.get(user.id, role.id)
     }
 }

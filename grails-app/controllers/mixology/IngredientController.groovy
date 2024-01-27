@@ -6,7 +6,6 @@ import grails.validation.ValidationException
 import enums.Unit
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import grails.orm.PagedResultList
 
 import static org.springframework.http.HttpStatus.*
 import static mixology.DrinkController.isOn
@@ -29,7 +28,7 @@ class IngredientController extends BaseController {
     def index() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = roleService.findByAuthority(enums.Role.ADMIN.name)
-        def adminRole = userRoleService.getRoleIfExists(user as User, role as Role)
+        def adminRole = userRoleService.getUserRoleIfExists(user as User, role as Role)
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -67,8 +66,8 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def customIndex() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def args = [
                 max: params.max ?: 5,
                 offset: params.offset ?: 0,
@@ -108,7 +107,7 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def role = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def role = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         def ingredient = ingredientService.get(id)
         withFormat{
             html {
@@ -162,8 +161,8 @@ class IngredientController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def adminRole = roleService.findByAuthority(enums.Role.ADMIN.name)
         def userRole = roleService.findByAuthority(enums.Role.USER.name)
-        def adminUser = userRoleService.getRoleIfExists(user as User, adminRole as Role)
-        def regularUser = userRoleService.getRoleIfExists(user as User, userRole as Role)
+        def adminUser = userRoleService.getUserRoleIfExists(user as User, adminRole as Role)
+        def regularUser = userRoleService.getUserRoleIfExists(user as User, userRole as Role)
         List<Ingredient> ingredients
         int savedCount = 0
         try {
@@ -232,8 +231,8 @@ class IngredientController extends BaseController {
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def edit(Long id) {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        def userRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
+        def adminRole = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def userRole = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.USER.name))
         def ingredient = ingredientService.get(id)
         def drinks = adminRole ? Drink.all : user.drinks as List
         render view:'edit', model:[ingredient:ingredient, user:user, drinks:drinks]
@@ -251,7 +250,7 @@ class IngredientController extends BaseController {
         }
         Ingredient ingredientToUpdate = ingredientService.get(params.id as Long)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def adminRole = userRoleService.getRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        def adminRole = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         def drinksBefore = ingredientToUpdate?.drinks*.id ?: []
         ingredientToUpdate.clearErrors()
         if ( (!ingredientToUpdate.isCustom() && adminRole) ||
@@ -335,7 +334,7 @@ class IngredientController extends BaseController {
         Ingredient ingredient = ingredientService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = roleService.findByAuthority(enums.Role.ADMIN.name)
-        def adminRole = userRoleService.getRoleIfExists(user as User, role as Role)
+        def adminRole = userRoleService.getUserRoleIfExists(user as User, role as Role)
         boolean adminIsLoggedIn = adminRole ? true : false
         if ( (!ingredient.canBeDeleted && adminRole) ||
              (ingredient.canBeDeleted) ){
