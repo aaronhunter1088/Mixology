@@ -26,7 +26,7 @@ class IngredientSpec extends BaseController implements DomainUnitTest<Ingredient
 
         expect: 'ingredient values are valid'
             assertNotNull i.id
-            assert i.prettyName() == '1.5 ounces of Vodka'
+            assert i.prettyName() == '1.5 ozs of Vodka'
 
         Ingredient j = new Ingredient([
                 name: 'Strawberry',

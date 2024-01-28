@@ -17,6 +17,7 @@ abstract class BaseController implements IController {
     def userService
     def roleService
     def userRoleService
+    def authTokenService
 
     protected static Logger logger = null
 

@@ -429,7 +429,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.drinkService = Stub(DrinkService) { get(_) >> drink2; save(_) >> drink2}
         request.method = 'PUT'
         controller.params.id = drink2.id
-        controller.params.name = 'updatedName'
+        controller.params.drinkName = 'updatedName'
         controller.params.ingredients = ["4", "5"]
 
         when:
@@ -456,13 +456,8 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.params.alcoholType = 'VODKA'
         controller.params.drinkSymbol = 'TD'
         controller.params.mixingInstructions = 'Test instructions'
-        controller.params.glass = 'HIGHBALL'
+        controller.params.suggestedGlass = 'HIGHBALL'
         controller.params.ingredients = ["1", "2", "3", "4", "5"]
-//        controller.params.ingredients = "[100 Proof Vodka : 1.5 : OZ, Orange Juice : 1.0 : SPLASH]"
-//        controller.params.ingredientName = ['100 Proof Vodka', 'Orange Juice']
-//        controller.params.ingredientAmount = [1.5, 1.5]
-//        controller.params.ingredientUnit = ['OZ', 'SPLASH']
-//        controller.params.version = 2l
         controller.update()
 
         then:

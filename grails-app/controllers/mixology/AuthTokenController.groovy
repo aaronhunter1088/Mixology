@@ -3,9 +3,9 @@ package mixology
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 
-class AuthTokenController {
+class AuthTokenController extends BaseController {
 
-    AuthTokenService authTokenService
+    def authTokenService
     def userService
     def springSecurityService
 
@@ -31,7 +31,7 @@ class AuthTokenController {
     }
 
     def save(AuthToken authToken) {
-        if (authToken == null) {
+        if (!authToken) {
             notFound()
             return
         }
@@ -43,10 +43,10 @@ class AuthTokenController {
             return
         }
 
+        flash.message = message(code: 'default.created.message', args: [message(code: 'authToken.label', default: 'AuthToken'), authToken.id])
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'authToken.label', default: 'AuthToken'), authToken.id])
-                redirect authToken
+                redirect action:"show", method:"GET", params:[id:authToken.id]
             }
             '*' { respond authToken, [status: CREATED] }
         }
@@ -84,7 +84,7 @@ class AuthTokenController {
             return
         }
 
-        authTokenService.delete(id)
+        authTokenService.delete(id, null, false)
 
         request.withFormat {
             form multipartForm {

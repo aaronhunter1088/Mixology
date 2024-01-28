@@ -50,9 +50,7 @@ class LogoutControllerSpec extends BaseController implements ControllerUnitTest<
     @Test
     void "test logging out works"() {
         given:
-        Expando e = new Expando()
-        e.fullname = testUser.firstName + ' ' + testUser.lastName
-        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> e }
+        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> testUser }
 
         when:
         controller.index()

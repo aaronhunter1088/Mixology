@@ -1,6 +1,7 @@
 package mixology.unit
 
 import enums.Unit
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
 import mixology.DrinkService
 import mixology.Ingredient
@@ -22,6 +23,7 @@ abstract class BaseController extends Specification implements DataTest {
     def userService = getDatastore().getService(UserService)
     def roleService = getDatastore().getService(RoleService)
     def userRoleService = getDatastore().getService(UserRoleService)
+    //def authTokenService = getDatastore().getService(AuthTokenService)
 
     static Logger logger = null
 

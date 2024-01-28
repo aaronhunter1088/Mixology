@@ -296,8 +296,8 @@ class DrinkController extends BaseController {
             user.attach()
             Set<Ingredient> ingredients = Ingredient.findAllByIdInList(drinkToUpdate.ingredients*.id)
             drinkToUpdate.ingredients = ingredients
-            def drinkIngredients = drinkToUpdate.ingredients
-            def customIngredients = user.ingredients
+            def drinkIngredients = drinkToUpdate.ingredients ?: [] as Set<Ingredient>
+            def customIngredients = user.ingredients ?: [] as Set<Ingredient>
             render view:'edit',
                     model:[errors:drinkToUpdate.errors,
                            drink:drinkToUpdate,

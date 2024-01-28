@@ -74,7 +74,7 @@ class AuthTokenService {
      * This method does not return anything.
      * @param id
      */
-    void delete(def id, def user, def flush) {
+    void delete(Long id, User user, boolean flush) {
         AuthToken token = null
         Map<Long,AuthToken> tokens = [:]
         if (id instanceof Long) token = get(id as Long)

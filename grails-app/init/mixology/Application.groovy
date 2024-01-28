@@ -59,7 +59,7 @@ class Application extends GrailsAutoConfiguration {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("*")
             }
-        };
+        }
     }
 
     @Bean

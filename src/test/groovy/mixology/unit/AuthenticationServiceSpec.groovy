@@ -1,7 +1,7 @@
-package mixology
-
+package mixology.unit
 
 import grails.testing.services.ServiceUnitTest
+import mixology.AuthenticationService
 import spock.lang.Specification
 
 class AuthenticationServiceSpec extends Specification implements ServiceUnitTest<AuthenticationService>{
@@ -12,8 +12,4 @@ class AuthenticationServiceSpec extends Specification implements ServiceUnitTest
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

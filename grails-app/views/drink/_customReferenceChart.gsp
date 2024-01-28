@@ -1,7 +1,7 @@
 <%@ page import="enums.*; mixology.*;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <p style="font-size:35px;margin:0;color:#a60000;"><b>NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART</b></p>
-<div style="display:block;overflow-y:auto;overflow-x:hidden;height:260px;"> <%
+<div style="display:block;overflow-y:auto;overflow-x:hidden;height:255px;"> <%
     int count = 0
     int total = drinks.size()
     int rows = (int) (total/60) + ( (total % 60!=0) ? 1 : 0)
