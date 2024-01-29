@@ -2,6 +2,7 @@ package api
 
 import enums.Alcohol
 import enums.GlassType
+import enums.Unit
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.media.Content
@@ -123,12 +124,30 @@ class DrinksPathItem {
                             .type('string')
                             .example(Alcohol.randomAlcohol),
                     ingredients:new Schema()
-                            .type('array')
-                            .items(new Schema().type('number').example(Integer.valueOf(15)))
-                            .example([15,30,65]),
-                    mixingInstruction:new Schema()
+                                .type('array')
+                                .items(new Schema()
+                                    .type('number')
+                                    .example(Integer.valueOf(15))
+                                ).items(new Schema()
+                                .type('object')
+                                .properties([
+                                    amount:new Schema()
+                                            .type('number')
+                                            .example(2.5),
+                                    name:new Schema()
+                                            .type('string')
+                                            .example('The name of your ingredient'),
+                                    unit:new Schema()
+                                            .type('string')
+                                            .example(Unit.randomUnit)
+                                ])
+                                .example([15,30,
+                                          "{'name':'ofNewDrink1','unit':'ofNewDrink1','amount':'ofNewDrink1'}",
+                                          "{'name':'ofNewDrink2','unit':'ofNewDrink2','amount':'ofNewDrink2'}"]),
+                    ),
+                            mixingInstruction:new Schema()
                             .type('string')
-                            .example('Write in your instructions here.'),
+                            .example('Add existing ingredients by passing in the ID, or add a new ingredient following the object example'),
                     name:new Schema()
                             .type('string')
                             .example('OpenAPI Drink'),

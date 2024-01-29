@@ -5,6 +5,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonParser
 import groovy.json.JsonSlurper
 import mixology.BaseController
+import mixology.Drink
 import mixology.User
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger

@@ -68,6 +68,19 @@
                 background-color:black;
                 color:white;
             }
+            .buttons {
+                background-color: black;
+                overflow: hidden;
+                padding: 0.3em;
+                -moz-box-shadow: 0 0 3px 1px black;
+                -webkit-box-shadow: 0 0 3px 1px black;
+                box-shadow: 0 0 3px 1px black;
+                margin: 0.1em 0 0 0;
+                border: none;
+            }
+            .buttons > a {
+                color:ghostwhite;
+            }
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">

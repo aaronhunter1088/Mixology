@@ -1,10 +1,14 @@
 package api.v1
 
+import enums.Unit
 import grails.converters.JSON
 import io.swagger.annotations.Api
 import mixology.Drink
 import mixology.DrinkService
+import mixology.Ingredient
+import mixology.IngredientService
 import mixology.User
+import org.apache.commons.lang.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.CrossOrigin
 
@@ -27,6 +31,8 @@ class DrinkResource extends BaseResource {
 
     @Autowired
     DrinkService drinkService
+    @Autowired
+    IngredientService ingredientService
 
     @Produces('application/json')
     @GET

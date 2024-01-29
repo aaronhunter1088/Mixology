@@ -79,7 +79,7 @@ class DrinkService {
     /**
      * This save method is used for saving a real Drink.
      * This saves the Drink itself. Then it adds the Drink
-     * to the Users drinks, then saves the user.It returns
+     * to the Users drinks, then saves the user. It returns
      * the drink.
      * A drink, other than a default drink, will always belong
      * to a user.

@@ -62,6 +62,10 @@
             border-color:white;
             color:white;
         }
+        .input-wrapper > textarea {
+            background-color:black;
+            color:white;
+        } /* Required */
         .input-wrapper > input {
             background-color:black;
             color:white;

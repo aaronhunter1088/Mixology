@@ -48,6 +48,16 @@
                 background: #fff;
                 padding: 0 5px;
             }
+            /*These two webkit scrollbars control size and color*/
+            ::-webkit-scrollbar {
+                -webkit-appearance:none;
+                width: 5px;
+            }
+            ::-webkit-scrollbar-thumb {
+                border-radius: 4px;
+                background-color: rgb(128, 128, 128);
+                box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            }
         </style>
     </head>
     <g:set var="darkMode" value="${user.darkMode}"/>
