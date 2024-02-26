@@ -121,10 +121,11 @@ class DrinkController extends BaseController {
 
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def show(Long id) {
         Drink drink = drinkService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        if (drink.custom && user == null) drink = null // if not a default drink and no user
         def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
         def adminUser = userRoleService.getUserRoleIfExists(user as User, roleAdmin as Role)
         withFormat{

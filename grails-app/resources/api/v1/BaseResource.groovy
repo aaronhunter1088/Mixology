@@ -1,12 +1,10 @@
 package api.v1
 
-import grails.converters.JSON
 import groovy.json.JsonBuilder
-import groovy.json.JsonParser
-import groovy.json.JsonSlurper
 import mixology.BaseController
-import mixology.Drink
+import mixology.Role
 import mixology.User
+import mixology.UserRole
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.context.MessageSource
@@ -19,7 +17,7 @@ import javax.ws.rs.core.Response
 
 abstract class BaseResource extends BaseController {
 
-    private static Logger logger = LogManager.getLogger(BaseResource.class)
+    static Logger logger = LogManager.getLogger(BaseResource.class)
 
     SessionLocaleResolver localeResolver
     MessageSource messageSource

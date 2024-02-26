@@ -19,10 +19,10 @@
             height: 1%;
         }
         #login .cssform .inner input[type="text"] {
-            width: 150px;
+            width: 350px;
         }
         #login .cssform .inner input[type="password"] {
-            width: 150px;
+            width: 350px;
         }
         #login .cssform .inner input[type="button"] {
             font-size: 8px;
@@ -31,20 +31,17 @@
         }
         #login .cssform .inner label {
             font-weight: bold;
-            float: left;
-            text-align: right;
+            float: right;
+            text-align:right;
             margin-left: -105px;
             width: 110px;
             padding-top: 3px;
             padding-right: 10px;
         }
-        #login #loginButtons {
+        #login .loginButtons {
             display: inline-flex;
             text-align:center;
             font-size:12px;
-        }
-        #login #remember_me_holder {
-            padding-left: 120px;
         }
         #login #submit {
             margin-left: 15px;
@@ -60,7 +57,8 @@
             color: #c33;
         }
         #login .inner .text_ {
-            width: 120px;
+            width: 200px;
+            float:right;
         }
         #login .inner .chk {
             height: 12px;
@@ -69,26 +67,26 @@
 </head>
 <div id="login" class="container-fluid">
     <div class="inner">
-        <form action="${postUrl ?: '/login/authenticate'}" method="POST" id="loginForm" class="cssform" autocomplete="off">
-            <p>
+        <form action="${postUrl ?: '/login/authenticate'}" method="POST" id="loginForm" autocomplete="off">
+            <div style="padding-bottom:5px;">
                 <label for="username"><g:message code='springSecurity.login.username.label'/>:</label>
                 <input type="text" class="text_" name="${usernameParameter ?: 'username'}" id="username"/>
-            </p>
-            <p>
+            </div>
+            <div style="padding-bottom:5px;">
                 <label for="password"><g:message code='springSecurity.login.password.label'/>:</label>
-                <input type="password" class="text_" name="${passwordParameter ?: 'password'}" id="password"/><br/>
-            </p>
+                <input type="password" class="text_" name="${passwordParameter ?: 'password'}" id="password"/>
+            </div>
             <g:if test="${false}">
                 <p id="rememberMePlaceholder">
                     <input type="checkbox" class="chk" name="${rememberMeParameter ?: 'remember-me'}" id="remember_me" <g:if test='${hasCookie}'>checked="checked"</g:if>/>
                     <label for="remember_me"><g:message code='springSecurity.login.remember.me.label'/></label>
                 </p>
             </g:if>
-            <p>
+            <div style="padding-top:7px;">
                 <input class="btn btn-primary btn-xs" type="submit" id="submit" value="${message(code:'springSecurity.login.button')}" formaction="${postUrl ?: '/login/authenticate'}" />
                 <input class="btn btn-success btn-xs" type="submit" id="create" value="${message(code:'default.register.label')}" formaction="${createLink(controller:'user',action:'create')}" />
                 <input class="btn btn-outline-danger btn-xs" type="submit" id="forgot" value="${message(code:'default.forgotPassword.label')}" formaction="${createLink(controller:'user',action:'forgotPassword')}" />
-            </p>
+            </div>
         </form>
     </div>
 </div>

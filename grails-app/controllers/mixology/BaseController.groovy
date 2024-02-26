@@ -12,12 +12,12 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 abstract class BaseController implements IController {
 
-    def drinkService
-    def ingredientService
-    def userService
-    def roleService
-    def userRoleService
-    def authTokenService
+    protected DrinkService drinkService
+    protected IngredientService ingredientService
+    protected UserService userService
+    protected RoleService roleService
+    protected UserRoleService userRoleService
+    protected AuthTokenService authTokenService
 
     protected static Logger logger = null
 

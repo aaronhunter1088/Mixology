@@ -61,7 +61,7 @@
             }
         </style>
     </head>
-    <g:set var="darkMode" value="${user.darkMode}"/>
+    <g:set var="darkMode" value="${user?.darkMode}"/>
     <g:if test="${darkMode}">
         <style>
             .input-wrapper > input,textarea {

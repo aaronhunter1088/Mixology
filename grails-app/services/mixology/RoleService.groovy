@@ -9,12 +9,13 @@ import javax.transaction.Transactional
 @Service(Role)
 class RoleService {
 
-    private static Logger logger = LogManager.getLogger(UserService.class)
+    private static Logger logger = LogManager.getLogger(RoleService.class)
 
-    @Transactional
     Role save(String authority, boolean validate = false) {
         logger.info("authority:: $authority\tvalidate:: $validate")
-        new Role(authority:authority).save(validate:validate, flush:true)
+        Role.withSession {
+            new Role(authority:authority).save(validate:validate, flush:validate)
+        }
     }
 
     Role findByAuthority(String authority) {

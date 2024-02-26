@@ -1,18 +1,13 @@
 package api.v1
 
-import enums.Unit
+import enums.*
 import grails.converters.JSON
-import io.swagger.annotations.Api
 import mixology.Drink
 import mixology.DrinkService
-import mixology.Ingredient
 import mixology.IngredientService
 import mixology.User
-import org.apache.commons.lang.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.CrossOrigin
 
-import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.DELETE
 import javax.ws.rs.GET
 import javax.ws.rs.POST

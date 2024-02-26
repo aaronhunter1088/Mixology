@@ -13,10 +13,13 @@ class UserRoleService {
 
     UserRole save(User user, Role roleOfUser, boolean flush = false) {
         logger.info("flush:: $flush")
-        UserRole.create(user, roleOfUser, flush)
+        UserRole.withNewTransaction {
+            UserRole.create(user, roleOfUser, flush)
+        }
     }
 
     UserRole getUserRoleIfExists(User user, Role role) {
-        UserRole.get(user.id, role.id)
+        if (user && role) UserRole.get(user.id, role.id)
+        else null
     }
 }
