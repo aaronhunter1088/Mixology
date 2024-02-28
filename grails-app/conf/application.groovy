@@ -58,6 +58,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 		/* Defaults */
 	[pattern: '/',               access: ['permitAll']],
+	[pattern: '/**',             access: ['permitAll']],
 	[pattern: '/error',          access: ['permitAll']],
 	[pattern: '/index',          access: ['permitAll']],
 	[pattern: '/shutdown',       access: ['permitAll']],
@@ -97,18 +98,16 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/user/delete',         access: ['ROLE_ADMIN']],
 	[pattern: '/user/darkMode',       access: ['permitAll']],
-	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
 	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
-	[pattern: '/swagger-ui/**',       access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/swagger-ui/**',       access: ['permitAll']],
 	[pattern: '/v3/api-docs',         access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 	/* Resources */
-	[pattern: '/**',                  access: ['IS_AUTHENTICATED_FULLY']],
 	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
-	[pattern: '/swagger-ui/**',       access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
+	[pattern: '/swagger-ui/**',       access: ['permitAll']],
 	[pattern: '/v3/api-docs',         access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 ]
