@@ -180,7 +180,8 @@
                                     <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                     <g:if test="${drink.custom || adminIsLoggedIn}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                        <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>
+                                        <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
+                                        <a href="#ex1" rel="modal:open">Open</a>
                                         <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
                                     </g:if>
                                 </sec:ifLoggedIn>
@@ -191,7 +192,7 @@
             </section>
         </div>
         <!-- Modal HTML embedded directly into document -->
-        <div id="sendEmailDiv" class="modal container" style="width:300px;height:150px;">
+        <div id="sendEmailDiv" class="modal" style="width:300px;height:150px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <g:form controller="drink" action="sendADrinkEmail" method="POST" name="emailDrink">
                 <input name="drinkId" id="drinkId" type="hidden" value="${this.drink.id}"/>
                 <input name="recipientName" id="recipientName" type="text" placeholder="Enter recipient name" required="required"/>
@@ -200,17 +201,21 @@
                 <input class="btn btn-outline-success btn-xs" type="submit" form="emailDrink" value="${message(code: 'default.share.label', default: 'Share')}" />
             </g:form>
         </div>
+        <div id="ex1" class="modal">
+            <p>Thanks for clicking. That felt good.</p>
+            <a href="#" rel="modal:close">Close</a>
+        </div>
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("show drink loaded");
 
                 var deleteTag = document.getElementsByClassName("fa-solid fa-trash-can");
-            });
-            function getSendeeEmail(drinkId) {
-                console.log("getSendeeEmail");
-                console.log("drinkId: " + drinkId);
 
-            }
+                // $("#share").click(function() {
+                //     console.log('share btn clicked');
+                //     $("#sendEmailDiv").modal('show');
+                // });
+            });
         </script>
     </body>
 </html>

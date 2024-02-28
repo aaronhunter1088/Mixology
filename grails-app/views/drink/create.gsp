@@ -3,10 +3,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title>Create Drinks</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
         <g:include view="includeAll.gsp"/>
@@ -199,6 +197,7 @@
                                         <legend style="margin-left:25px;width:auto;">
                                             &emsp14;Create A New Ingredient&emsp14;
                                             <a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success btn-xs" href="javascript:addRow('ingredientTableDiv', 'ingredient', '')"><strong>+</strong></a>
+                                            <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                             <hr style="height:1px;background-color:#008011">
                                         </legend>
                                         <div id="ingredientErrorMessagesDiv">

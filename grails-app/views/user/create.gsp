@@ -95,20 +95,6 @@
         </style>
     </head>
     <g:set var="user" value="${g.message(code:'user.label', args:" ", default:'User')}" />
-    <g:set var="darkMode" value="${currentUser.darkMode}"/>
-    <g:if test="${darkMode}">
-        <style>
-            .input-wrapper > input,textarea {
-                background-color:black;
-                color:white;
-                border-color:white;
-            }
-            fieldset::before {
-                background: #000;
-                color:white;
-            }
-        </style>
-    </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
             <section style="background-color:${darkMode?'black':'white'};">

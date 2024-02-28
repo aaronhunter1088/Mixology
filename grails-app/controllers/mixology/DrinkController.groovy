@@ -613,55 +613,6 @@ class DrinkController extends BaseController {
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER'])
-    def saveSharedDrink() {
-        logger.info("Implement saving shared drink")
-        if (!params) {
-            logger.info("No parameters passed in")
-            redirect(uri:'/')
-        }
-        logger.info "${params.userEmail}"
-        logger.info "${params.drinkId}"
-        // find the user. if no user found, for now do nothing
-        def user = userService.getByUsername(params.userEmail as String)
-        if (!user) {
-            logger.info("Couldn't find a user with email: ${params.userEmail}")
-            render "Couldn't find a user with email: ${params.userEmail}"
-        }
-        // if user found, find the drink. if no drink, for now, do nothing
-        def drink = drinkService.get(params.drinkId as long)
-        if (!drink) {
-            logger.info("Couldn't find a drink with id: ${params.drinkId}")
-            render "Couldn't find a drink with id: ${params.drinkId}"
-        }
-        // if drink found, save drink to user. return nothing for now
-        def message = "You successfully saved the drink, and ingredients. Next time you log in, you'll find them in your lists."
-        def copiedIngredients = Ingredient.copyAll(drink.ingredients) as List<Ingredient>
-        copiedIngredients.each {ingredient ->
-            if ( !user.ingredients.contains(ingredient) ) {
-                ingredientService.save(ingredient, user, false)
-            }
-            else {
-                message = "You already have some or all of these ingredients."
-            }
-        }
-        drink = Drink.copyDrink(drink)
-        copiedIngredients.each{ci ->
-            drink.addToIngredients(ci)
-        }
-        if ( !(user.drinks.contains(drink)) ) {
-            drinkService.save(drink, user, true)
-            render message
-        } else {
-            if (message.contains('successfully')) {
-                render "You already have this drink"
-            } else {
-                render message + " You already have this drink as well."
-            }
-        }
-    }
-
-    // TODO: move into its own service
-    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def sendADrinkEmail() {
         if (!params) {
             badRequest(flash, request,'', '')
@@ -733,6 +684,54 @@ class DrinkController extends BaseController {
             withFormat {
                 flash.message = 'There was an error sending the email'
                 redirect action:'show', params:[id:drink.id], method: "GET", status: INTERNAL_SERVER_ERROR
+            }
+        }
+    }
+
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
+    def saveSharedDrink() {
+        logger.info("Implement saving shared drink")
+        if (!params) {
+            logger.info("No parameters passed in")
+            redirect(uri:'/')
+        }
+        logger.info "${params.userEmail}"
+        logger.info "${params.drinkId}"
+        // find the user. if no user found, for now do nothing
+        def user = userService.getByUsername(params.userEmail as String)
+        if (!user) {
+            logger.info("Couldn't find a user with email: ${params.userEmail}")
+            render "Couldn't find a user with email: ${params.userEmail}"
+        }
+        // if user found, find the drink. if no drink, for now, do nothing
+        def drink = drinkService.get(params.drinkId as long)
+        if (!drink) {
+            logger.info("Couldn't find a drink with id: ${params.drinkId}")
+            render "Couldn't find a drink with id: ${params.drinkId}"
+        }
+        // if drink found, save drink to user. return nothing for now
+        def message = "You successfully saved the drink, and ingredients. Next time you log in, you'll find them in your lists."
+        def copiedIngredients = Ingredient.copyAll(drink.ingredients) as List<Ingredient>
+        copiedIngredients.each {ingredient ->
+            if ( !user.ingredients.contains(ingredient) ) {
+                ingredientService.save(ingredient, user, false)
+            }
+            else {
+                message = "You already have some or all of these ingredients."
+            }
+        }
+        drink = Drink.copyDrink(drink)
+        copiedIngredients.each{ci ->
+            drink.addToIngredients(ci)
+        }
+        if ( !(user.drinks.contains(drink)) ) {
+            drinkService.save(drink, user, true)
+            render message
+        } else {
+            if (message.contains('successfully')) {
+                render "You already have this drink"
+            } else {
+                render message + " You already have this drink as well."
             }
         }
     }
