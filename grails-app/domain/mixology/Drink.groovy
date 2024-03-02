@@ -3,7 +3,6 @@ package mixology
 import enums.*
 import exceptions.UnsupportedGlassException
 import groovy.transform.ToString
-import org.grails.io.support.ResourceLoader
 
 @ToString
 class Drink implements Serializable{
@@ -12,7 +11,7 @@ class Drink implements Serializable{
     int number
     String mixingInstructions
     GlassType suggestedGlass
-    Alcohol alcoholType
+    Alcohol alcohol
     String symbol
     boolean canBeDeleted = true
     boolean custom = true
@@ -20,8 +19,8 @@ class Drink implements Serializable{
     static constraints = {
         name(size:3..30, blank:false, nullable:false)
         symbol(size:2..2, blank:false, nullable:false)
-        number(min:1, nullable:false)
-        alcoholType(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
+        number(min:1, max:999, nullable:false)
+        alcohol(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
         mixingInstructions(blank:false, nullable:false)
         suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
         canBeDeleted(default:true)
@@ -177,7 +176,7 @@ class Drink implements Serializable{
                 number: 0,
                 mixingInstructions: 'Filler instructions',
                 suggestedGlass: GlassType.getRandomGlass(),
-                alcoholType: alcoholType,
+                alcohol: alcoholType,
                 symbol: 'Fd',
                 ingredients: Ingredient.createFillerIngredients(3),
                 canBeDeleted: true,
@@ -191,7 +190,7 @@ class Drink implements Serializable{
                 name : drink.name,
                 symbol : drink.symbol,
                 number : drink.number,
-                alcoholType : drink.alcoholType,
+                alcohol : drink.alcohol,
                 mixingInstructions : drink.mixingInstructions,
                 suggestedGlass : drink.suggestedGlass,
                 canBeDeleted : drink.canBeDeleted,

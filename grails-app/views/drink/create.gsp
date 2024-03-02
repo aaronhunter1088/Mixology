@@ -126,7 +126,7 @@
                 <p></p>
                 <div id="create-drink">
                     <div style="display:flex;justify-content:center;">
-                        <fieldset style="border:thick solid #000080;height:800px;width:1000px;">
+                        <fieldset style="border:thick solid #000080;height:auto;width:1000px;">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
                                 &emsp14;<g:message code="default.create.label" args="[entityName]" />&emsp14;
                                 <hr style="height:1px;background-color:#000080">
@@ -136,19 +136,19 @@
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="name" required id="name" />
+                                            <input type="text" name="name" required id="name" value="${params.name}" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="number" required id="number" />
+                                            <input type="text" name="number" required id="number" value="${params.number}" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
                                         <div class="input-wrapper">
-                                            <select name="alcoholType" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
+                                            <select name="alcohol" id="alcohol" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
                                                 <option label="Select One" selected disabled>Select One</option>
                                                 <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
                                                     <option value="${alcohol}">${alcohol}</option>
@@ -159,13 +159,13 @@
                                     <div class="formfield" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="symbol" value required id="symbol" />
+                                            <input type="text" name="symbol" value="${params.symbol}" required id="symbol" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for="suggestedGlass"><span class='required-indicator'>*</span> Suggested Glass</label>
                                         <div class="input-wrapper">
-                                            <select name="glass" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
+                                            <select name="glass" id="glass" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
                                                 <option label="Select One" selected disabled>Select One</option>
                                                 <g:each in="${GlassType.values()}" var="glass" name="suggestedGlass">
                                                     <option value="${glass}">${glass}</option>
@@ -176,7 +176,7 @@
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='mixingInstructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
                                         <div class="input-wrapper" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
-                                            <g:textArea form="newDrink" name="mixingInstructions" value="" rows="5" cols="40"/>
+                                            <g:textArea form="newDrink" name="mixingInstructions" value="${params.mixingInstructions}" rows="5" cols="40"/>
                                         </div>
                                     </div>
                                     <g:if test="${user.ingredients}">
@@ -279,7 +279,7 @@
                                                     first.setAttribute('text', 'Select One');
                                                     select.appendChild(first);
                                                     let option = document.createElement('option');
-                                                    <g:each in="${Unit.values()}" status="i" var="unit">
+                                                    <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" status="i" var="unit">
                                                     if ('${unit}' === ingredientUnit) option.selected = true;
                                                     option.value = '${unit}';
                                                     option.text = '${unit}';
@@ -299,7 +299,7 @@
                                                     label3.setAttribute('for', prefix + 'Amount' + rowId);
                                                     label3.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     input = document.createElement('input');
-                                                    input.setAttribute('type', 'text');
+                                                    input.setAttribute('type', 'number');
                                                     input.setAttribute('id', prefix + 'Amount');
                                                     input.setAttribute('name', prefix + 'Amount');
                                                     input.setAttribute('class', 'form-control');
@@ -450,6 +450,24 @@
                 console.log("SuccessCount:"+successCount + "===" + numberOfRows+":NumberOfRows ==> " + result);
                 return result;
             }
+            $(document).ready(function() {
+                console.log("drink create loaded");
+                if ("${params.ingredients instanceof String[]}" === "true") {
+                    let ingredients = Array.of("${params.ingredients as List<String>}");
+                    ingredients.toString().split(',').forEach(id => {
+                        let use = id.replace('[','').trim();
+                        use = use.replace(']','').trim();
+                        console.log("calling addIngredient("+use+")");
+                        addIngredient(use);
+                    });
+                    // for(let i=0; i<ingredients.length; i++) {
+                    //     console.log("calling addIngredient("+ingredients[i]+")");
+                    //     addIngredient(ingredients[i]);
+                    // }
+                } else {
+                    addIngredient("${params.ingredients}");
+                }
+            });
         </script>
     </body>
 </html>

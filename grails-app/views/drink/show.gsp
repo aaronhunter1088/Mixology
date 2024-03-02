@@ -133,10 +133,10 @@
                                             <input type="text" disabled name="number" value="${drink.number}" required="" id="number" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="alcoholType">
+                                    <div class="formfield" id="alcohol">
                                         <label for='alcohol'>Drink Type</label>
                                         <div class="input-wrapper" style="text-align:right;">
-                                            <input type="text" disabled name="alcohol" value="${drink.alcoholType}" required="" id="alcohol" />
+                                            <input type="text" disabled name="alcohol" value="${drink.alcohol}" required="" id="alcohol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinkSymbol">
@@ -175,13 +175,17 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <fieldset class="buttons">
+                            <fieldset class="buttons" style="text-align:center;">
                                 <sec:ifLoggedIn>
-                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.addToYourDrinks.label" default="Add To Your Drinks"/></g:link>
+                                    <g:if test="${!drink.custom}">
+                                        <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.addToYourDrinks.label" default="Add To Your Drinks"/></g:link>
+                                    </g:if>
                                     <g:if test="${drink.custom || adminIsLoggedIn}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
                                         <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
                                         <a href="#ex1" rel="modal:open">Open</a>
+                                    </g:if>
+                                    <g:if test="${drink.canBeDeleted}">
                                         <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
                                     </g:if>
                                 </sec:ifLoggedIn>

@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Edit An Ingredient</title>
+        <title>Edit Ingredient</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -155,7 +155,7 @@
                                                     <div style="display:block;color:${darkMode?'white':'black'};">
                                                         <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-success btn-xs" onclick="addDrink('${drink.id}');">Added</button>
                                                         <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/> ${drink} &emsp14;
+                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
                                                     </div>
                                                 </g:if>
                                             </g:each>
@@ -164,7 +164,7 @@
                                                     <div style="display:block;color:${darkMode?'white':'black'};">
                                                         <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>
                                                         <button hidden id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink.id}"/> ${drink} &emsp14;
+                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
                                                     </div>
                                                 </g:if>
                                             </g:each>

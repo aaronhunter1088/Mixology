@@ -41,7 +41,7 @@
                 <div id="drink${colRow+1}" style="display:inline-flex;padding:0;">
                     <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:${darkMode?'dodgerblue':'navy'};"><b>${drink.number}</b></p><br/>
                     <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:${darkMode?'mediumseagreen':'#155724'};"><b>${drink.symbol}</b></p>
-                    <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:${darkMode?'white':'black'};">${drink.name} (${drink.alcoholType.alcoholName.charAt(0)})</p>
+                    <p style="font-size:1em;margin-left:5px;margin-bottom:-5px;color:${darkMode?'white':'black'};">${drink.name} (${drink.alcohol.alcoholName.charAt(0)})</p>
                 </div><br/> <%
                 colRow += 1
             } %>

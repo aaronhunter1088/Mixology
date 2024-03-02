@@ -8,27 +8,30 @@ import java.security.SecureRandom
 enum Unit {
 
     // second value used for printing to screen only
-    OZ("oz"), OZS("ozs"),
-    FLUID_OZ("fluid_oz"), FL_OZS("fluid_ozs"),
-    SPLASH("splash"), SPLASHES("slashes"),
-    DASH("dash"), DASHES("dashes"),
-    SODA_CAN("soda_can"), SODA_CANS("soda_cans"),
-    TABLESPOON("tablespoon"), TABLESPOONS("tablespoons"),
-    TEASPOON("teaspoon"), TEASPOONS("teaspoons"),
-    WEDGE("wedge"), WEDGES("wedges"),
-    SCOOP("scoop"), SCOOPS("scoops"),
-    FRUIT("fruit"), FRUITS("fruits"),
-    CUP("cup"), CUPS("cups")
+    // S=Singular, P=Plural
+    OZ("oz"), OZS("ozs", 'P'),
+    FLUID_OZ("fluid_oz"), FL_OZS("fluid_ozs", 'P'),
+    SPLASH("splash"), SPLASHES("slashes", 'P'),
+    DASH("dash"), DASHES("dashes", 'P'),
+    SODA_CAN("soda_can"), SODA_CANS("soda_cans", 'P'),
+    TABLESPOON("tablespoon"), TABLESPOONS("tablespoons", 'P'),
+    TEASPOON("teaspoon"), TEASPOONS("teaspoons", 'P'),
+    WEDGE("wedge"), WEDGES("wedges", 'P'),
+    SCOOP("scoop"), SCOOPS("scoops", 'P'),
+    FRUIT("fruit"), FRUITS("fruits", 'P'),
+    CUP("cup"), CUPS("cups", 'P')
 
     String value
-    Unit(value) {
+    String type
+    Unit(String value, String type = 'S') {
         this.value = value
+        this.type = type
     }
 
     static getRandomUnit() {
         SecureRandom r = new SecureRandom()
         int randNum = r.nextInt(values().length)
-        println "random unit: ${values()[randNum]}"
+        //println "random unit: ${values()[randNum]}"
         return values()[randNum]
     }
 

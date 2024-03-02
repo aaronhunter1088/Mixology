@@ -170,7 +170,7 @@
                                             <td>${drink.name}</td>
                                             <td>${drink.symbol}</td>
                                             <td>${drink.number}</td>
-                                            <td>${drink.alcoholType}</td>
+                                            <td>${drink.alcohol}</td>
                                             <td>${(drink.ingredients as List).sort(false, {d1, d2 -> d1.id <=> d2.id })}</td>
                                             <td>${drink.suggestedGlass}</td>
                                         </tr>

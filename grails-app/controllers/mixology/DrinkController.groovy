@@ -190,7 +190,7 @@ class DrinkController extends BaseController {
         try {
             drink = createDrinkFromParams(params, user, role_admin)
             if (drink.isCustom() || enums.Role.ADMIN.is(role_admin?.role)) {
-                drinkService.save(drink, user, false)
+                drinkService.save(drink, user, true)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
@@ -255,7 +255,7 @@ class DrinkController extends BaseController {
                    drinkToUpdate.isCustom() && (!adminRole || !userRole) ) {
                 drinkToUpdate.name = params?.drinkName ?: drinkToUpdate.name
                 drinkToUpdate.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drinkToUpdate.number
-                drinkToUpdate.alcoholType = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcoholType
+                drinkToUpdate.alcohol = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcohol
                 drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
                 drinkToUpdate.suggestedGlass = params.suggestedGlass ? GlassType.valueOf(params.suggestedGlass as String) : drinkToUpdate.suggestedGlass
                 drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
@@ -450,7 +450,7 @@ class DrinkController extends BaseController {
         Drink drink = new Drink()
         drink.name = params.name
         drink.number = params.number as Integer
-        drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
+        drink.alcohol = Alcohol.valueOf(params.alcohol as String)
         drink.symbol = params.symbol
         drink.suggestedGlass = GlassType.valueOf(params.glass as String)
         drink.mixingInstructions = params.mixingInstructions
@@ -479,9 +479,9 @@ class DrinkController extends BaseController {
         List<Unit> ingredientUnits = new ArrayList<>()
         List<Double> ingredientAmounts = new ArrayList<>()
         List<Ingredient> ingredients = new ArrayList<>()
-        if (params.ingredients?.size() > 1 || params.ingredients instanceof String) {
+        if (Arrays.asList(params.ingredients).size() > 0) {
             Ingredient foundI
-            params.ingredients.each { String id ->
+            Arrays.asList(params.ingredients).each { id ->
                 foundI = Ingredient.findById ( id as Long )
                 if (foundI?.id) ingredients << foundI
             }
@@ -570,7 +570,7 @@ class DrinkController extends BaseController {
         }
     }
 
-    def saveValidIngredients(user) {
+    def saveValidIngredients(User user) {
         if (!validIngredients) {
             validIngredients = createNewIngredientsFromParams(params)
         }

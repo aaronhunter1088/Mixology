@@ -81,7 +81,7 @@
                             <div class="card" style="">
                                 <p style="text-align:center;margin-bottom:0;">Tequila Drinks</p>
                                 <%
-                                    def tequilaDrinks = Drink.findAllByAlcoholType(Alcohol.TEQUILA).take(12)
+                                    def tequilaDrinks = Drink.findAllByAlcohol(Alcohol.TEQUILA).take(12)
                                     for (int i=0; i<tequilaDrinks.size(); i+=2) {
                                         Drink drink1 = tequilaDrinks.get(i)
                                         Drink drink2 = tequilaDrinks.get(i+1)
@@ -126,7 +126,7 @@
                                 <div class="card">
                                     <p style="text-align:center;margin-bottom:0;">Vodka Drinks</p>
                                     <%
-                                        def vodkaDrinks = Drink.findAllByAlcoholType(Alcohol.VODKA).take(12)
+                                        def vodkaDrinks = Drink.findAllByAlcohol(Alcohol.VODKA).take(12)
                                         for (int i=0; i<vodkaDrinks.size(); i+=4) {
                                             Drink drink1 = vodkaDrinks.get(i)
                                             Drink drink2 = vodkaDrinks.get(i+1)
@@ -146,7 +146,7 @@
                                 <div class="card">
                                     <p style="text-align:center;margin-bottom:0;">Gin Drinks</p>
                                     <%
-                                        def ginDrinks = Drink.findAllByAlcoholType(Alcohol.GIN).take(9)
+                                        def ginDrinks = Drink.findAllByAlcohol(Alcohol.GIN).take(9)
                                         for (int i=0; i<ginDrinks.size(); i+=3) {
                                             Drink drink1 = ginDrinks.get(i)
                                             Drink drink2 = ginDrinks.get(i+1)
@@ -165,7 +165,7 @@
                             <div class="card">
                                 <p style="text-align:center;margin-bottom:0;">Shooter Drinks</p>
                                 <%
-                                    def shooterDrinks = Drink.findAllByAlcoholType(Alcohol.SHOOTER).take(16)
+                                    def shooterDrinks = Drink.findAllByAlcohol(Alcohol.SHOOTER).take(16)
                                     for (int i=0; i<shooterDrinks.size(); i+=8) {
                                         Drink drink1 = shooterDrinks.get(i)
                                         Drink drink2 = shooterDrinks.get(i+1)
@@ -205,7 +205,7 @@
                                         />
                                     </div>
                                     <%
-                                        List frozenDrinks = Drink.findAllByAlcoholType(Alcohol.FROZEN).take(9)
+                                        List frozenDrinks = Drink.findAllByAlcohol(Alcohol.FROZEN).take(9)
                                         Drink drink1 = frozenDrinks.get(0)
                                     %>
                                         <g:render template="/drinkCard" model="[drink:drink1,backgroundColor:'mediumseagreen']"/>

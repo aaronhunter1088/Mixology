@@ -15,9 +15,9 @@ class DrinkServiceSpec extends BaseController implements ServiceUnitTest<DrinkSe
 
     @Test
     void "test getting all tequila drinks"() {
-        List<Drink> tequilaDrinks = drinkService.list(null).each { Drink d -> d.alcoholType == Alcohol.TEQUILA}
+        List<Drink> tequilaDrinks = drinkService.list(null).each { Drink d -> d.alcohol == Alcohol.TEQUILA}
         tequilaDrinks.each {
-            assert it.alcoholType == Alcohol.TEQUILA
+            assert it.alcohol == Alcohol.TEQUILA
         }
     }
 }

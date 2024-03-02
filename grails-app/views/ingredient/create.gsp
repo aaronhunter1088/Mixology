@@ -91,6 +91,7 @@
                         <fieldset style="border:thick solid #008011;width:750px;" class="no-before">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
                                 &emsp14;Create An Ingredient&emsp14;<a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success" href="javascript:addRow('ingredientTable', 'ingredient')"><b>+</b></a>
+                                <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                 <hr style="height:1px;background-color:#008011">
                             </legend>
                             <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient">
@@ -105,7 +106,7 @@
                                                 <label for="ingredientUnitSelect">Unit&nbsp;<span class='required-indicator'>*</span></label>
                                                 <select id="ingredientUnitSelect" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
                                                     <option value="" label="Select One" selected disabled>Select One</option>
-                                                    <g:each in="${Unit.values()}" var="unit" name="ingredientUnit">
+                                                    <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" var="unit" name="ingredientUnit">
                                                         <option value="${unit}">${unit}</option>
                                                     </g:each>
                                                 </select>
@@ -171,7 +172,7 @@
                                             first.setAttribute('text', 'Select One');
                                             select.appendChild(first);
                                             let option = document.createElement('option');
-                                            <g:each in="${Unit.values()}" status="i" var="unit">
+                                            <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" status="i" var="unit">
                                             option.value = '${unit}';
                                             option.text = '${unit}';
                                             select.appendChild(option);

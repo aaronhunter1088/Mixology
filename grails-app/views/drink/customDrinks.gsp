@@ -78,7 +78,7 @@
                             <div class="card" style="overflow-y:auto;height:1823px;">
                                 <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
                                 <%
-                                    List tequilaDrinks = drinkList.findAll { it.alcoholType == Alcohol.TEQUILA}
+                                    List tequilaDrinks = drinkList.findAll { it.alcohol == Alcohol.TEQUILA}
                                             .sort((d1, d2) -> d1.number <=> d2.number).collect()
                                     int minimumSize = Math.max(12, (tequilaDrinks?.size() ?: 0))
                                     for (int i=0; i<minimumSize; i+=2) {
@@ -128,7 +128,7 @@
                                 <div class="card" style="overflow-y:auto;height:923px;">
                                     <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
                                     <%
-                                        List vodkaDrinks = drinkList.findAll { it.alcoholType == Alcohol.VODKA}
+                                        List vodkaDrinks = drinkList.findAll { it.alcohol == Alcohol.VODKA}
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
                                         minimumSize = Math.max(12, (vodkaDrinks?.size() ?: 0))
                                         for (int i=0; i<minimumSize; i+=4) {
@@ -171,7 +171,7 @@
                                 <div class="card" style="overflow-y:auto;height:923px;">
                                     <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
                                     <%
-                                        def ginDrinks = drinkList.findAll { it.alcoholType == Alcohol.GIN }
+                                        def ginDrinks = drinkList.findAll { it.alcohol == Alcohol.GIN }
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
                                         minimumSize = Math.max(9, (ginDrinks?.size() ?: 0))
                                         for (int i=0; i<minimumSize; i+=3) {
@@ -197,7 +197,7 @@
                             <div class="card" style="overflow-y:auto;height:623px;">
                                 <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
                                 <%
-                                    List shooterDrinks = drinkList.findAll { it.alcoholType == Alcohol.SHOOTER }
+                                    List shooterDrinks = drinkList.findAll { it.alcohol == Alcohol.SHOOTER }
                                             .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
                                     minimumSize = Math.max(16, (shooterDrinks?.size() ?: 0))
                                     for (int i=0; i<minimumSize; i+=8) {
@@ -248,7 +248,7 @@
                                         />
                                     </div>
                                     <%
-                                        List frozenDrinks = drinkList.findAll { it.alcoholType == Alcohol.FROZEN }
+                                        List frozenDrinks = drinkList.findAll { it.alcohol == Alcohol.FROZEN }
                                                 .sort((d1, d2) -> d1.number <=> d2.number).take(9).collect()
                                         Drink drink1, drink2
                                         try { drink1 = frozenDrinks.get(0) }

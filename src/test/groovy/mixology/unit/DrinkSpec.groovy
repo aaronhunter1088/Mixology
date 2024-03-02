@@ -7,7 +7,6 @@ import grails.testing.gorm.DomainUnitTest
 import mixology.Drink
 import mixology.Ingredient
 import org.junit.Test
-import spock.lang.Specification
 import spock.lang.Unroll
 
 import static groovy.test.GroovyAssert.assertNotNull
@@ -104,7 +103,7 @@ class DrinkSpec extends BaseController implements DomainUnitTest<Drink> {
     @Test
     void "test drink validation with alcoholType"() {
         when:
-        domain.alcoholType = alcohol as Alcohol
+        domain.alcohol = alcohol as Alcohol
 
         then:
         expected == domain.validate(['alcoholType'])

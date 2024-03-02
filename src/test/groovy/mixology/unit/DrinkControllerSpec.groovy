@@ -4,18 +4,13 @@ import enums.Alcohol
 import enums.GlassType
 import enums.Role
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.validation.ValidationException
 import mixology.Drink
 import mixology.DrinkController
 import mixology.DrinkService
 import mixology.Ingredient
-import mixology.IngredientService
-import mixology.RoleService
 import mixology.User
-import mixology.UserRoleService
-import mixology.UserService
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.junit.Test
@@ -463,7 +458,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         then:
         drink1.name == 'updatedName'
         drink1.number == 11
-        drink1.alcoholType == Alcohol.VODKA
+        drink1.alcohol == Alcohol.VODKA
         drink1.symbol == 'TD'
         drink1.mixingInstructions == 'Test instructions'
         drink1.suggestedGlass == GlassType.HIGHBALL
@@ -490,7 +485,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         def copied = testUser.drinks[0]
         assert copied.name == drink1.name
         assert copied.number == drink1.number
-        assert copied.alcoholType == drink1.alcoholType
+        assert copied.alcohol == drink1.alcohol
         assert copied.symbol == drink1.symbol
         assert copied.mixingInstructions == drink1.mixingInstructions
         assert copied.suggestedGlass == drink1.suggestedGlass

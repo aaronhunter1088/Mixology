@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Edit Drink</title>
+        <title><g:message code="default.edit.label" default="Edit Drink" args="['Drink']" /></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -123,12 +123,12 @@
                                             </div>
                                         </div>
                                         <div class="formfield">
-                                            <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
+                                            <label for='alcohol'><span class='required-indicator'>*</span> Drink Type</label>
                                             <div class="input-wrapper">
-                                                <select name="alcoholType" class="form-control" style="width:42%;">
+                                                <select name="alcohol" class="form-control" style="width:42%;">
                                                     <option label="Select One" selected disabled>Select One</option>
-                                                    <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
-                                                        <g:if test="${drink.alcoholType == alcohol}">
+                                                    <g:each in="${Alcohol.values()}" var="alcohol" name="alcohol">
+                                                        <g:if test="${drink.alcohol == alcohol}">
                                                             <option value="${alcohol}" selected>${alcohol}</option>
                                                         </g:if>
                                                         <g:else>
