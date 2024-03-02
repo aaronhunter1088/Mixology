@@ -70,18 +70,23 @@
             background-color:black;
             color:white;
         }
+        /*These two webkit scrollbars control size and color*/
+        ::-webkit-scrollbar {
+            -webkit-appearance:none;
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            border-radius: 4px;
+            background-color: rgb(128, 128, 128);
+            box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+        }
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
             <section style="text-align:center;background-color:${darkMode?'black':'white'};">
-                <div style="display:inline-flex;text-align:center;">
-                    <div id="navigation">
-                        <g:render template="../navigation"/>
-                    </div>
-                    <div id="header" style="margin:auto;padding-top:10px;vertical-align:middle;">
-                        <h1 style="color:${darkMode?'white':'black'};"><g:message code="default.edit.label" args="[ingredient]" /></h1>
-                    </div>
+                <div style="display:inline-flex;text-align:center;" id="navigation">
+                    <g:render template="../navigation"/>
                 </div>
                 <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
@@ -97,7 +102,7 @@
                     <div id="edit-ingredient" class="col-12 scaffold-show">
                         <fieldset style="border:thick solid #008011;">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
-                                &emsp14;<g:message code="default.edit.label" args="['Ingredient']" />&emsp14;
+                                <g:message code="default.edit.label" args="[ingredient]" />&emsp14;
                                 <hr style="height:1px;background-color:#008011;">
                             </legend>
                             <g:form resource="${this.ingredient}" method="put" name="updateIngredient">
@@ -132,16 +137,12 @@
                                     </div>
                                     <div style="display:inline-flex;">
                                         <div class="formfield">
-                                            <label for='custom'>Default Ingredient?&nbsp;</label>
-                                            <div class="input-wrapper">
-                                                <input type="checkbox" disabled name="custom" value="${!ingredient.custom}" <g:if test="${!ingredient.custom}"> checked="checked" </g:if> id="custom" />
-                                            </div>
+                                            <g:if test="${ingredient.custom}"><label>Custom Ingredient</label></g:if>
+                                            <g:if test="${!ingredient.custom}"><label>Default Ingredient</label></g:if>
                                         </div>
                                         <div class="formfield">
-                                            <label for='deletable'>Deletable?&nbsp;</label>
-                                            <div class="input-wrapper">
-                                                <input type="checkbox" disabled name="deletable" value="${ingredient.canBeDeleted}" <g:if test="${ingredient.canBeDeleted}"> checked="checked" </g:if> id="deletable" />
-                                            </div>
+                                            <g:if test="${ingredient.canBeDeleted}"><label>Deletable</label></g:if>
+                                            <g:if test="${!ingredient.canBeDeleted}"><label>Not Deletable</label></g:if>
                                         </div>
                                     </div>
                                 </div>

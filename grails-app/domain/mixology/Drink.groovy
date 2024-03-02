@@ -195,7 +195,7 @@ class Drink implements Serializable{
                 mixingInstructions : drink.mixingInstructions,
                 suggestedGlass : drink.suggestedGlass,
                 canBeDeleted : drink.canBeDeleted,
-                custom : drink.custom
+                custom : true
         ])
         copiedDrink
     }

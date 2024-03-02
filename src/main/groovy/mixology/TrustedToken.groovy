@@ -1,6 +1,7 @@
 package mixology
 
 import groovy.transform.ToString
+import org.springframework.beans.factory.annotation.Autowired
 
 import javax.servlet.ServletRequest
 import javax.servlet.http.HttpServletRequest
@@ -20,7 +21,14 @@ class TrustedToken {
     String username
     String password
 
-    public TrustedToken(){}
+
+    public TrustedToken(User user, HttpServletRequest request){
+        this.basic = true
+        this.authPresent = true
+        this.username = user.username
+        this.password = UserPasswordEncoderListener.decodePasswordConfirm(user.passwordConfirm)
+        this.httpServletRequest = request
+    }
     public TrustedToken( ServletRequest servletRequest ) {
         this.servletRequest = servletRequest
         if( servletRequest instanceof HttpServletRequest ) {

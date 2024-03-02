@@ -106,9 +106,9 @@
                 <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
                 </g:if>
-                <g:hasErrors bean="${this.newUser}">
+                <g:hasErrors bean="${this.user}">
                     <ul class="errors" role="alert">
-                        <g:eachError bean="${this.newUser}" var="error">
+                        <g:eachError bean="${this.user}" var="error">
                             <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
                         </g:eachError>
                     </ul>
@@ -142,9 +142,9 @@
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='cellphone'><span class='required-indicator'>*</span> <g:message code="user.create.cellphone" default="Cellphone"/></label>
+                                        <label for='cellphone'>&emsp;<g:message code="user.create.cellphone" default="Cellphone"/></label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="cellphone" value="" required="" id="cellphone" />
+                                            <input type="text" name="cellphone" value="" id="cellphone" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
@@ -158,13 +158,13 @@
                                         <label for='passwordConfirm'><span class='required-indicator'>*</span> <g:message code="springSecurity.login.confirm.password.label" default="Confirm Password"/></label>
                                         <div class="input-wrapper">
                                             <input type="password" name="passwordConfirm" value="" required="" id="passwordConfirm" />
-                                            <span id="togglePasswordConfirm" onclick="showPassword('PasswordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
+                                            <span id="togglePasswordConfirm" onclick="showPassword('passwordConfirm');" class="fa fa-fw fa-eye" style="position:relative;margin-top:7px;margin-left:-40px;float:right;"></span>
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='photo'><span>&nbsp;&nbsp;</span> <g:message code="user.create.photo" default="Photo"/></label>
                                         <div id="uploadPhoto" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:100%;height:32px;">
-                                            <span id="uploadSpan" style="margin-top:5px;"><g:message code="default.button.update.label" default="Upload"/></span>
+                                            <span id="uploadSpan" style="margin-top:5px;"><g:message code="default.button.upload.label" default="Upload"/></span>
                                             <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
                                         </div>
                                     </div>

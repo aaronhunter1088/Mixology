@@ -95,7 +95,7 @@
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
-        <div id="showDrink" class="" style="background-color:${darkMode?'black':'white'};">
+        <div id="showDrink" style="background-color:${darkMode?'black':'white'};">
             <section style="background-color:${darkMode?'black':'white'};">
                 <div class="container">
                     <div id="navigation" style="display:flex;justify-content:center;">
@@ -177,7 +177,7 @@
                             </fieldset>
                             <fieldset class="buttons">
                                 <sec:ifLoggedIn>
-                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
+                                    <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.addToYourDrinks.label" default="Add To Your Drinks"/></g:link>
                                     <g:if test="${drink.custom || adminIsLoggedIn}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
                                         <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%

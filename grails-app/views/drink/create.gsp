@@ -70,6 +70,11 @@
             }
         </style>
     </head>
+    <%
+        def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
+        def userService = grailsApplication.mainContext.getBean('userService')
+        def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+    %>
     <g:set var="entityName" value="${message(code: 'drink.label', args:[''], default: 'Drink')}" />
     <g:set var="darkMode" value="${user.darkMode}"/>
     <g:if test="${darkMode}">

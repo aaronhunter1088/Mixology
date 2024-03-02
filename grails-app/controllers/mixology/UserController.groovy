@@ -2,13 +2,16 @@ package mixology
 
 
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartRequest
 import javax.imageio.ImageIO
+import javax.servlet.http.HttpServletRequest
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -22,6 +25,8 @@ class UserController extends BaseController {
     def userService
     def userRoleService
     def springSecurityService
+    def authenticationService
+    def userPasswordEncoderListener
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -90,7 +95,7 @@ class UserController extends BaseController {
     def create() {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         User newUser = new User(params)
-        render view:'create', model:[newUser:newUser,currentUser:user]
+        render view:'create', model:[user:newUser,currentUser:user]
     }
 
     def save(User user) {
@@ -116,22 +121,20 @@ class UserController extends BaseController {
             def userRole = roleService.findByAuthority(enums.Role.USER.name)
             user = createUserFromParams(user, params, file)
             if (user.validate()) {
-                user = userService.save(user, true)
-                userRoleService.save(user, userRole, true)
-                request.withFormat {
-                    form multipartForm {
+                User.withTransaction { status ->
+                    try {
+                        user = userService.save(user, true)
+                        userRoleService.save(user, userRole, true)
+                        //authenticationService.checkToken(new TrustedToken(user, request as HttpServletRequest))
+                        SpringSecurityUtils.reauthenticate(user.username, user.password)
                         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                        respond user, view:'show', status:OK
+                        redirect (id:user.id, action:'show', status:OK)
+                    } catch (Exception e) {
+                        status.setRollbackOnly()
                     }
-                    '*'{ respond user, [status: OK] }
                 }
             } else {
-                request.withFormat {
-                    form multipartForm {
-                        respond user.errors, view:'create', status:BAD_REQUEST
-                    }
-                    '*'{ respond user.errors, [status:BAD_REQUEST] }
-                }
+                respond user.errors, view:'create', status:BAD_REQUEST
             }
         }
     }

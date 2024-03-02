@@ -3,6 +3,7 @@ package mixology
 import enums.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationErrors
 import grails.validation.ValidationException
 import groovy.text.GStringTemplateEngine
 
@@ -184,40 +185,35 @@ class DrinkController extends BaseController {
             return
         }
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
-        def ur = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
-        Drink drink
+        def role_admin = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
+        Drink drink = new Drink()
         try {
-            drink = createDrinkFromParams(params, user, ur)
-            if (drink.isCustom() || ur?.role == enums.Role.ADMIN) {
+            drink = createDrinkFromParams(params, user, role_admin)
+            if (drink.isCustom() || enums.Role.ADMIN.is(role_admin?.role)) {
                 drinkService.save(drink, user, false)
             }
             else {
                 drink.errors.reject("You cannot save a default drink!")
             }
         }
-        catch (ValidationException e) {
-            respond drink?.errors, view:'create', status: BAD_REQUEST
-            return
+        catch (Exception e) {
+            logger.error("ValidationError: ${e.getMessage()}")
+            if (!(e instanceof ValidationErrors)) {
+                drink.errors.reject('default.created.error.message', ['Drink', e.getMessage()] as Object[], '')
+            }
         }
 
-        if (drink.errors.hasErrors()) {
-            request.withFormat {
-                form multipartForm {
-                    respond drink?.errors, [status: FORBIDDEN]
-                }
-                '*' { respond drink, [status: FORBIDDEN] }
-            }
-        } else {
-            request.withFormat {
-                form multipartForm {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
-                    redirect drink
-                }
-                '*' { respond drink, [status: CREATED] }
-            }
-        }
         // clear the list
         validIngredients.clear()
+
+        if (drink.errors.hasErrors()) {
+            //respond drink?.errors, [status:BAD_REQUEST]
+            respond drink.errors, view:'create', status:BAD_REQUEST
+        }
+        else {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
+            respond drink, [status: CREATED]
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
@@ -346,7 +342,7 @@ class DrinkController extends BaseController {
             copiedDrink = drinkService.save(copiedDrink, user, true)
             user.clearErrors()
             if (!user.hasErrors()) {
-                flash.message = message(code: 'default.copied.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name, user], default: "Copied $copiedDrink to $user. You can edit your version as you see fit.") as Object
+                flash.message = message(code:'default.copied.message', args:[drink.name, (user.firstName+' '+user.lastName)], default: "Copied ${copiedDrink.name} to ${user.firstName} ${user.lastName}. You can edit your version as you see fit.") as Object
                 request.withFormat {
                     form multipartForm {
                         respond drink, view:'show'
@@ -451,17 +447,16 @@ class DrinkController extends BaseController {
                 if (ingredient?.id) validIngredients.add(ingredient)
             }
         }
-        Drink drink = new Drink([
-                name: params.name,
-                number: params.number as Integer,
-                alcoholType: Alcohol.valueOf(params.alcoholType as String),
-                symbol: params.symbol,
-                suggestedGlass: GlassType.valueOf(params.glass as String),
-                mixingInstructions: params.mixingInstructions,
-                ingredients: validIngredients
+        Drink drink = new Drink()
+        drink.name = params.name
+        drink.number = params.number as Integer
+        drink.alcoholType = Alcohol.valueOf(params.alcoholType as String)
+        drink.symbol = params.symbol
+        drink.suggestedGlass = GlassType.valueOf(params.glass as String)
+        drink.mixingInstructions = params.mixingInstructions
+        drink.ingredients = validIngredients
                 //,custom: Boolean.valueOf(params.custom as String)
                 //,canBeDeleted: ( Boolean.valueOf(params.canBeDeleted as String) && Boolean.valueOf(params.custom as String) )
-        ])
         if ( role && role?.role == enums.Role.ADMIN ) {
             drink.canBeDeleted = false
             drink.custom = false
@@ -499,7 +494,7 @@ class DrinkController extends BaseController {
                 ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
             } else {
                 ingredientNames.add(params.ingredientName as String)
-                ingredientUnits.add(Unit.valueOf((params.ingredientUnit as String).trim()))
+                ingredientUnits.add(Unit.valueOf((params.ingredientUnit as String)?.trim()))
                 ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
             }
         }
