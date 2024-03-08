@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse
 class IngredientController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(IngredientController.class)
+    Set<Ingredient> validIngredients = new HashSet<Ingredient>()
 
     def drinkService
     def ingredientService
@@ -163,10 +164,10 @@ class IngredientController extends BaseController {
         def userRole = roleService.findByAuthority(enums.Role.USER.name)
         def adminUser = userRoleService.getUserRoleIfExists(user as User, adminRole as Role)
         def regularUser = userRoleService.getUserRoleIfExists(user as User, userRole as Role)
-        List<Ingredient> ingredients
+        def ingredients
         int savedCount = 0
         try {
-            ingredients = createIngredientsFromParams(params, adminUser)
+            ingredients = validIngredients.size() > 0 ? validIngredients : new ArrayList<Ingredient>()
             ingredients.each { ingredient ->
                 Ingredient saved = null
                 if (
@@ -199,22 +200,20 @@ class IngredientController extends BaseController {
         }
         catch (ValidationException e) {
             respond errorI?.errors, view:'create', status: BAD_REQUEST
+            validIngredients.clear()
             return
         }
 
         List<Long> ingredientIds = ingredients*.id
         ingredientIds.removeAll([null])
+        validIngredients.clear()
         if (!ingredientIds.isEmpty()) {
-            request.withFormat {
-                form multipartForm {
-                    if (ingredientIds.size() == 1) {
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
-                    } else {
-                        flash.message = ''
-                    }
-                    redirect(controller:'ingredient',view:'show')
-                }
-                '*' { respond ingredients.get(0), view:'show', status:CREATED }
+            if (ingredientIds.size() == 1) {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+                redirect(controller:'ingredient',action:'show',params:[id:ingredientIds.get(0)])
+            } else {
+                flash.message = "${ingredientIds.size()} ingredients were created"
+                redirect(controller:'ingredient',action:'create')
             }
         }
         else {
@@ -372,37 +371,17 @@ class IngredientController extends BaseController {
      * @return
      */
     def createIngredientsFromParams(def params, def adminUser) {
-        List<String> ingredientNames = new ArrayList<>()
-        List<Unit> units = new ArrayList<>()
-        List<Double> ingredientAmounts = new ArrayList<>()
-        List<Ingredient> ingredients = new ArrayList<>()
-        if (params.ingredientName.size() > 1 && !(params.ingredientName instanceof String)) {
-            params.ingredientName.each {
-                ingredientNames.add(it as String)
-            }
-            params.ingredientUnit.each {units.add(it as Unit)} //{units.add(Unit.valueOf(it as String))}
-            params.ingredientAmount.each {
-                ingredientAmounts.add(Double.parseDouble(it as String))
-            }
-        } else {
-            ingredientNames.add(params.ingredientName as String)
-            units.add(params.ingredientUnit as Unit)
-            ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
+        Ingredient ingredient = new Ingredient([
+                name: params.ingredientName as String,
+                unit: params.ingredientUnit as Unit,
+                amount: Double.parseDouble(params.ingredientAmount as String)
+        ])
+        if (adminUser) {
+            ingredient.canBeDeleted = false
+            ingredient.custom = false
         }
-        int createNum = ingredientNames.size()
-        for (int i=0; i<createNum; i++) {
-            Ingredient ingredient = new Ingredient([
-                    name: ingredientNames.get(i),
-                    unit: units.get(i),
-                    amount: ingredientAmounts.get(i)
-            ])
-            if (adminUser) {
-                ingredient.canBeDeleted = false
-                ingredient.custom = false
-            }
-            ingredients.add(ingredient)
-        }
-        return ingredients
+
+        return ingredient
     }
 
     /**
@@ -429,15 +408,17 @@ class IngredientController extends BaseController {
      */
     def validateIngredient(params) {
         println "Ingredients: API call # ${params.apiCallCount}"
-        Ingredient ingredient = createIngredientsFromParams(params, null).get(0)
+        Ingredient ingredient = createIngredientsFromParams(params, null)
         boolean result = alreadyExists(ingredient)
         response.setContentType("text/json")
         if (result) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient has already been created")
+            validIngredients.clear()
         } else {
             response.getWriter().append("Ingredient is valid")
             response.getWriter().flush();
             response.setStatus(HttpServletResponse.SC_OK) // 200
+            validIngredients.add(ingredient)
         }
     }
 

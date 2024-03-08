@@ -94,147 +94,140 @@
                                 <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                 <hr style="height:1px;background-color:#008011">
                             </legend>
-                            <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient">
-                                <form id="ingredientForm" name="ingredientForm">
-                                    <div id="ingredientTable" style="position:relative;display:block;padding:20px;">
-                                        <div id="ingredientRow1" style="position:relative;display:flex;justify-content:space-evenly;">
-                                            <div style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                                <label for="ingredientName">Name&nbsp;<span class='required-indicator'>*</span></label>
-                                                <input type="text" id="ingredientName" name="ingredientName" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            </div>
-                                            <div style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                                <label for="ingredientUnitSelect">Unit&nbsp;<span class='required-indicator'>*</span></label>
-                                                <select id="ingredientUnitSelect" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
-                                                    <option value="" label="Select One" selected disabled>Select One</option>
-                                                    <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" var="unit" name="ingredientUnit">
-                                                        <option value="${unit}">${unit}</option>
-                                                    </g:each>
-                                                </select>
-                                            </div>
-                                            <div style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                                <label for="ingredientAmount">Amount&nbsp;<span class='required-indicator'>*</span></label>
-                                                <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            </div>
-                                            <div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                                <a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>
-                                            </div>
+                            <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient" onsubmit="return isValid();">
+%{--                                <form id="ingredientForm" name="ingredientForm">--}%
+%{--                                </form>--}%
+                                <div id="ingredientTable" style="position:relative;display:block;padding:20px;">
+                                    <div id="ingredientRow1" style="position:relative;display:flex;justify-content:space-evenly;">
+                                        <div id="ingredientNameColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <label for="ingredientName">Name&nbsp;<span class='required-indicator'>*</span></label>
+                                            <input type="text" id="ingredientName" name="ingredientName" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         </div>
-                                        <!--
-                                        New rows will be added here
-                                        -->
+                                        <div id="ingredientUnitColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <label for="ingredientUnitSelect">Unit&nbsp;<span class='required-indicator'>*</span></label>
+                                            <select id="ingredientUnitSelect" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
+                                                <option value="" label="Select One" selected disabled>Select One</option>
+                                                <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" var="unit" name="ingredientUnit">
+                                                    <option value="${unit}">${unit}</option>
+                                                </g:each>
+                                            </select>
+                                        </div>
+                                        <div id="ingredientAmountColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <label for="ingredientAmount">Amount&nbsp;<span class='required-indicator'>*</span></label>
+                                            <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                        </div>
+                                        <div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>
+                                        </div>
                                     </div>
-                                    <script>
-                                        function addRow(tbody, prefix) {
-                                            rowId++;
-                                            console.log("clicked +... adding row " + rowId)
-                                            // create Name
-                                            let div = document.createElement('div');
-                                            div.setAttribute('id', prefix + 'Row' + rowId)
-                                            //style="position:relative;display:flex;justify-content:space-evenly;"
-                                            div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;');
-                                            let div1 = document.createElement('div');
-                                            div1.setAttribute('id', prefix + 'NameRow' + rowId);
-                                            div1.setAttribute('name', prefix + 'NameRow' + rowId);
-                                            //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
-                                            div1.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                            let label1 = document.createElement('label');
-                                            label1.setAttribute('for', prefix + 'Name' + rowId);
-                                            label1.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
-                                            let input = document.createElement('input');
-                                            input.setAttribute('type', 'text');
-                                            input.setAttribute('id', prefix + 'Name');
-                                            input.setAttribute('name', prefix + 'Name' + rowId);
-                                            input.setAttribute('class', 'form-control');
-                                            input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
-                                            input.setAttribute('required', 'true');
-                                            div1.appendChild(label1);
-                                            div1.appendChild(input);
-                                            div.appendChild(div1);
-                                            // create Unit
-                                            let div2 = document.createElement('div');
-                                            div2.setAttribute('id', prefix + 'UnitRow' + rowId);
-                                            div2.setAttribute('name', prefix + 'UnitRow' + rowId);
-                                            //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
-                                            div2.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                            let label2 = document.createElement('label');
-                                            label2.setAttribute('for', prefix + 'Unit' + rowId);
-                                            label2.innerHTML = 'Unit' + '&nbsp;<span class=\'required-indicator\'>*</span>';
-                                            let select = document.createElement('select');
-                                            select.setAttribute('name', 'ingredientUnit' + rowId);
-                                            select.setAttribute('required', 'true');
-                                            select.setAttribute('style', 'background-color:${darkMode?'black':'white'};')
-                                            select.setAttribute('class', 'form-control')
-                                            //style="background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
-                                            let first = document.createElement('option');
-                                            first.setAttribute('label', 'Select One');
-                                            first.selected = true;
-                                            first.disabled = true;
-                                            first.setAttribute('text', 'Select One');
-                                            select.appendChild(first);
-                                            let option = document.createElement('option');
-                                            <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" status="i" var="unit">
-                                            option.value = '${unit}';
-                                            option.text = '${unit}';
-                                            select.appendChild(option);
-                                            option = document.createElement('option');
-                                            </g:each>
-                                            div2.appendChild(label2);
-                                            div2.appendChild(select);
-                                            div.appendChild(div2);
-                                            // create Amount
-                                            let div3 = document.createElement('div');
-                                            div3.setAttribute('id', prefix + 'AmountRow' + rowId);
-                                            div3.setAttribute('name', prefix + 'AmountRow' + rowId);
-                                            //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
-                                            div3.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                            let label3 = document.createElement('label');
-                                            label3.setAttribute('for', prefix + 'Amount' + rowId);
-                                            label3.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
-                                            input = document.createElement('input');
-                                            input.setAttribute('type', 'text');
-                                            input.setAttribute('id', prefix + 'Amount');
-                                            input.setAttribute('name', prefix + 'Amount');
-                                            input.setAttribute('class', 'form-control');
-                                            input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
-                                            input.setAttribute('required', 'true');
-                                            div3.appendChild(label3);
-                                            div3.appendChild(input);
-                                            div.appendChild(div3);
-                                            // create X button
-                                            let div4 = document.createElement('div');
-                                            div4.setAttribute('id', prefix + 'CancelRow' + rowId);
-                                            div4.setAttribute('name', prefix + 'CancelRow' + rowId);
-                                            //<div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            div4.setAttribute('style', 'padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                            let a = document.createElement('a');
-                                            a.setAttribute('class', 'btn btn-outline-danger btn-xs');
-                                            a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
-                                            //<a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>
-                                            a.setAttribute('style', 'height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;');
-                                            let bold = document.createElement('B');
-                                            let X = document.createTextNode('X');
-                                            bold.appendChild(X);
-                                            a.appendChild(bold);
-                                            div4.appendChild(a);
-                                            div.appendChild(div4);
-                                            //let hr = document.createElement('hr');
-                                            //hr.setAttribute('id', prefix + 'HR' + rowId);
-                                            //hr.setAttribute('style', 'background-color:${darkMode?'white':'black'};');
-                                            //$('#'+tbody).append(hr);
-                                            $('#'+tbody).append(div);
-                                        }
-                                        function removeRow(trId) {
-                                            // TODO: When a row is removed, the row ids should be updated
-                                            //  to reflect the proper row count.
-                                            //rowId--;
-                                            $('#'+trId).remove();
-                                            //$('#'+'ingredientHR'+trId+1).remove();
-                                            console.log("clicked X... removing row")
-                                        }
-                                    </script>
-                                </form>
+                                </div>
+                                <script>
+                                    function addRow(tbody, prefix) {
+                                        rowId++;
+                                        console.log("clicked +... adding row " + rowId)
+                                        let div = document.createElement('div');
+                                        div.setAttribute('id', prefix + 'Row' + rowId)
+                                        //style="position:relative;display:flex;justify-content:space-evenly;"
+                                        div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;');
+                                        let nameDiv = document.createElement('div');
+                                        // create Name
+                                        nameDiv.setAttribute('id', prefix + 'NameColumn' + rowId);
+                                        nameDiv.setAttribute('name', prefix + 'NameColumn' + rowId);
+                                        //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
+                                        nameDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                        let labelForName = document.createElement('label');
+                                        labelForName.setAttribute('for', prefix + 'Name' + rowId);
+                                        labelForName.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        let input = document.createElement('input');
+                                        input.setAttribute('type', 'text');
+                                        input.setAttribute('id', prefix + 'Name');
+                                        input.setAttribute('name', prefix + 'Name' + rowId);
+                                        input.setAttribute('class', 'form-control');
+                                        input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
+                                        input.setAttribute('required', 'true');
+                                        nameDiv.appendChild(labelForName);
+                                        nameDiv.appendChild(input);
+                                        div.appendChild(nameDiv);
+                                        // create Unit
+                                        let unitDiv = document.createElement('div');
+                                        unitDiv.setAttribute('id', prefix + 'UnitColumn' + rowId);
+                                        unitDiv.setAttribute('name', prefix + 'UnitColumn' + rowId);
+                                        //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
+                                        unitDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                        let labelForUnit = document.createElement('label');
+                                        labelForUnit.setAttribute('for', prefix + 'Unit' + rowId);
+                                        labelForUnit.innerHTML = 'Unit' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        let select = document.createElement('select');
+                                        select.setAttribute('name', prefix + 'Unit' + rowId);
+                                        select.setAttribute('required', 'true');
+                                        select.setAttribute('style', 'background-color:${darkMode?'black':'white'};')
+                                        select.setAttribute('class', 'form-control')
+                                        //style="background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
+                                        let first = document.createElement('option');
+                                        first.setAttribute('label', 'Select One');
+                                        first.selected = true;
+                                        first.disabled = true;
+                                        first.setAttribute('text', 'Select One');
+                                        select.appendChild(first);
+                                        let option = document.createElement('option');
+                                        <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" status="i" var="unit">
+                                        option.value = '${unit}';
+                                        option.text = '${unit}';
+                                        select.appendChild(option);
+                                        option = document.createElement('option');
+                                        </g:each>
+                                        unitDiv.appendChild(labelForUnit);
+                                        unitDiv.appendChild(select);
+                                        div.appendChild(unitDiv);
+                                        // create Amount
+                                        let amountDiv = document.createElement('div');
+                                        amountDiv.setAttribute('id', prefix + 'AmountColumn' + rowId);
+                                        amountDiv.setAttribute('name', prefix + 'AmountColumn' + rowId);
+                                        //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
+                                        amountDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                        let labelForAmount = document.createElement('label');
+                                        labelForAmount.setAttribute('for', prefix + 'Amount' + rowId);
+                                        labelForAmount.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        input = document.createElement('input');
+                                        input.setAttribute('type', 'text');
+                                        input.setAttribute('id', prefix + 'Amount');
+                                        input.setAttribute('name', prefix + 'Amount' + rowId);
+                                        input.setAttribute('class', 'form-control');
+                                        input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
+                                        input.setAttribute('required', 'true');
+                                        amountDiv.appendChild(labelForAmount);
+                                        amountDiv.appendChild(input);
+                                        div.appendChild(amountDiv);
+                                        // create X button
+                                        let div4 = document.createElement('div');
+                                        div4.setAttribute('id', prefix + 'CancelRow' + rowId);
+                                        div4.setAttribute('name', prefix + 'CancelRow' + rowId);
+                                        //<div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                        div4.setAttribute('style', 'padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                        let a = document.createElement('a');
+                                        a.setAttribute('class', 'btn btn-outline-danger btn-xs');
+                                        a.setAttribute('href', 'javascript:removeRow("'+prefix + 'Row' + rowId + '")');
+                                        //<a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>
+                                        a.setAttribute('style', 'height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;');
+                                        let bold = document.createElement('B');
+                                        let X = document.createTextNode('X');
+                                        bold.appendChild(X);
+                                        a.appendChild(bold);
+                                        div4.appendChild(a);
+                                        div.appendChild(div4);
+                                        $('#'+tbody).append(div);
+                                    }
+                                    function removeRow(trId) {
+                                        --rowId;
+                                        $('#'+trId).remove();
+                                        console.log("clicked X... removing row, rowCount: "+rowId);
+                                    }
+                                </script>
+                                <!--
+                                New rows will be added here
+                                -->
                                 <div class="formfield" style="margin-top:25px;padding-left:10px;text-align:center;">
-                                    <button class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save">Create Ingredient(s)</button>
+                                    <input class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save" value="Create Ingredients"/>
                                 </div>
                             </g:form>
                         </fieldset>
@@ -244,8 +237,10 @@
         </div>
         <script type="text/javascript">
             function isValid() {
-                let tableRows = $("#ingredientTable > tbody > tr");
+                //alert("isValid");
+                let tableRows = $("#ingredientTable > div");
                 let rowCount = tableRows.length;
+                console.log('rowCount: ' + rowCount);
                 let row;
                 let result = false;
                 let successCount = 0;
@@ -253,9 +248,9 @@
                 let ajaxCalls = 0;
                 tableRows.each(function () {
                     row = $(this);
-                    let cellValue1 = row.find('td:nth-child(1) > input').val();
-                    let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
-                    let cellValue3 = row.find('td:nth-child(3) > input').val();
+                    let cellValue1 = row.find('div:nth-child(1) > input').val();
+                    let cellValue2 = row.find('div:nth-child(2) > select > option:selected').val();
+                    let cellValue3 = row.find('div:nth-child(3) > input').val();
                     $.ajax({
                         headers: {
                             accept: "application/json",
@@ -268,7 +263,7 @@
                             ingredientName: cellValue1,
                             ingredientUnit: cellValue2,
                             ingredientAmount: cellValue3,
-                            apiCallCount: ajaxCalls
+                            apiCallCount: ++ajaxCalls
                         },
                         statusCode: {
                             200: function(data) {
@@ -300,11 +295,7 @@
                         }
                     });
                 });
-                if (successCount === rowCount) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return successCount === rowCount;
             }
         </script>
     </body>

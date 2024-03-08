@@ -101,9 +101,6 @@
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <script type="text/javascript">
-            $(document).ready(function() {
-                console.log("create drink page loaded");
-            });
             let rowId = 0;
         </script>
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
@@ -136,49 +133,49 @@
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="name" required id="name" value="${params.name}" />
+                                            <input type="text" name="name" required id="name" value="${params?.name}" />
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Name -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="number" required id="number" value="${params.number}" />
+                                            <input type="text" name="number" required id="number" value="${params?.number}" />
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Number -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
                                         <div class="input-wrapper">
                                             <select name="alcohol" id="alcohol" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
-                                                <option label="Select One" selected disabled>Select One</option>
+                                                <option label="Select One" <g:if test="${params.alcohol == null}">selected</g:if> disabled>Select One</option>
                                                 <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
-                                                    <option value="${alcohol}">${alcohol}</option>
+                                                    <option value="${alcohol}" <g:if test="${params.alcohol != null && params.alcohol == alcohol}">selected</g:if>>${alcohol}</option>
                                                 </g:each>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Alcohol -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="symbol" value="${params.symbol}" required id="symbol" />
+                                            <input type="text" name="symbol" value="${params?.symbol}" required id="symbol" />
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Symbol -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for="suggestedGlass"><span class='required-indicator'>*</span> Suggested Glass</label>
                                         <div class="input-wrapper">
                                             <select name="glass" id="glass" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
-                                                <option label="Select One" selected disabled>Select One</option>
+                                                <option label="Select One" <g:if test="${params.glass == null}">selected</g:if> disabled>Select One</option>
                                                 <g:each in="${GlassType.values()}" var="glass" name="suggestedGlass">
-                                                    <option value="${glass}">${glass}</option>
+                                                    <option value="${glass}" <g:if test="${params.glass == glass}">selected</g:if>>${glass}</option>
                                                 </g:each>
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Glass -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
                                         <label for='mixingInstructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
                                         <div class="input-wrapper" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
-                                            <g:textArea form="newDrink" name="mixingInstructions" value="${params.mixingInstructions}" rows="5" cols="40"/>
+                                            <g:textArea form="newDrink" name="mixingInstructions" value="${params?.mixingInstructions}" rows="5" cols="40"/>
                                         </div>
-                                    </div>
+                                    </div> <!-- Drink Mixing Instructions -->
                                     <g:if test="${user.ingredients}">
                                         <div class="formfield" style="color:${darkMode?'white':'black'};">
                                             <label><span class='required-indicator'>*</span> Ingredients</label><br>
@@ -194,7 +191,7 @@
                                                     </div>
                                                 </g:each>
                                             </div>
-                                        </div>
+                                        </div> <!-- Drink Ingredients -->
                                     </g:if>
                                 </div>
                                 <form id="ingredientForm" name="ingredientForm" style="">
@@ -207,11 +204,8 @@
                                         </legend>
                                         <div id="ingredientErrorMessagesDiv">
                                             <h3 id="ingredientErrorMessage" role="alert">${errorMessage}</h3>
-                                        </div>
+                                        </div> <!-- New Ingredient errors -->
                                         <div id="ingredientTableDiv" class="tableFixHead" style="height:525px;">
-                                            <!--
-                                            New rows will be added here
-                                            -->
                                             <script type="text/javascript">
                                                 function addRow(tbody, prefix, ingredient) {
                                                     console.log("clicked +... adding row")
@@ -233,16 +227,15 @@
                                                         //console.log("chosen unit: " + ingredientUnit);
                                                     }
                                                     rowId++;
-                                                    // create Name
                                                     let div = document.createElement('div');
                                                     div.setAttribute('id', prefix + 'Row' + rowId)
                                                     div.setAttribute('class', 'input-wrapper');
                                                     div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;padding:0 5px;height:70px;');
+                                                    // create Name
                                                     let div1 = document.createElement('div');
                                                     div1.setAttribute('id', prefix + 'Id' + rowId);
                                                     div1.setAttribute('name', prefix + 'Name' + rowId);
                                                     div1.setAttribute('class','form-control');
-                                                    //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
                                                     div1.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                                     let label1 = document.createElement('label');
                                                     label1.setAttribute('for', prefix + 'Name' + rowId);
@@ -345,7 +338,9 @@
                                                     console.log("rowId count is at " + rowId)
                                                 }
                                             </script>
-
+                                            <!--
+                                            New rows will be added here
+                                            -->
                                         </div>
                                     </fieldset>
                                 </form>
@@ -380,7 +375,7 @@
                 removeButton.hidden = true;
             }
             function isValid() {
-                let tableRows = $("#ingredientTable > tbody > tr");
+                let tableRows = $("#ingredientTableDiv > tbody > tr");
                 let numberOfRows = tableRows.length
                 let successCount = 0;
                 let failCount = 0;
@@ -452,20 +447,16 @@
             }
             $(document).ready(function() {
                 console.log("drink create loaded");
-                if ("${params.ingredients instanceof String[]}" === "true") {
-                    let ingredients = Array.of("${params.ingredients as List<String>}");
+                if ("${params?.ingredients instanceof String[]}" === "true") {
+                    let ingredients = Array.of("${params?.ingredients as List<String>}");
                     ingredients.toString().split(',').forEach(id => {
                         let use = id.replace('[','').trim();
                         use = use.replace(']','').trim();
                         console.log("calling addIngredient("+use+")");
                         addIngredient(use);
                     });
-                    // for(let i=0; i<ingredients.length; i++) {
-                    //     console.log("calling addIngredient("+ingredients[i]+")");
-                    //     addIngredient(ingredients[i]);
-                    // }
                 } else {
-                    addIngredient("${params.ingredients}");
+                    addIngredient("${params?.ingredients}");
                 }
             });
         </script>

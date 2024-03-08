@@ -198,8 +198,9 @@ class DrinkController extends BaseController {
         }
         catch (Exception e) {
             logger.error("ValidationError: ${e.getMessage()}")
-            if (!(e instanceof ValidationErrors)) {
-                drink.errors.reject('default.created.error.message', ['Drink', e.getMessage()] as Object[], '')
+            if (!(e instanceof grails.validation.ValidationException)) {
+                drink.errors.reject('default.created.error.message',
+                        ['Drink', e.message] as Object[], '')
             }
         }
 
@@ -486,7 +487,8 @@ class DrinkController extends BaseController {
                 if (foundI?.id) ingredients << foundI
             }
             return ingredients
-        } else {
+        }
+        else {
             def options = (params.ingredients as String)?.split(':')
             if (options && options.size() > 2) {
                 ingredientNames.add(options[0] as String)
@@ -497,22 +499,22 @@ class DrinkController extends BaseController {
                 ingredientUnits.add(Unit.valueOf((params.ingredientUnit as String)?.trim()))
                 ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
             }
-        }
-        int createNum = ingredientNames.size()
-        for (int i=0; i<createNum; i++) {
-            Ingredient ingredient = new Ingredient([
-                    name: ingredientNames.get(i),
-                    unit: ingredientUnits.get(i),
-                    amount: ingredientAmounts.get(i)
-            ])
-            if (alreadyExists(ingredient)) {
-                ingredient = getExisting(ingredient)
-                if (ingredient?.id) ingredients.add(ingredient)
-            } else {
-                ingredients.add(ingredient)
+            int createNum = ingredientNames.size()
+            for (int i=0; i<createNum; i++) {
+                Ingredient ingredient = new Ingredient([
+                        name: ingredientNames.get(i),
+                        unit: ingredientUnits.get(i),
+                        amount: ingredientAmounts.get(i)
+                ])
+                if (alreadyExists(ingredient)) {
+                    ingredient = getExisting(ingredient)
+                    if (ingredient?.id) ingredients.add(ingredient)
+                } else {
+                    ingredients.add(ingredient)
+                }
             }
+            return ingredients
         }
-        return ingredients
     }
 
     /**

@@ -19,10 +19,10 @@ class Drink implements Serializable{
     static constraints = {
         name(size:3..30, blank:false, nullable:false)
         symbol(size:2..2, blank:false, nullable:false)
-        number(min:1, max:999, nullable:false)
+        number(min:1, max:999, nullable:false, validator: {try{Integer.parseInt(it as String)} catch (Exception e){ return ['invalid.number'] } })
         alcohol(blank:false, nullable:false, validator: { if (!(it in Alcohol.values())) return ['invalid.alcoholType'] })
         mixingInstructions(blank:false, nullable:false)
-        suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.glassType'] })
+        suggestedGlass(blank:false, nullable:false, validator: { if (!(it in GlassType.values())) return ['invalid.suggestedGlass'] })
         canBeDeleted(default:true)
         custom(default:true)
         ingredients(minSize:0, nullable:true)
