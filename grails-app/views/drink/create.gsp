@@ -208,7 +208,8 @@
                                         <div id="ingredientTableDiv" class="tableFixHead" style="height:525px;">
                                             <script type="text/javascript">
                                                 function addRow(tbody, prefix, ingredient) {
-                                                    console.log("clicked +... adding row")
+                                                    rowId++;
+                                                    console.log("clicked +... adding row, rowCount " + rowId);
                                                     // increase field set size as table grows until 10 rows. then it stops and table is scrollable
                                                     if (rowId <= 7) {
                                                         let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
@@ -226,7 +227,7 @@
                                                         ingredientUnit = values[2].trim().toUpperCase().replaceAll(' ', '_');
                                                         //console.log("chosen unit: " + ingredientUnit);
                                                     }
-                                                    rowId++;
+
                                                     let div = document.createElement('div');
                                                     div.setAttribute('id', prefix + 'Row' + rowId)
                                                     div.setAttribute('class', 'input-wrapper');
@@ -294,7 +295,7 @@
                                                     input = document.createElement('input');
                                                     input.setAttribute('type', 'number');
                                                     input.setAttribute('id', prefix + 'Amount');
-                                                    input.setAttribute('name', prefix + 'Amount');
+                                                    input.setAttribute('name', prefix + 'Amount' + rowId);
                                                     input.setAttribute('class', 'form-control');
                                                     input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
                                                     input.setAttribute('required', 'true');
@@ -322,8 +323,6 @@
                                                     else if (ingredient !== '' && ${!darkMode}) { div1.style.backgroundColor = 'lightblue'; div2.style.backgroundColor = 'lightblue'; div3.style.backgroundColor = 'lightblue'; }
                                                     $('#'+tbody).append(div);
                                                 }
-                                            </script>
-                                            <script type="text/javascript">
                                                 function removeRow(trId) {
                                                     console.log("clicked X... removing rowId " + rowId)
                                                     $('#'+trId).remove();
@@ -375,16 +374,22 @@
                 removeButton.hidden = true;
             }
             function isValid() {
-                let tableRows = $("#ingredientTableDiv > tbody > tr");
+                alert('isValid');
+                //let tableRows = $("#ingredientTableDiv > tbody > tr");
+                let tableRows = $("#ingredientTableDiv > div");
                 let numberOfRows = tableRows.length
+                console.log('rows: ' + numberOfRows);
                 let successCount = 0;
                 let failCount = 0;
                 let ajaxCalls = 0;
                 tableRows.each(function () {
                     let row = $(this);
-                    let cellValue1 = row.find('td:nth-child(1) > input').val();
-                    let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
-                    let cellValue3 = row.find('td:nth-child(3) > input').val();
+                    //let cellValue1 = row.find('td:nth-child(1) > input').val();
+                    //let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
+                    //let cellValue3 = row.find('td:nth-child(3) > input').val();
+                    let cellValue1 = row.find('div:nth-child(1) > input').val();
+                    let cellValue2 = row.find('div:nth-child(2) > select > option:selected').val();
+                    let cellValue3 = row.find('div:nth-child(3) > input').val();
                     $.ajax({
                         headers: {
                             accept: "application/json",

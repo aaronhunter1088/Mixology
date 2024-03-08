@@ -213,7 +213,7 @@ class DrinkController extends BaseController {
         }
         else {
             flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
-            respond drink, [status: CREATED]
+            redirect(controller:'drink',action:'show',params:[id:drink.id])
         }
     }
 
@@ -427,9 +427,9 @@ class DrinkController extends BaseController {
      * @return
      */
     def createDrinkFromParams(params, user, role) throws ValidationException {
-        def validIds = saveValidIngredients(user)
+        def validIds = saveValidIngredients(user as User, params as Map)
         def validStringIds = validIds.collect { it as String }
-        /* TODO: If params.ingredients is one ( "435" ),
+        /* If params.ingredients is one ( "435" ),
             and not like String[2] ["435","436"] then we should not
             do .each, we should just add that value alone to the validStringIds
          */
@@ -475,46 +475,33 @@ class DrinkController extends BaseController {
      * @param params
      * @return
      */
-    def createNewIngredientsFromParams(params) {
-        List<String> ingredientNames = new ArrayList<>()
-        List<Unit> ingredientUnits = new ArrayList<>()
-        List<Double> ingredientAmounts = new ArrayList<>()
-        List<Ingredient> ingredients = new ArrayList<>()
-        if (Arrays.asList(params.ingredients).size() > 0) {
-            Ingredient foundI
-            Arrays.asList(params.ingredients).each { id ->
-                foundI = Ingredient.findById ( id as Long )
-                if (foundI?.id) ingredients << foundI
-            }
-            return ingredients
+    def createNewIngredientsFromParams(def params, def adminUser) {
+        Ingredient ingredient = new Ingredient([
+                name: params.ingredientName as String,
+                unit: params.ingredientUnit as Unit,
+                amount: Double.parseDouble(params.ingredientAmount as String)
+        ])
+        if (adminUser) {
+            ingredient.canBeDeleted = false
+            ingredient.custom = false
         }
-        else {
-            def options = (params.ingredients as String)?.split(':')
-            if (options && options.size() > 2) {
-                ingredientNames.add(options[0] as String)
-                ingredientAmounts.add(Double.parseDouble(options[1]))
-                ingredientUnits.add(Unit.valueOf((options[2] as String).trim()))
-            } else {
-                ingredientNames.add(params.ingredientName as String)
-                ingredientUnits.add(Unit.valueOf((params.ingredientUnit as String)?.trim()))
-                ingredientAmounts.add(Double.parseDouble(params.ingredientAmount as String))
-            }
-            int createNum = ingredientNames.size()
-            for (int i=0; i<createNum; i++) {
-                Ingredient ingredient = new Ingredient([
-                        name: ingredientNames.get(i),
-                        unit: ingredientUnits.get(i),
-                        amount: ingredientAmounts.get(i)
-                ])
-                if (alreadyExists(ingredient)) {
-                    ingredient = getExisting(ingredient)
-                    if (ingredient?.id) ingredients.add(ingredient)
-                } else {
-                    ingredients.add(ingredient)
-                }
-            }
-            return ingredients
-        }
+
+        return ingredient
+//        List<String> ingredientNames = new ArrayList<>()
+//        List<Unit> ingredientUnits = new ArrayList<>()
+//        List<Double> ingredientAmounts = new ArrayList<>()
+//        List<Ingredient> ingredients = new ArrayList<>()
+//        if (Arrays.asList(params.ingredients).size() > 0) {
+//            Ingredient foundI
+//            Arrays.asList(params.ingredients).each { id ->
+//                foundI = Ingredient.findById ( id as Long )
+//                if (foundI?.id) ingredients << foundI
+//            }
+//            return ingredients
+//        }
+//        else {
+//
+//        }
     }
 
     /**
@@ -557,11 +544,13 @@ class DrinkController extends BaseController {
      */
     def validateIngredients(params) {
         println "API Call # ${params.apiCallCount}"
-        Ingredient ingredient = createNewIngredientsFromParams(params).get(0)
-        boolean result = false
-        if (alreadyExists(ingredient)) { result = true }
+        User user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        Role role = Role.findByAuthority(enums.Role.ADMIN.name)
+        def adminUser = UserRole.get(user.id, role.id)
+        Ingredient ingredient = createNewIngredientsFromParams(params, adminUser)
+        boolean exists = alreadyExists(ingredient)
         response.setContentType("text/json")
-        if (result) {
+        if (exists) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Ingredient: "+ingredient+" has already been created")
         }
         else {
@@ -572,9 +561,11 @@ class DrinkController extends BaseController {
         }
     }
 
-    def saveValidIngredients(User user) {
+    def saveValidIngredients(def user, def params) {
         if (!validIngredients) {
-            validIngredients = createNewIngredientsFromParams(params)
+            Role role = Role.findByAuthority(enums.Role.ADMIN.name)
+            def adminUser = UserRole.get(user.id, role.id)
+            validIngredients = createNewIngredientsFromParams(params, adminUser) as Set<Ingredient>
         }
         def validIngredientIds = []
         validIngredients.eachWithIndex{ Ingredient i, int idx ->

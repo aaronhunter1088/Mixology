@@ -408,7 +408,10 @@ class IngredientController extends BaseController {
      */
     def validateIngredient(params) {
         println "Ingredients: API call # ${params.apiCallCount}"
-        Ingredient ingredient = createIngredientsFromParams(params, null)
+        User user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
+        Role role = Role.findByAuthority(enums.Role.ADMIN.name)
+        def adminUser = UserRole.get(user.id, role.id)
+        Ingredient ingredient = createIngredientsFromParams(params, adminUser)
         boolean result = alreadyExists(ingredient)
         response.setContentType("text/json")
         if (result) {

@@ -97,7 +97,7 @@ class DrinkService {
                 // user is not validated here. we are saving drink (mainly)
                 user.addToDrinks(drink).save(flush:true, failOnError:false, validate:false)
             }
-            logger.info("Drink saved to user (${user.username}) : (${user.id})!")
+            logger.info("Drink (${drink.id}) saved to user (${user.username}) : (${user.id})!")
             drink
         } catch (Exception e) {
             logger.error("Could not save drink:: $drink because ${e.message}")
