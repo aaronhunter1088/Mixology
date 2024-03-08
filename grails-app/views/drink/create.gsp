@@ -195,7 +195,7 @@
                                     </g:if>
                                 </div>
                                 <form id="ingredientForm" name="ingredientForm" style="">
-                                    <fieldset id="ingredientFieldSet" style="height:75px;border:thick solid #008011;color:${darkMode?'white':'black'};" class="no-before">
+                                    <fieldset id="ingredientFieldSet" style="height:85px;border:thick solid #008011;color:${darkMode?'white':'black'};" class="no-before">
                                         <legend style="margin-left:25px;width:auto;">
                                             &emsp14;Create A New Ingredient&emsp14;
                                             <a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success btn-xs" href="javascript:addRow('ingredientTableDiv', 'ingredient', '')"><strong>+</strong></a>
@@ -211,7 +211,7 @@
                                                     rowId++;
                                                     console.log("clicked +... adding row, rowCount " + rowId);
                                                     // increase field set size as table grows until 10 rows. then it stops and table is scrollable
-                                                    if (rowId <= 7) {
+                                                    if (rowId <= 8) {
                                                         let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                                         tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                                         let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + 70;
@@ -233,14 +233,14 @@
                                                     div.setAttribute('class', 'input-wrapper');
                                                     div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;padding:0 5px;height:70px;');
                                                     // create Name
-                                                    let div1 = document.createElement('div');
-                                                    div1.setAttribute('id', prefix + 'Id' + rowId);
-                                                    div1.setAttribute('name', prefix + 'Name' + rowId);
-                                                    div1.setAttribute('class','form-control');
-                                                    div1.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                                    let label1 = document.createElement('label');
-                                                    label1.setAttribute('for', prefix + 'Name' + rowId);
-                                                    label1.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                                    let nameDiv = document.createElement('div');
+                                                    nameDiv.setAttribute('id', prefix + 'NameColumn' + rowId);
+                                                    nameDiv.setAttribute('name', prefix + 'NameColumn' + rowId);
+                                                    //nameDiv.setAttribute('class','form-control');
+                                                    nameDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
+                                                    let labelForName = document.createElement('label');
+                                                    labelForName.setAttribute('for', prefix + 'Name' + rowId);
+                                                    labelForName.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     let input = document.createElement('input');
                                                     input.setAttribute('type', 'text');
                                                     input.setAttribute('id', prefix + 'Name');
@@ -249,15 +249,15 @@
                                                     input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
                                                     input.setAttribute('required', 'true');
                                                     if (ingredientName !== '') input.setAttribute('value',ingredientName);
-                                                    div1.appendChild(label1);
-                                                    div1.appendChild(input);
-                                                    div.appendChild(div1);
+                                                    nameDiv.appendChild(labelForName);
+                                                    nameDiv.appendChild(input);
+                                                    div.appendChild(nameDiv);
                                                     // create Unit
                                                     let div2 = document.createElement('div');
                                                     div2.setAttribute('id', prefix + 'UnitRow' + rowId);
                                                     div2.setAttribute('name', prefix + 'UnitRow' + rowId);
                                                     div2.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                                    div2.setAttribute('class','form-control');
+                                                    //div2.setAttribute('class','form-control');
                                                     let label2 = document.createElement('label');
                                                     label2.setAttribute('for', prefix + 'Unit' + rowId);
                                                     label2.innerHTML = 'Unit' + '&nbsp;<span class=\'required-indicator\'>*</span>';
@@ -288,7 +288,7 @@
                                                     div3.setAttribute('id', prefix + 'AmountRow' + rowId);
                                                     div3.setAttribute('name', prefix + 'AmountRow' + rowId);
                                                     div3.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
-                                                    div3.setAttribute('class','form-control');
+                                                    //div3.setAttribute('class','form-control');
                                                     let label3 = document.createElement('label');
                                                     label3.setAttribute('for', prefix + 'Amount' + rowId);
                                                     label3.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
@@ -319,8 +319,8 @@
                                                     div4.appendChild(a);
                                                     div.appendChild(div4);
                                                     // used to identify as added by clicking Edit Me
-                                                    if (ingredient !== '' && ${darkMode}) { div1.style.backgroundColor = 'darkblue'; div2.style.backgroundColor = 'darkblue'; div3.style.backgroundColor = 'darkblue'; }
-                                                    else if (ingredient !== '' && ${!darkMode}) { div1.style.backgroundColor = 'lightblue'; div2.style.backgroundColor = 'lightblue'; div3.style.backgroundColor = 'lightblue'; }
+                                                    if (ingredient !== '' && ${darkMode}) { nameDiv.style.backgroundColor = 'darkblue'; div2.style.backgroundColor = 'darkblue'; div3.style.backgroundColor = 'darkblue'; }
+                                                    else if (ingredient !== '' && ${!darkMode}) { nameDiv.style.backgroundColor = 'lightblue'; div2.style.backgroundColor = 'lightblue'; div3.style.backgroundColor = 'lightblue'; }
                                                     $('#'+tbody).append(div);
                                                 }
                                                 function removeRow(trId) {
@@ -426,9 +426,8 @@
                                 }
                                 console.log("FAILED: " + message);
                                 row.addClass("errors");
-                                let errorMessage = $("#ingredientErrorMessage")
+                                let errorMessage = $("#ingredientErrorMessagesDiv ingredientErrorMessage").html(message);
                                 errorMessage.addClass("errors");
-                                errorMessage.html(message);
                                 let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                 tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                 let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + addedHeight;

@@ -94,9 +94,9 @@
                                 <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                 <hr style="height:1px;background-color:#008011">
                             </legend>
+                            <div id="ingredientErrorMessagesDiv" style="display:block;">
+                            </div> <!-- New Ingredient errors -->
                             <g:form url="[controller:'ingredient', action:'save']" id="newIngredient" name="newIngredient" onsubmit="return isValid();">
-%{--                                <form id="ingredientForm" name="ingredientForm">--}%
-%{--                                </form>--}%
                                 <div id="ingredientTable" style="position:relative;display:block;padding:20px;">
                                     <div id="ingredientRow1" style="position:relative;display:flex;justify-content:space-evenly;">
                                         <div id="ingredientNameColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
@@ -121,22 +121,22 @@
                                         </div>
                                     </div>
                                 </div>
-                                <script>
+                                <script type="text/javascript">
                                     function addRow(tbody, prefix) {
                                         rowId++;
                                         console.log("clicked +... adding row " + rowId)
                                         let div = document.createElement('div');
-                                        div.setAttribute('id', prefix + 'Row' + rowId)
-                                        //style="position:relative;display:flex;justify-content:space-evenly;"
+                                        div.setAttribute('id', prefix + 'Row' + rowId);
+                                        div.setAttribute('class', 'input-wrapper');
                                         div.setAttribute('style', 'position:relative;display:flex;justify-content:space-evenly;');
-                                        let nameDiv = document.createElement('div');
                                         // create Name
+                                        let nameDiv = document.createElement('div');
                                         nameDiv.setAttribute('id', prefix + 'NameColumn' + rowId);
                                         nameDiv.setAttribute('name', prefix + 'NameColumn' + rowId);
                                         //style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};"
                                         nameDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                         let labelForName = document.createElement('label');
-                                        labelForName.setAttribute('for', prefix + 'Name' + rowId);
+                                        labelForName.setAttribute('for', prefix + 'NameColumn' + rowId);
                                         labelForName.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                         let input = document.createElement('input');
                                         input.setAttribute('type', 'text');
@@ -283,8 +283,10 @@
                                 }
                                 console.log("FAILED: " + message);
                                 row.addClass("errors");
-                                $("#ingredientErrorMessages").addClass("errors");
-                                $("#ingredientErrorMessages > h3").html(message);
+                                $("#ingredientErrorMessagesDiv").addClass("errors");
+                                let h3 = document.createElement('h6');
+                                h3.innerText = message;
+                                $("#ingredientErrorMessagesDiv").append(h3);
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));

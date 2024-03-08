@@ -84,11 +84,9 @@
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="editDrink" style="background-color:${darkMode?'black':'white'};">
-            <section style="background-color:${darkMode?'black':'white'};">
-                <div class="container">
-                    <div style="display:flex;justify-content:center;" id="navigation">
-                        <g:render template="../navigation"/>
-                    </div>
+            <section style="text-align:center;background-color:${darkMode?'black':'white'};">
+                <div style="display:flex;justify-content:center;" id="navigation">
+                    <g:render template="../navigation"/>
                 </div>
                 <g:if test="${flash.message}">
                     <div class="message" role="status">${flash.message}</div>
@@ -101,7 +99,7 @@
                     </ul>
                 </g:hasErrors>
                 <div id="edit-drink" class="container">
-                    <div style="display:flex;justify-content:center;">
+                    <div style="display:flex;justify-content:center;text-align:left;">
                         <div style="display:block;">
                             <fieldset style="border:thick solid #000080;">
                                 <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">

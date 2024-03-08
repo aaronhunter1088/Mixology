@@ -83,7 +83,7 @@
         </style>
     </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
-        <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
+        <div id="editIngredient" style="background-color:${darkMode?'black':'white'};">
             <section style="text-align:center;background-color:${darkMode?'black':'white'};">
                 <div style="display:inline-flex;text-align:center;" id="navigation">
                     <g:render template="../navigation"/>
@@ -98,85 +98,87 @@
                         </g:eachError>
                     </ul>
                 </g:hasErrors>
-                <div style="display:inline-flex;text-align:left;">
-                    <div id="edit-ingredient" class="col-12 scaffold-show">
-                        <fieldset style="border:thick solid #008011;">
-                            <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
-                                <g:message code="default.edit.label" args="[ingredient]" />&emsp14;
-                                <hr style="height:1px;background-color:#008011;">
-                            </legend>
-                            <g:form resource="${this.ingredient}" method="put" name="updateIngredient">
-                                <div id="update-ingredient1" style="width:50%;float:left;color:${darkMode?'white':'black'};">
-                                    <div class="formfield">
-                                        <label for='name'><span class='required-indicator'>*</span> Ingredient Name</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="name" value="${ingredient.name}" required="" id="name" />
+                <div id="edit-ingredient" class="container">
+                    <div style="display:flex;justify-content:center;text-align:left;">
+                        <div style="display:block;">
+                            <fieldset style="border:thick solid #008011;">
+                                <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
+                                    <g:message code="default.edit.label" args="[ingredient]" />&emsp14;
+                                    <hr style="height:1px;background-color:#008011;">
+                                </legend>
+                                <g:form resource="${this.ingredient}" method="put" name="updateIngredient">
+                                    <div id="update-ingredient1" style="width:50%;float:left;color:${darkMode?'white':'black'};">
+                                        <div class="formfield">
+                                            <label for='name'><span class='required-indicator'>*</span> Ingredient Name</label>
+                                            <div class="input-wrapper">
+                                                <input type="text" name="name" value="${ingredient.name}" required="" id="name" />
+                                            </div>
+                                        </div>
+                                        <div class="formfield">
+                                            <label for='unit'><span class='required-indicator'>*</span> Unit</label>
+                                            <div class="input-wrapper">
+                                                <select name="unit" class="form-control" style="width:42%;">
+                                                    <option label="Select One" selected disabled>Select One</option>
+                                                    <g:each in="${Unit.values()}" var="unit" name="unit">
+                                                        <g:if test="${ingredient.unit == unit}">
+                                                            <option value="${unit}" selected>${unit}</option>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <option value="${unit}">${unit}</option>
+                                                        </g:else>
+                                                    </g:each>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="formfield">
+                                            <label for='amount'><span class='required-indicator'>*</span> Amount</label>
+                                            <div class="input-wrapper">
+                                                <input type="text" name="amount" value="${ingredient.amount}" required="" id="amount" />
+                                            </div>
+                                        </div>
+                                        <div style="display:inline-flex;">
+                                            <div class="formfield">
+                                                <g:if test="${ingredient.custom}"><label>Custom Ingredient</label></g:if>
+                                                <g:if test="${!ingredient.custom}"><label>Default Ingredient</label></g:if>
+                                            </div>
+                                            <div class="formfield">
+                                                <g:if test="${ingredient.canBeDeleted}"><label>Deletable</label></g:if>
+                                                <g:if test="${!ingredient.canBeDeleted}"><label>Not Deletable</label></g:if>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="formfield">
-                                        <label for='unit'><span class='required-indicator'>*</span> Unit</label>
-                                        <div class="input-wrapper">
-                                            <select name="unit" class="form-control" style="width:42%;">
-                                                <option label="Select One" selected disabled>Select One</option>
-                                                <g:each in="${Unit.values()}" var="unit" name="unit">
-                                                    <g:if test="${ingredient.unit == unit}">
-                                                        <option value="${unit}" selected>${unit}</option>
+                                    <div id="update-ingredient2" style="width:50%;display:block;float:right;">
+                                        <div class="formfield">
+                                            <div style="margin-top:-25px;height:419px;overflow-y:auto;">
+                                                <p style="text-align:left;color:${darkMode?'white':'black'};">Drinks</p>
+                                                <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
+                                                    <g:if test="${(ingredient as Ingredient).drinks.contains(drink)}">
+                                                        <div style="display:block;color:${darkMode?'white':'black'};">
+                                                            <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-success btn-xs" onclick="addDrink('${drink.id}');">Added</button>
+                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
+                                                            <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
+                                                        </div>
                                                     </g:if>
-                                                    <g:else>
-                                                        <option value="${unit}">${unit}</option>
-                                                    </g:else>
                                                 </g:each>
-                                            </select>
+                                                <g:each in="${drinks.sort{it.id}}" var="drink" status="i">
+                                                    <g:if test="${!(ingredient as Ingredient).drinks.contains(drink)}">
+                                                        <div style="display:block;color:${darkMode?'white':'black'};">
+                                                            <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>
+                                                            <button hidden id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
+                                                            <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
+                                                        </div>
+                                                    </g:if>
+                                                </g:each>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="formfield">
-                                        <label for='amount'><span class='required-indicator'>*</span> Amount</label>
-                                        <div class="input-wrapper">
-                                            <input type="text" name="amount" value="${ingredient.amount}" required="" id="amount" />
-                                        </div>
+                                    <div class="formfield" style="margin-top:25px;text-align:center;">
+                                        <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/ingredient/show/${ingredient.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
+                                        <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateIngredient">Update</button>
                                     </div>
-                                    <div style="display:inline-flex;">
-                                        <div class="formfield">
-                                            <g:if test="${ingredient.custom}"><label>Custom Ingredient</label></g:if>
-                                            <g:if test="${!ingredient.custom}"><label>Default Ingredient</label></g:if>
-                                        </div>
-                                        <div class="formfield">
-                                            <g:if test="${ingredient.canBeDeleted}"><label>Deletable</label></g:if>
-                                            <g:if test="${!ingredient.canBeDeleted}"><label>Not Deletable</label></g:if>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="update-ingredient2" style="width:50%;display:block;float:right;">
-                                    <div class="formfield">
-                                        <div style="margin-top:-25px;height:419px;overflow-y:auto;">
-                                            <p style="text-align:left;color:${darkMode?'white':'black'};">Drinks</p>
-                                            <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
-                                                <g:if test="${(ingredient as Ingredient).drinks.contains(drink)}">
-                                                    <div style="display:block;color:${darkMode?'white':'black'};">
-                                                        <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-success btn-xs" onclick="addDrink('${drink.id}');">Added</button>
-                                                        <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
-                                                    </div>
-                                                </g:if>
-                                            </g:each>
-                                            <g:each in="${drinks.sort{it.id}}" var="drink" status="i">
-                                                <g:if test="${!(ingredient as Ingredient).drinks.contains(drink)}">
-                                                    <div style="display:block;color:${darkMode?'white':'black'};">
-                                                        <button id="addDrinkBtn${drink.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addDrink('${drink.id}');">Add</button>
-                                                        <button hidden id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                        <input hidden type="checkbox" name="drinks" id="drink${drink.id}" value="${drink.id}"/> <g:link action="show" controller="drink" params='[id:"${drink.id}"]'>${drink.name}</g:link> (${drink.symbol}) (${drink.number}) &emsp14;
-                                                    </div>
-                                                </g:if>
-                                            </g:each>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="formfield" style="margin-top:25px;text-align:center;">
-                                    <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/ingredient/show/${ingredient.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
-                                    <button style="margin-left:10px;" id="updateDrink" class="btn btn-outline-primary" type="submit" form="updateIngredient">Update</button>
-                                </div>
-                            </g:form>
-                        </fieldset>
+                                </g:form>
+                            </fieldset>
+                        </div>
                     </div>
                 </div>
             </section>
