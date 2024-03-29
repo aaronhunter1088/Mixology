@@ -1,12 +1,11 @@
-package api.v1
+package mixology.unit
 
+import api.v1.DrinkResource
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.gorm.DataTest
-import junit.framework.TestCase
 import mixology.AuthTokenService
 import mixology.Drink
 import mixology.DrinkService
-import mixology.Ingredient
 import mixology.IngredientService
 import mixology.RoleService
 import mixology.User
@@ -15,17 +14,16 @@ import mixology.UserRole
 import mixology.UserRoleService
 import mixology.UserService
 import org.apache.logging.log4j.LogManager
-import org.grails.testing.GrailsUnitTest
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 
-class DrinkResourceTest extends Specification implements DataTest {
+@ContextConfiguration
+class DrinkResourceTest extends BaseController {//extends Specification implements DataTest {
 
     private static def logger = LogManager.getLogger(DrinkResourceTest.class)
     private DrinkResource resource
@@ -39,13 +37,13 @@ class DrinkResourceTest extends Specification implements DataTest {
     def authTokenService = new AuthTokenService()
     Class<?>[] getDomainClassesToMock(){ return [Drink, Role, User, UserRole] as Class[] }
 
-    @BeforeClass
-    void beforeClass() {
+    static void beforeAll() {
         logger.info("DrinkResourceTests starting")
     }
 
     @BeforeEach
     void setupEach() {
+        beforeAll()
         getDomainClassesToMock()
         resource = new DrinkResource()
         userService = new UserService()

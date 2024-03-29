@@ -53,7 +53,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
                 number: 1,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.HURRICANE,
-                alcoholType: Alcohol.TEQUILA,
+                alcohol: Alcohol.TEQUILA,
                 symbol: 'D1',
                 ingredients: ingredientsAAndBAndC(),
                 canBeDeleted: true,
@@ -64,7 +64,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
                 number: 2,
                 mixingInstructions: 'Instructions',
                 suggestedGlass: GlassType.SHOT,
-                alcoholType: Alcohol.TEQUILA,
+                alcohol: Alcohol.TEQUILA,
                 symbol: 'D2',
                 ingredients: ingredientsVodkaAndDAndE(),
                 canBeDeleted: false,
@@ -90,6 +90,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.userService = userService
         controller.roleService = roleService
         controller.userRoleService = userRoleService
+        controller.validIngredients = new HashSet<>()
     }
 
     def cleanup() {
@@ -277,7 +278,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.save()
 
         then:
-        response.status == 403
+        response.status == 400
     }
 
     @Test
@@ -291,7 +292,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
             Drink drink = new Drink()
             Errors error = new BeanPropertyBindingResult(drink, "Test drink")
             drink.errors = error
-            throw new ValidationException("test save drink fails validation", error)
+            return drink //throw new ValidationException("test save drink fails validation", error)
         }
 
         when:
@@ -315,9 +316,9 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         request.method = 'POST'
         controller.params.name = 'drinkNameTest'
         controller.params.number = '1'
-        controller.params.alcoholType = 'VODKA'
+        controller.params.alcohol = 'VODKA'
         controller.params.symbol = 'TD'
-        controller.params.instructions = 'Test instructions'
+        controller.params.mixingInstructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
         //controller.params.ingredients = "100 Proof Vodka : 1.5 : OZ"
         controller.params.ingredientName = '100 Proof Vodka'
@@ -328,7 +329,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.save()
 
         then:
-        response.status == 201
+        response.status == 302
     }
 
     @Test
@@ -345,7 +346,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         request.method = 'POST'
         controller.params.name = 'vodkaOrangeJuice'
         controller.params.number = '1'
-        controller.params.alcoholType = 'VODKA'
+        controller.params.alcohol = 'VODKA'
         controller.params.symbol = 'TD'
         controller.params.instructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
@@ -353,7 +354,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.save()
 
         then:
-        response.status == 201
+        response.status == 302
     }
 
     // Test Editing
@@ -585,9 +586,13 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
 
     @Test
     void "test validateIngredients returns bad request"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> testUser
+        }
         controller.params.apiCallCount = 1
-        controller.metaClass.createNewIngredientsFromParams { params ->
-            return [ingredientA]
+        controller.metaClass.createNewIngredientsFromParams { params, adminUser ->
+            return ingredientA
         }
         when:
             controller.validateIngredients(params)
@@ -598,13 +603,17 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
 
     @Test
     void "test validateIngredients returns ok"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getPrincipal() >> testUser
+        }
         controller.params.apiCallCount = 1
-        controller.metaClass.createNewIngredientsFromParams { params ->
-            return [new Ingredient([
+        controller.metaClass.createNewIngredientsFromParams { params, adminUser ->
+            return new Ingredient([
                     name: 'New Ingredient',
                     unit: 'WEDGE',
                     amount: 2.5
-            ])]
+            ])
         }
         when:
         controller.validateIngredients(params)

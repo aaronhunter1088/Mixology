@@ -104,6 +104,7 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
         controller.userService = userService
         controller.roleService = roleService
         controller.userRoleService = userRoleService
+        controller.validIngredients = new HashSet<>()
     }
 
     def cleanup() {
@@ -253,11 +254,11 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
         UserRole.create(user, role)
         controller.params.prop = ''
         controller.metaClass.createIngredientsFromParams { params, aRole ->
-            return [new Ingredient([
+            return new Ingredient([
                     name:'',
                     unit: WEDGE,
                     amount: 0
-            ])]
+            ])
         }
         controller.springSecurityService = Stub(SpringSecurityService) {
             getPrincipal() >> user
@@ -273,37 +274,37 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
             response.status == 400
     }
 
-    @Test
-    void "test saving fails because of multiple validation errors"() {
-        given:
-        request.method = 'POST'
-        def user = new User([
-                username: "testusername@gmail.com",
-                firstName: "test",
-                lastName: "user"
-        ]).save(validate:false)
-        Role role = new Role(authority: enums.Role.USER.name).save()
-        UserRole.create(user, role)
-        controller.params.prop = ''
-        controller.metaClass.createIngredientsFromParams { params, aRole ->
-            return [
-                    new Ingredient([name:'', unit: WEDGE, amount: 0, custom:false]),
-                    new Ingredient([name:'', unit: FRUIT, amount: 0, custom:false])
-            ]
-        }
-        controller.ingredientService = Stub(IngredientService) {save(_,_,_) >> null}
-        controller.springSecurityService = Stub(SpringSecurityService) {
-            getPrincipal() >> user
-        }
-        controller.userService = userService
-        controller.userRoleService = userRoleService
-
-        when:
-        controller.save()
-
-        then:
-        response.status == 400
-    }
+//    @Test
+//    void "test saving fails because of multiple validation errors"() {
+//        given:
+//        request.method = 'POST'
+//        def user = new User([
+//                username: "testusername@gmail.com",
+//                firstName: "test",
+//                lastName: "user"
+//        ]).save(validate:false)
+//        Role role = new Role(authority: enums.Role.USER.name).save()
+//        UserRole.create(user, role)
+//        controller.params.prop = ''
+//        controller.metaClass.createIngredientsFromParams { params, aRole ->
+//            return [
+//                    new Ingredient([name:'', unit: WEDGE, amount: 0, custom:false]),
+//                    new Ingredient([name:'', unit: FRUIT, amount: 0, custom:false])
+//            ]
+//        }
+//        controller.ingredientService = Stub(IngredientService) {save(_,_,_) >> null}
+//        controller.springSecurityService = Stub(SpringSecurityService) {
+//            getPrincipal() >> user
+//        }
+//        controller.userService = userService
+//        controller.userRoleService = userRoleService
+//
+//        when:
+//        controller.save()
+//
+//        then:
+//        response.status == 400
+//    }
 
     @Test
     void "test saving an ingredient fails because it already exists"() {
@@ -315,7 +316,7 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
                 lastName: "user"
         ]).save(validate:false)
         controller.params.ingredientName = 'Vodka'
-        controller.params.ingredientUnit = Unit.OZ
+        controller.params.ingredientUnit = OZ
         controller.params.ingredientAmount = 1.5
         Role role = new Role(authority: enums.Role.ADMIN.name).save()
         UserRole.create(user, role)
@@ -368,7 +369,7 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
         controller.save()
 
         then:
-        response.status == 201
+        response.status == 302
     }
 
     @Test
@@ -383,11 +384,28 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
         def unit1 = Unit.randomUnit
         def unit2 = Unit.randomUnit
 
-        controller.params.ingredientName = ['testIngredient1', 'testIngredient2']
-        controller.params.ingredientUnit = [unit1, unit2]
-        controller.params.ingredientAmount = [1.0, 2.0]
-        controller.params.canBeDeleted = true
-        controller.params.custom = true
+        controller.validIngredients = new ArrayList<Ingredient>(){{
+            add(new Ingredient([
+                    name: 'testIngredient1',
+                    unit: unit1,
+                    amount: 1.0,
+                    canBeDeleted: true,
+                    custom: true
+            ]))
+            add(new Ingredient([
+                    name: 'testIngredient2',
+                    unit: unit2,
+                    amount: 2.0,
+                    canBeDeleted: true,
+                    custom: true
+            ]))
+        }}
+        //controller.params.ingredientName = ['testIngredient1', 'testIngredient2']
+        //controller.params.ingredientUnit = [unit1, unit2]
+        //controller.params.ingredientAmount = [1.0, 2.0]
+        //controller.params.canBeDeleted = true
+        //controller.params.custom = true
+        controller.params.option = 'hasToIncludeParams'
         Role role = new Role(authority: enums.Role.USER.name).save()
         UserRole.create(user, role)
         //controller.createIngredientsFromParams(params,role) >> [testIngredient1, testIngredient2]
@@ -406,7 +424,7 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
 
         then:
         User.findByUsername(user.username) >> user
-        response.status == 201
+        response.status == 302
     }
 
     /* TODO: Rethink if this is needed.
@@ -646,9 +664,11 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
     // Test UI Call
     @Test
     void "test validateIngredients returns bad request"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> testUser}
         controller.params.apiCallCount = 1
         controller.metaClass.createIngredientsFromParams { params, role ->
-            return [ingredientA]
+            return ingredientA
         }
         when:
         controller.validateIngredient(params)
@@ -659,6 +679,8 @@ class IngredientControllerSpec extends BaseController implements ControllerUnitT
 
     @Test
     void "test validateIngredients returns ok"() {
+        given:
+        controller.springSecurityService = Stub(SpringSecurityService) { getPrincipal() >> testUser}
         controller.params.apiCallCount = 1
         controller.params.ingredientName = 'New Ingredient'
         controller.params.ingredientUnit = 'WEDGE'

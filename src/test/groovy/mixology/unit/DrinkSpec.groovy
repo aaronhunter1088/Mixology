@@ -27,7 +27,7 @@ class DrinkSpec extends BaseController implements DomainUnitTest<Drink> {
                 number: 34,
                 mixingInstructions: 'Pour ingredients over crushed ice in highball glass. Add cola for color and garnish with lemon',
                 suggestedGlass: GlassType.HIGHBALL,
-                alcoholType: Alcohol.VODKA,
+                alcohol: Alcohol.VODKA,
                 symbol: 'Li',
                 ingredients: Ingredient.createFillerIngredients(3)
         ]).save(failOnError:true)
@@ -106,12 +106,12 @@ class DrinkSpec extends BaseController implements DomainUnitTest<Drink> {
         domain.alcohol = alcohol as Alcohol
 
         then:
-        expected == domain.validate(['alcoholType'])
-        domain.errors['alcoholType']?.code == expectedErrorCode
+        expected == domain.validate(['alcohol'])
+        domain.errors['alcohol']?.code == expectedErrorCode
 
         where:
         alcohol   | expected | expectedErrorCode
-        null        | false    | 'nullable'
+        null      | false    | 'nullable'
         Alcohol.VODKA | true | null
     }
 

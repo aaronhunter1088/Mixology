@@ -68,9 +68,9 @@
 <div id="login" class="container-fluid">
     <div class="inner">
         <form action="${postUrl ?: '/login/authenticate'}" method="POST" id="loginForm" autocomplete="off">
-            <div style="padding-bottom:5px;">
+            <div style="padding-bottom:5px;text-align:left;vertical-align:center;">
                 <label for="username"><g:message code='springSecurity.login.username.label'/>:</label>
-                <input type="text" class="text_" name="${usernameParameter ?: 'username'}" id="username"/>
+                <input type="text" class="text_" name="${usernameParameter ?: 'username'}" id="username" required/>
             </div>
             <div style="padding-bottom:5px;">
                 <label for="password"><g:message code='springSecurity.login.password.label'/>:</label>
@@ -85,7 +85,8 @@
             <div style="padding-top:7px;">
                 <input class="btn btn-primary btn-xs" type="submit" id="submit" value="${message(code:'springSecurity.login.button')}" formaction="${postUrl ?: '/login/authenticate'}" />
                 <input class="btn btn-success btn-xs" type="submit" id="create" value="${message(code:'default.register.label')}" formaction="${createLink(controller:'user',action:'create')}" />
-                <input class="btn btn-outline-danger btn-xs" type="submit" id="forgot" value="${message(code:'default.forgotPassword.label')}" formaction="${createLink(controller:'user',action:'forgotPassword')}" />
+%{--                <input class="btn btn-outline-danger btn-xs" type="submit" id="forgot" value="${message(code:'default.forgotPassword.label')}" formaction="${createLink(controller:'emails',action:'forgotPasswordEmail')}" />--}%
+                <input class="btn btn-outline-danger btn-xs" type="submit" id="forgot" value="${message(code:'default.forgotPassword.label')}" formaction="/login/forgotPassword" />
             </div>
         </form>
     </div>

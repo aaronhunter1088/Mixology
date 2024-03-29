@@ -167,7 +167,7 @@ class IngredientController extends BaseController {
         def ingredients
         int savedCount = 0
         try {
-            ingredients = validIngredients.size() > 0 ? validIngredients : new ArrayList<Ingredient>()
+            ingredients = validIngredients.size() > 0 ? validIngredients : [createIngredientsFromParams(params, adminUser)]
             ingredients.each { ingredient ->
                 Ingredient saved = null
                 if (

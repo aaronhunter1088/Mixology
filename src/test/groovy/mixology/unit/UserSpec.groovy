@@ -59,11 +59,11 @@ class UserSpec extends BaseController implements DomainUnitTest<User> {
         null    | false    | 'nullable'
         ''      | false    | 'blank'
         'T'     | false    | 'size.toosmall'
-        'T'*31  | false    | 'size.toobig'
+        'T'*41  | false    | 'size.toobig'
         'Good'  | true     | null
     }
 
-    @Unroll('User.validate() with firstName: #value should have returned #expected with errorCode: #expectedErrorCode')
+    @Unroll('User.validate() with lastName: #value should have returned #expected with errorCode: #expectedErrorCode')
     @Test
     void "test user validation with lastName"() {
         when:

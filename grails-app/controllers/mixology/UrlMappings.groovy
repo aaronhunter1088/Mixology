@@ -14,6 +14,8 @@ class UrlMappings {
             action = 'customIndex'
         }
 
+        "/emails/shareDrinkEmail"(controller:'emails', action:'shareDrinkEmail')
+
         "/mixology/drink/save" {
             controller = "drink"
             action = "save"
@@ -48,6 +50,7 @@ class UrlMappings {
         }
 
         "/"(view:"/index")
+        "/home"(view:'/index')
         "/v1/**" {controller = 'jaxRs'}
         "500"(view:'/error')
         "404"(view:'/notFound')

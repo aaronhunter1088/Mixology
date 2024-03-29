@@ -41,8 +41,8 @@ class UserPasswordEncoderListener {
     private void encodePasswordConfirmForEvent(AbstractPersistenceEvent event) {
         if (event.entityObject instanceof User) {
             User u = event.entityObject as User
-            if (u.password && ((event instanceof PreInsertEvent) || (event instanceof PreUpdateEvent
-                    && u.isDirty('password')))) {
+            if (u.passwordConfirm && ((event instanceof PreInsertEvent) || (event instanceof PreUpdateEvent
+                    && u.isDirty('passwordConfirm')))) {
                 event.getEntityAccess().setProperty('passwordConfirm', encodePasswordConfirm(u.passwordConfirm))
             }
         }

@@ -127,6 +127,12 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
         render([error: 'access denied'] as JSON)
     }
 
+    def forgotPassword = {
+           render view:'forgotPassword'
+    }
+
+    def resetPassword = {render view:'resetPassword'}
+
     @Override
     void setConfiguration(Config co) {
         //coordinatePositions = co.getProperty('security.coordinate.positions', List, []) as List<String>

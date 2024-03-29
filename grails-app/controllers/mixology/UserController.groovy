@@ -4,17 +4,24 @@ package mixology
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.sql.Sql
 import org.apache.commons.io.FileUtils
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartRequest
+import validators.PasswordValidator
+
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
+import java.sql.ResultSet
+import java.sql.Timestamp
+import java.time.LocalDateTime
+
 import static org.springframework.http.HttpStatus.*
 
 class UserController extends BaseController {
@@ -207,9 +214,49 @@ class UserController extends BaseController {
         }
     }
 
-    def forgotPassword = {
-        logger.info("Implement method User.forgotPassword")
-        redirect(uri:'/')
+    def forgotPassword() {
+        redirect(controller:'emails', action:'forgotPasswordEmail', params:params)
+    }
+
+    def updatePassword() {
+        if (!params) {
+            flash.message = 'No request parameters found!'
+            redirect uri:'/'
+        }
+        def x = PasswordValidator.passwordValidator params.password
+        def y = PasswordValidator.passwordValidator params.passwordConfirm
+        if (x || y) {
+            flash.message = "Your password did not meet the requirements. Try again."
+            redirect controller:'login', action:'resetPassword', model:[params:params]
+            return
+        }
+        def dataSource = grailsApplication.mainContext.dataSource
+        def db = new Sql(dataSource)
+        String username = null
+        Timestamp tokenExpiresDate = null
+        db.eachRow("select * from userPasswordReset where token='"+params.token+"';" as String) {
+            //println "${it['username']}"
+            //println "${it['tokenExpires']}"
+            username = it['username']
+            tokenExpiresDate = it['tokenExpires'] as Timestamp
+        }
+        if (LocalDateTime.now() < tokenExpiresDate?.toLocalDateTime()) {
+            User user = userService.getByUsername(username)
+            if (user?.password == params.password) {
+                logger.info("You cannot reset your password using the provided value. Try again.")
+                flash.message = "You cannot reset your password using the provided value. Try again."
+                redirect controller:'login', action:'resetPassword'
+            }
+            user.password = params.password
+            user.passwordConfirm = params.passwordConfirm
+            userService.save(user, true)
+            logger.info("User has successfully updated their password.")
+            redirect(uri:'/')
+        } else {
+            logger.info("The token has expired. User must request a new Reset Link")
+            flash.message = "The token has expired. Please request a new Reset Link."
+            redirect controller:'login', action:'forgotPassword'
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])

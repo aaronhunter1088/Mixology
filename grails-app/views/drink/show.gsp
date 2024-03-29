@@ -183,7 +183,6 @@
                                     <g:if test="${drink.custom || adminIsLoggedIn}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
                                         <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
-                                        <a href="#ex1" rel="modal:open">Open</a>
                                     </g:if>
                                     <g:if test="${drink.canBeDeleted}">
                                         <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
@@ -197,7 +196,7 @@
         </div>
         <!-- Modal HTML embedded directly into document -->
         <div id="sendEmailDiv" class="modal" style="width:300px;height:150px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <g:form controller="drink" action="sendADrinkEmail" method="POST" name="emailDrink">
+            <g:form controller="emails" action="shareDrinkEmail" method="POST" name="emailDrink" useToken="true">
                 <input name="drinkId" id="drinkId" type="hidden" value="${this.drink.id}"/>
                 <input name="recipientName" id="recipientName" type="text" placeholder="Enter recipient name" required="required"/>
                 <input name="recipientEmail" id="recipientEmail" type="text" placeholder="Enter recipient email" required="required"/>

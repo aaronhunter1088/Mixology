@@ -67,7 +67,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/css/**',      access: ['permitAll']],
 	[pattern: '/**/images/**',   access: ['permitAll']],
 	[pattern: '/**/favicon.ico', access: ['permitAll']],
-	[pattern: '/drinks',		 access: ['permitAll']],
+	[pattern: '/home',		     access: ['permitAll']],
 	[pattern: '/customDrinks',	 access: ['permitAll']],
 		/* Login Controller */
 	[pattern: '/login/auth', 	 access: ['permitAll']],
@@ -98,6 +98,11 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/user/edit',      	  access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/user/delete',         access: ['ROLE_ADMIN']],
 	[pattern: '/user/darkMode',       access: ['permitAll']],
+		/* Email Controller */
+	[pattern: '/emails/forgotPasswordEmail', access: ['permitAll']],
+	//[pattern: '/drink/sendADrinkEmail', access: ['permitAll']],
+	[pattern: '/emails/shareDrinkEmail', access: ['permitAll']],
+		/* API */
 	[pattern: '/v1/tokens/**',        access: ['IS_AUTHENTICATED_ANONYMOUSLY']],
 	[pattern: '/v1/**',               access: ['ROLE_ADMIN','ROLE_USER']],
 	[pattern: '/swagger-ui/**',       access: ['permitAll']],

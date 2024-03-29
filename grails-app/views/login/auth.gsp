@@ -4,7 +4,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Mixology</title>
+        <title>Mixology Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -119,8 +119,8 @@
                     </g:if>
 
                     <p>
-                        <a class="btn btn-secondary btn-xs" id="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
-                        <input class="btn btn-primary btn-xs" type="submit" id="submit" value="${message(code: 'springSecurity.login.button')}"/>
+                        <a class="btn btn-secondary" id="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+                        <input class="btn btn-primary" type="submit" id="submit" value="${message(code: 'springSecurity.login.button')}"/>
                     </p>
                 </form>
             </div>
