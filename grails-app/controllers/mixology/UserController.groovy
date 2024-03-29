@@ -179,7 +179,7 @@ class UserController extends BaseController {
         if (file) {
             reduced = reduceImageSize(file)
             user.photo = reduced
-        } else if  (Boolean.valueOf(params.clearedImage as String)){
+        } else if (Boolean.valueOf(params.clearedImage as String)){
             user.photo = ''
         }
 
@@ -252,7 +252,7 @@ class UserController extends BaseController {
             userService.save(user, true)
             logger.info("User has successfully updated their password.")
             redirect(uri:'/')
-        } else {
+        } else { // back up
             logger.info("The token has expired. User must request a new Reset Link")
             flash.message = "The token has expired. Please request a new Reset Link."
             redirect controller:'login', action:'forgotPassword'

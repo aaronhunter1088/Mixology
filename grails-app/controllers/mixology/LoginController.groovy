@@ -3,6 +3,7 @@ package mixology
 import grails.config.Config
 import grails.converters.JSON
 import grails.core.support.GrailsConfigurationAware
+import groovy.sql.Sql
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.multiverse.api.exceptions.LockedException
@@ -12,6 +13,9 @@ import javax.security.auth.login.CredentialExpiredException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
+import java.sql.Timestamp
+import java.time.LocalDateTime
 
 class LoginController extends grails.plugin.springsecurity.LoginController implements GrailsConfigurationAware {
 
@@ -128,10 +132,22 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
     }
 
     def forgotPassword = {
-           render view:'forgotPassword'
+        render view:'forgotPassword'
     }
 
-    def resetPassword = {render view:'resetPassword'}
+    def resetPassword = {
+        def dataSource = grailsApplication.mainContext.dataSource
+        def db = new Sql(dataSource)
+        db.eachRow("select * from userPasswordReset where token='"+params.token+"';" as String) {
+            if (LocalDateTime.now() > (it['tokenExpires'] as Timestamp)?.toLocalDateTime()) {
+                logger.info("The token has expired. User must request a new Reset Link")
+                flash.message = "The token has expired. Please request a new Reset Link."
+                redirect controller:'login', action:'forgotPassword'
+            } else {
+                render view:'resetPassword'
+            }
+        }
+    }
 
     @Override
     void setConfiguration(Config co) {
