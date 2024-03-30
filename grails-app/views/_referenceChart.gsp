@@ -1,6 +1,6 @@
 <%@ page import="enums.*; mixology.Drink;" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<p style="font-size:35px;margin:0;color:#a60000;"><b>NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART</b></p>
+<p style="font-size:35px;margin:0;color:#a60000;"><b><g:message code="quick.reference.chart" default="NUMBER, SYMBOL, AND NAME QUICK REFERENCE CHART"/></b></p>
 <div style="display:inline-flex; text-align:left;">
     <div style="display:block;">
         <%  int idEntifier = 1

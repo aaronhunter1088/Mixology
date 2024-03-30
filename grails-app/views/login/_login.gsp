@@ -68,11 +68,11 @@
 <div id="login" class="container-fluid">
     <div class="inner">
         <form action="${postUrl ?: '/login/authenticate'}" method="POST" id="loginForm" autocomplete="off">
-            <div style="padding-bottom:5px;text-align:left;vertical-align:center;">
+            <div style="padding-bottom:5px;color:${darkMode?'white':'black'};">
                 <label for="username"><g:message code='springSecurity.login.username.label'/>:</label>
                 <input type="text" class="text_" name="${usernameParameter ?: 'username'}" id="username" required/>
             </div>
-            <div style="padding-bottom:5px;">
+            <div style="padding-bottom:5px;color:${darkMode?'white':'black'};">
                 <label for="password"><g:message code='springSecurity.login.password.label'/>:</label>
                 <input type="password" class="text_" name="${passwordParameter ?: 'password'}" id="password"/>
             </div>

@@ -20,10 +20,7 @@ class UrlMappings {
             controller = "drink"
             action = "save"
         }
-        "/mixology/drink/delete/$id" {
-            controller = "drink"
-            action = "delete"
-        }
+        
         "/mixology/drink/update" {
             controller = "drink"
             action = "update"

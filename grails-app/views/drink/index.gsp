@@ -136,9 +136,9 @@
                         <p></p>
                         <g:if test="${drinkCount <= 0}">
                             <g:if test="${customDrinks}">
-                                <p>No custom drinks found!</p>
+                                <p><g:message code="no.custom.drinks.found" default="No custom drinks found!"/></p>
                             </g:if><g:elseif test="${isOn(params.defaultDrink as String)}">
-                                <p>No default drinks found!</p>
+                                <p><g:message code="no.default.drinks.found" default="No default drinks found!"/></p>
                             </g:elseif><g:else>
                                 <p>No drinks found!</p>
                             </g:else>

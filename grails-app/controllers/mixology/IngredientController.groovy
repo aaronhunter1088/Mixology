@@ -110,6 +110,11 @@ class IngredientController extends BaseController {
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         def role = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         def ingredient = ingredientService.get(id)
+        if (ingredient.custom && user == null) ingredient = null // if not a default drink and no user
+        else if (user && !user?.ingredients?.contains(ingredient)) {
+            render view:'/notFound', model:[object:'Ingredient']
+            return
+        }
         withFormat{
             html {
                 if (!ingredient) { render view:'/notFound', model:[object:'Ingredient']}

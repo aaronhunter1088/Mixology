@@ -107,7 +107,7 @@ class EmailsController extends BaseController {
                     } catch (SQLException sqle) {
                         try {
                             def result = db.executeUpdate("replace into userPasswordReset values ('${params.username}', '${token}', '${datetime}');")
-                            if (result == 1) println "Updated entry for ${user.username} successful"
+                            if (result >= 1) println "Updated entry for ${user.username} successful"
                         } catch (Exception e) {
                             logger.error("There was a problem with re-entering password reset")
                         }

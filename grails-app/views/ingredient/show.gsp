@@ -146,12 +146,21 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <fieldset class="buttons" style="width:100%;">
+                            <fieldset class="buttons" style="text-align:center;width:100%;">
                                 <sec:ifLoggedIn>
                                     <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                     <g:if test="${ingredient.custom || role}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.ingredient}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                        <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.ingredient}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
+                                    </g:if>
+                                    <g:if test="${ingredient.canBeDeleted}">
+                                        <div style="display:block;">
+                                            <g:form controller="ingredient" action="delete" method="DELETE">
+                                                <input type="hidden" name="id" value="${ingredient.id}">
+                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit"
+                                                        onclick="return confirm('${message(code:'default.button.delete.confirm.message', default:'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></button>
+                                            %{--<g:link class="fa-solid fa-trash-can" action="delete" resource="${this.ingredient}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>--}%
+                                            </g:form>
+                                        </div>
                                     </g:if>
                                 </sec:ifLoggedIn>
                             </fieldset>

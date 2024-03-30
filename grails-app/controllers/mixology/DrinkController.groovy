@@ -127,6 +127,10 @@ class DrinkController extends BaseController {
         Drink drink = drinkService.get(id)
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
         if (drink.custom && user == null) drink = null // if not a default drink and no user
+        else if (user && !user?.drinks?.contains(drink)) {
+            render view:'/notFound', model:[object:'Drink']
+            return
+        }
         def roleAdmin = roleService.findByAuthority(enums.Role.ADMIN.name)
         def adminUser = userRoleService.getUserRoleIfExists(user as User, roleAdmin as Role)
         withFormat{
@@ -363,10 +367,11 @@ class DrinkController extends BaseController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_ADMIN','ROLE_USER'])
     def delete(Long id) {
         if (!id || !params) {
-            notFound(flash,request,'','')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'drink.label', default: 'Drink'), params.id])
+            redirect action: "show", status: NOT_FOUND
             return
         }
         if (request.method != 'DELETE') {

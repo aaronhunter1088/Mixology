@@ -133,7 +133,7 @@
                                             <input type="text" disabled name="number" value="${drink.number}" required="" id="number" />
                                         </div>
                                     </div>
-                                    <div class="formfield" id="alcohol">
+                                    <div class="formfield" id="alcoholType">
                                         <label for='alcohol'>Drink Type</label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="alcohol" value="${drink.alcohol}" required="" id="alcohol" />
@@ -185,7 +185,14 @@
                                         <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
                                     </g:if>
                                     <g:if test="${drink.canBeDeleted}">
-                                        <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>
+                                        <div style="display:block;">
+                                            <g:form controller="drink" action="delete" method="DELETE">
+                                                <input type="hidden" name="id" value="${drink.id}">
+                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit"
+                                                        onclick="return confirm('${message(code:'default.button.delete.confirm.message', default:'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></button>
+                                            </g:form>
+                                        </div>
+%{--                                        <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.drink}" onclick="return confirm('${message(code:'default.button.delete.confirm.message', default:'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>--}%
                                     </g:if>
                                 </sec:ifLoggedIn>
                             </fieldset>

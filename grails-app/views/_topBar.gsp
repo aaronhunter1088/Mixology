@@ -41,7 +41,7 @@
     <sec:ifNotLoggedIn>
         <div id="loginDiv" style="display:inline-flex;">
             <img style="width:auto;height:100px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-            <g:render template="/login/login"/>
+            <g:render template="/login/login" model="[darkMode:darkMode]"/>
         </div>
     </sec:ifNotLoggedIn>
     <sec:ifLoggedIn>
