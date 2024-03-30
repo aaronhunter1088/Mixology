@@ -110,14 +110,14 @@
                                     <input type="text" name="number" id="number" placeholder="${g.message(code:'drink.search.number', default:'number')}" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
                                     <label for="alcoholSelect"></label>
                                     <select id="alcoholSelect" name="alcohol" style="width:120px;text-align:center;" class="form-control">
-                                        <option label="alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled><g:message code="drink.search.alcohols" default="alcohols"/></option>
+                                        <option label="${g.message(code:"drink.search.alcohols", default:"alcohols")}" <g:if test="${!params.alcohol}">selected</g:if> disabled><g:message code="drink.search.alcohols" default="alcohols"/></option>
                                         <g:each in="${Alcohol.values()}" var="alcohol">
                                             <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
                                         </g:each>
                                     </select>
                                     <label for="glassSelect"></label>
                                     <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
-                                        <option label="glasses" selected disabled><g:message code="drink.search.glasses" default="glasses"/></option>
+                                        <option label="${g.message(code:"drink.search.glasses", default:"glasses")}" selected disabled><g:message code="drink.search.glasses" default="glasses"/></option>
                                         <g:each in="${GlassType.values()}" var="glass">
                                             <option value="${glass}">${glass}</option>
                                         </g:each>

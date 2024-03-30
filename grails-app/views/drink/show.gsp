@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Show A Drink</title>
+        <title><g:message code="drink.show.a.drink" default="Show A Drink"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -122,47 +122,47 @@
                                 </legend>
                                 <div id="drink" style="width:auto;color:${darkMode?'white':'black'};">
                                     <div class="formfield" id="drinkName">
-                                        <label for='name'>Drink Name</label>
+                                        <label for='name'><g:message code="drink.show.name" default="Drink Name"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="name" value="${drink.name}" required="" id="name" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinkNumber">
-                                        <label for='number'>Drink Number</label>
+                                        <label for='number'><g:message code="drink.show.number" default="Drink Number"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="number" value="${drink.number}" required="" id="number" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="alcoholType">
-                                        <label for='alcohol'>Drink Type</label>
+                                        <label for='alcohol'><g:message code="drink.show.type" default="Drink Type"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="alcohol" value="${drink.alcohol}" required="" id="alcohol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinkSymbol">
-                                        <label for='symbol'>Drink Symbol</label>
+                                        <label for='symbol'><g:message code="drink.show.symbol" default="Drink Symbol"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="symbol" value="${drink.symbol}" required="" id="symbol" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="glassType">
-                                        <label for="glass">Suggested Glass</label>
+                                        <label for="glass"><g:message code="drink.show.glass" default="Suggested Glass"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="glass" value="${drink.suggestedGlass}" required="" id="glass" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="instructions">
-                                        <label for='instructions'>Mixing Instructions</label>
+                                        <label for='instructions'><g:message code="drink.show.mixing" default="Mixing Instructions"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <textarea disabled readonly name="instructions" rows="5" cols="40">${drink.mixingInstructions}</textarea>
                                         </div>
                                     </div>
                                     <div class="formfield" id="ingredients">
                                         <g:if test="${!drink.ingredients || drink.ingredients.size() == 0}">
-                                            <label>No Ingredients</label>
+                                            <label><g:message code="drink.show.no.ingredients" default="No Ingredients"/></label>
                                             <p>Once you add this drink to an ingredient, they'll show here</p>
                                         </g:if><g:else>
-                                            <label>Ingredients</label><br/>
+                                            <label><g:message code="drink.show.ingredients" default="Ingredients"/></label><br/>
                                             <div style="margin-top:-25px;height:100px;padding-right:10px;overflow-y:auto;text-align:right;">
                                                 <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
                                                     <div style="display:block;">
@@ -182,7 +182,7 @@
                                     </g:if>
                                     <g:if test="${drink.custom || adminIsLoggedIn}">
                                         <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.drink}">&nbsp;<g:message code="default.button.edit.label" default="Edit"/></g:link>
-                                        <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;Share</a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
+                                        <a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share" id="share">&nbsp;<g:message code="default.button.share" default="Share"/></a> %{--<a href="#sendEmailDiv" rel="modal:open" class="fa fa-solid fa-share">&nbsp;Share</a>--}%
                                     </g:if>
                                     <g:if test="${drink.canBeDeleted}">
                                         <div style="display:block;">
@@ -205,8 +205,8 @@
         <div id="sendEmailDiv" class="modal" style="width:300px;height:150px;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <g:form controller="emails" action="shareDrinkEmail" method="POST" name="emailDrink" useToken="true">
                 <input name="drinkId" id="drinkId" type="hidden" value="${this.drink.id}"/>
-                <input name="recipientName" id="recipientName" type="text" placeholder="Enter recipient name" required="required"/>
-                <input name="recipientEmail" id="recipientEmail" type="text" placeholder="Enter recipient email" required="required"/>
+                <input name="recipientName" id="recipientName" type="text" placeholder="${g.message(code:'enter.recipient.name', default:'Enter recipient name')}" required="required"/>
+                <input name="recipientEmail" id="recipientEmail" type="text" placeholder="${g.message(code:'enter.recipient.email', default:'Enter recipient email')}" required="required"/>
                 <br/>
                 <input class="btn btn-outline-success btn-xs" type="submit" form="emailDrink" value="${message(code: 'default.share.label', default: 'Share')}" />
             </g:form>

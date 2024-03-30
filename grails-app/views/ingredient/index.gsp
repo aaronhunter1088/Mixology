@@ -104,7 +104,7 @@
                                     <input type="text" name="name" id="name" placeholder="${g.message(code:'ingredient.search.name', default:'ingredient name')}" value="${params.name}" style="text-align:center;" class="form-control" />
                                     <label for="unit"></label>
                                     <select id="unit" name="unit" style="width:100px;text-align:center;" class="form-control">
-                                        <option label="units" <g:if test="${!params.unit}">selected</g:if> disabled><g:message code="ingredient.search.unit" default="units"/></option>
+                                        <option label="${g.message(code:"ingredient.search.unit", default:"units")}" <g:if test="${!params.unit}">selected</g:if> disabled><g:message code="ingredient.search.unit" default="units"/></option>
                                         <g:each in="${Unit.values()}" var="unit">
                                             <option value="${unit}" <g:if test="${(params.unit as String) == unit.value.toUpperCase()}">selected</g:if>>${unit}</option>
                                         </g:each>

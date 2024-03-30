@@ -67,8 +67,8 @@
         def userService = grailsApplication.mainContext.getBean('userService')
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
     %>
-    <g:set var="language" value="${user?.language ?: "en"}"/>
-    <g:set var="darkMode" value="${user?.darkMode ?: "true"}"/>
+    <g:set var="language" value="${user?.language ?: 'en'}"/>
+    <g:set var="darkMode" value="${user?.darkMode ?: (params.darkMode=='true') ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="">
             <div style="display:block;position:fixed;top:20px;z-index:100;text-align:left;" class="row" id="topBar">
@@ -245,11 +245,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
         console.log("index loaded");
-        //console.log("language: '$ {language}'");
-        //console.log("href: " + location.href.split('lang=').length);
+        console.log("language: '${language}'");
+        console.log("darkMode: '${darkMode}'");
+        console.log("href: " + location.href.split('lang=').length);
         if ("${language}" !== '' && location.href.split('lang=').length === 1) {
             console.log("resetting language to ${language}");
-            window.location.href = location.href + '?lang=' + "${language ?: 'en'}";
+            window.location.href = location.href + '?lang=' + "${language ?: 'en'}" + '&darkMode=' + "${darkMode}";
         } else {
             console.log("not setting language");
         }

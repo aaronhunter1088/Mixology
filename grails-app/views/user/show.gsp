@@ -201,9 +201,9 @@
                                             </div>
                                             <div class="formfield">
                                                 <label for="languages"><g:message code="user.show.language" default="Language"/></label>
-                                                <div class="input-wrapper" style="width:174px;">
+                                                <div class="input-wrapper">
                                                     <g:select id="languages" name="languages" from="${['en','fr']}" value="${user?.language}"
-                                                              noSelection="['':'-Choose a language-']"/>
+                                                              noSelection='["":"${g.message(code:'user.show.choose.language', default:'-Choose a language-')}"]'/>
                                                 </div>
                                             </div>
                                         </div>
