@@ -103,33 +103,33 @@
                             <g:form action="${params.action}" controller="drink" name="filterDrinks" method="get">
                                 <div id="filterDrinksFormDiv" style="display:flex;">
                                     <label for="id"></label>
-                                    <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
+                                    <input type="text" name="id" id="id" placeholder="${g.message(code:'drink.search.id', default:'id')}" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
                                     <label for="name"></label>
-                                    <input type="text" name="name" id="name" placeholder="drink name" value="${params.name}" style="text-align:center;" class="form-control" />
+                                    <input type="text" name="name" id="name" placeholder="${g.message(code:'drink.search.drink.name', default:'drink name')}" value="${params.name}" style="text-align:center;" class="form-control" />
                                     <label for="number"></label>
-                                    <input type="text" name="number" id="number" placeholder="number" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
+                                    <input type="text" name="number" id="number" placeholder="${g.message(code:'drink.search.number', default:'number')}" value="${params.number}" style="width:100px;text-align:center;" class="form-control" />
                                     <label for="alcoholSelect"></label>
                                     <select id="alcoholSelect" name="alcohol" style="width:120px;text-align:center;" class="form-control">
-                                        <option label="alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled>alcohols</option>
+                                        <option label="alcohols" <g:if test="${!params.alcohol}">selected</g:if> disabled><g:message code="drink.search.alcohols" default="alcohols"/></option>
                                         <g:each in="${Alcohol.values()}" var="alcohol">
                                             <option value="${alcohol}" <g:if test="${(params.alcohol as String) == alcohol.alcoholName.toUpperCase()}">selected</g:if>>${alcohol}</option>
                                         </g:each>
                                     </select>
                                     <label for="glassSelect"></label>
                                     <select id="glassSelect" name="glass" style="text-align:center;" class="form-control">
-                                        <option label="glasses" selected disabled>glasses</option>
+                                        <option label="glasses" selected disabled><g:message code="drink.search.glasses" default="glasses"/></option>
                                         <g:each in="${GlassType.values()}" var="glass">
                                             <option value="${glass}">${glass}</option>
                                         </g:each>
                                     </select>
                                     <g:if test="${adminIsLoggedIn}">
-                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultDrink">Default Drink? </label>
+                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultDrink"><g:message code="drink.search.default" default="Default Drink?"/></label>
                                         <input type="checkbox" name="defaultDrink" id="defaultDrink"
                                                <g:if test="${params.defaultDrink && isOn(params.defaultDrink as String)}">checked="checked"</g:if>
                                                onclick="triggerCustomCheckbox();" />
                                     </g:if>
-                                    <button style="margin: auto 10px;" id="filterDrinkBtn" class="btn btn-primary btn-xs" type="submit" form="filterDrinks">Filter</button>
-                                    <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
+                                    <button style="margin: auto 10px;" id="filterDrinkBtn" class="btn btn-primary btn-xs" type="submit" form="filterDrinks"><g:message code="default.button.filter.label" default="Filter"/></button>
+                                    <g:link action="${params.action}" controller="drink" class="btn btn-outline-primary btn-xs" style="text-align:center;margin-top:auto;margin-bottom:auto;"><g:message code="default.button.clear.label" default="Clear"/></g:link>
                                 </div>
                             </g:form>
                         </div>
@@ -140,20 +140,20 @@
                             </g:if><g:elseif test="${isOn(params.defaultDrink as String)}">
                                 <p><g:message code="no.default.drinks.found" default="No default drinks found!"/></p>
                             </g:elseif><g:else>
-                                <p>No drinks found!</p>
+                                <p><g:message code="no.drinks.found" default="No drinks found!"/></p>
                             </g:else>
                         </g:if>
                         <g:else>
                             <table id="drinksTable">
                                 <thead>
                                     <tr id="drinksHeaderRow">
-                                        <th>Count (${drinkCount})</th>
-                                        <th>Drink Name</th>
-                                        <th>Drink Symbol</th>
-                                        <th>Drink Number</th>
-                                        <th>Alcohol Type</th>
-                                        <th>Ingredients</th>
-                                        <th>Suggested Glass</th>
+                                        <th><g:message code="drink.index.count" default="Count"/> (${drinkCount})</th>
+                                        <th><g:message code="drink.index.name" default="Drink Name"/></th>
+                                        <th><g:message code="drink.index.symbol" default="Drink Symbol"/></th>
+                                        <th><g:message code="drink.index.number" default="Drink Number"/></th>
+                                        <th><g:message code="drink.index.alcohol" default="Alcohol Type"/></th>
+                                        <th><g:message code="drink.index.ingredients" default="Ingredients"/></th>
+                                        <th><g:message code="drink.index.glass" default="Suggested Glass"/></th>
                                     </tr>
                                 </thead>
                                 <tbody>

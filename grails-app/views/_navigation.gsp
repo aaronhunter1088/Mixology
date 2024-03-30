@@ -58,14 +58,14 @@
                             <!-- Ingredient -->
                             <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.ingredient.management" default="Ingredient Mgmt"/></li><br/>
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;<g:message code="ingredient.label" args="s" default="Ingredients"/></g:link>
+                                <g:link class="fa-solid fa-list" controller="ingredient" action="index">&nbsp;<g:message code="navigation.ingredient.label" default="Ingredients"/></g:link>
                             </sec:ifAnyGranted>
                             <g:link class="fa-solid fa-list" controller="ingredient" action="customIndex">&nbsp;<g:message code="navigation.your.ingredients" default="Your Ingredients"/></g:link>
                             <g:link class="fa fa-light fa-jar" controller="ingredient" action="create">&nbsp;<g:message code="navigation.new.ingredient" default="New Ingredient"/></g:link>
                         <!-- Auth Token -->
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.authToken.management" default="AuthToken Mgmt"/></li><br/>
-                                <g:link class="fa-solid fa-list" controller="authToken" action="index">&nbsp;<g:message code="authToken.label" args="s" default="AuthTokens"/></g:link>
+                                <g:link class="fa-solid fa-list" controller="authToken" action="index">&nbsp;<g:message code="authToken.label" args="s" default="Auth Tokens"/></g:link>
                             </sec:ifAnyGranted>
                         </ul>
                     </li> <!-- Domain Objects -->

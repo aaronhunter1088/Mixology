@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Create Drinks</title>
+        <title><g:message code="drinks.create" default="Create Drinks"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -40,7 +40,7 @@
                 padding-right:10px;
             }
             fieldset::before {
-                content: "Use this form to create a new drink";
+                content: "${g.message(code:'drink.create.help', default:'Use this form to create a new drink')}";
                 position: absolute;
                 margin-top: -45px;
                 right: 10px;
@@ -131,22 +131,22 @@
                             <g:form url="[controller:'drink', action:'save']" id="newDrink" name="newDrink" onsubmit="return isValid();">
                                 <div id="create-drink" style="width:55%;float:left;">
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='name'><span class='required-indicator'>*</span> Drink Name</label>
+                                        <label for='name'><span class='required-indicator'>*</span> <g:message code="drink.create.name" default="Drink Name"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="name" required id="name" value="${params?.name}" />
                                         </div>
                                     </div> <!-- Drink Name -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='number'><span class='required-indicator'>*</span> Drink Number</label>
+                                        <label for='number'><span class='required-indicator'>*</span> <g:message code="drink.create.number" default="Drink Number"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="number" required id="number" value="${params?.number}" />
                                         </div>
                                     </div> <!-- Drink Number -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='alcoholType'><span class='required-indicator'>*</span> Drink Type</label>
+                                        <label for='alcoholType'><span class='required-indicator'>*</span> <g:message code="drink.create.type" default="Drink Type"/></label>
                                         <div class="input-wrapper">
                                             <select name="alcohol" id="alcohol" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
-                                                <option label="Select One" <g:if test="${params.alcohol == null}">selected</g:if> disabled>Select One</option>
+                                                <option label="${g.message(code:'select.one', default:'Select One')}" <g:if test="${params.alcohol == null}">selected</g:if> disabled><g:message code="select.one" default="Select One"/></option>
                                                 <g:each in="${Alcohol.values()}" var="alcohol" name="alcoholType">
                                                     <option value="${alcohol}" <g:if test="${params.alcohol != null && params.alcohol == alcohol}">selected</g:if>>${alcohol}</option>
                                                 </g:each>
@@ -154,16 +154,16 @@
                                         </div>
                                     </div> <!-- Drink Alcohol -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                        <label for='symbol'><span class='required-indicator'>*</span> Drink Symbol</label>
+                                        <label for='symbol'><span class='required-indicator'>*</span> <g:message code="drink.create.symbol" default="Drink Symbol"/></label>
                                         <div class="input-wrapper">
                                             <input type="text" name="symbol" value="${params?.symbol}" required id="symbol" />
                                         </div>
                                     </div> <!-- Drink Symbol -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for="suggestedGlass"><span class='required-indicator'>*</span> Suggested Glass</label>
+                                        <label for="suggestedGlass"><span class='required-indicator'>*</span> <g:message code="drink.create.glass" default="Suggested Glass"/></label>
                                         <div class="input-wrapper">
                                             <select name="glass" id="glass" class="form-control" style="width:55%;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:white;">
-                                                <option label="Select One" <g:if test="${params.glass == null}">selected</g:if> disabled>Select One</option>
+                                                <option label="${g.message(code:'select.one', default:'Select One')}" <g:if test="${params.glass == null}">selected</g:if> disabled><g:message code="select.one" default="Select One"/></option>
                                                 <g:each in="${GlassType.values()}" var="glass" name="suggestedGlass">
                                                     <option value="${glass}" <g:if test="${params.glass == glass}">selected</g:if>>${glass}</option>
                                                 </g:each>
@@ -171,21 +171,21 @@
                                         </div>
                                     </div> <!-- Drink Glass -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='mixingInstructions'><span class='required-indicator'>*</span> Mixing Instructions</label>
+                                        <label for='mixingInstructions'><span class='required-indicator'>*</span> <g:message code="drink.create.mixing" default="Mixing Instructions"/></label>
                                         <div class="input-wrapper" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
                                             <g:textArea form="newDrink" name="mixingInstructions" value="${params?.mixingInstructions}" rows="5" cols="40"/>
                                         </div>
                                     </div> <!-- Drink Mixing Instructions -->
                                     <g:if test="${user.ingredients}">
                                         <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                            <label><span class='required-indicator'>*</span> Ingredients</label><br>
+                                            <label><span class='required-indicator'>*</span> <g:message code="ingredient.label" args="s" default="Ingredients"/></label><br>
                                             <div style="margin-top:-25px;height:200px;overflow-y:auto;">
                                                 <g:each in="${user.ingredients.sort{-it.id}}" var="ingredient" status="i"> <!-- sort{'negative'...} returns list in reverse sort -->
                                                     <div style="display:block;">
                                                         <div id="ingredientsGroup" style="display:inline-flex;justify-content:center;">
-                                                            <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('ingredientTableDiv', 'ingredient', '${ingredient}')">Edit Me</button>
-                                                            <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');">Add</button>
-                                                            <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');">Remove</button>
+                                                            <button type="button" class="btn btn-outline-primary btn-xs" onclick="addRow('ingredientTableDiv', 'ingredient', '${ingredient}')"><g:message code="default.button.edit.me.label" default="Edit Me"/></button>
+                                                            <button id="addIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-info btn-xs" onclick="addIngredient('${ingredient.id}');"><g:message code="default.button.add.label" default="Add"/></button>
+                                                            <button hidden id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');"><g:message code="default.button.remove.label" default="Remove"/></button>
                                                             <input hidden type="checkbox" name="ingredients" id="ingredient${ingredient.id}" value="${ingredient.id}"/> ${ingredient.prettyName(true)} &emsp14;
                                                         </div>
                                                     </div>
@@ -197,7 +197,7 @@
                                 <form id="ingredientForm" name="ingredientForm" style="">
                                     <fieldset id="ingredientFieldSet" style="height:85px;border:thick solid #008011;color:${darkMode?'white':'black'};" class="no-before">
                                         <legend style="margin-left:25px;width:auto;">
-                                            &emsp14;Create A New Ingredient&emsp14;
+                                            &emsp14;<g:message code="drink.create.fly.ingredients.label" default="Create A New Ingredient"/>&emsp14;
                                             <a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success btn-xs" href="javascript:addRow('ingredientTableDiv', 'ingredient', '')"><strong>+</strong></a>
                                             <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                             <hr style="height:1px;background-color:#008011">
@@ -240,7 +240,7 @@
                                                     nameDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                                     let labelForName = document.createElement('label');
                                                     labelForName.setAttribute('for', prefix + 'Name' + rowId);
-                                                    labelForName.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                                    labelForName.innerHTML = '${g.message(code:'drink.create.name', default:'Name')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     let input = document.createElement('input');
                                                     input.setAttribute('type', 'text');
                                                     input.setAttribute('id', prefix + 'Name');
@@ -260,17 +260,17 @@
                                                     //div2.setAttribute('class','form-control');
                                                     let label2 = document.createElement('label');
                                                     label2.setAttribute('for', prefix + 'Unit' + rowId);
-                                                    label2.innerHTML = 'Unit' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                                    label2.innerHTML = '${g.message(code:'drink.create.unit', default:'Unit')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     let select = document.createElement('select');
                                                     select.setAttribute('name', 'ingredientUnit' + rowId);
                                                     select.setAttribute('required', 'true');
                                                     select.setAttribute('style', 'background-color:${darkMode?'black':'white'};')
                                                     select.setAttribute('class', 'form-control')
                                                     let first = document.createElement('option');
-                                                    first.setAttribute('label', 'Select One');
+                                                    first.setAttribute('label', '${g.message(code:'select.one', default:'Select One')}');
                                                     first.selected = true;
                                                     first.disabled = true;
-                                                    first.setAttribute('text', 'Select One');
+                                                    first.setAttribute('text', '${g.message(code:'select.one', default:'Select One')}');
                                                     select.appendChild(first);
                                                     let option = document.createElement('option');
                                                     <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" status="i" var="unit">
@@ -291,13 +291,13 @@
                                                     //div3.setAttribute('class','form-control');
                                                     let label3 = document.createElement('label');
                                                     label3.setAttribute('for', prefix + 'Amount' + rowId);
-                                                    label3.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                                    label3.innerHTML = '${g.message(code:'drink.create.amount', default:'Amount')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     input = document.createElement('input');
                                                     input.setAttribute('type', 'number');
                                                     input.setAttribute('id', prefix + 'Amount');
                                                     input.setAttribute('name', prefix + 'Amount' + rowId);
                                                     input.setAttribute('class', 'form-control');
-                                                    input.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
+                                                    input.setAttribute('style', 'width:75px;background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};');
                                                     input.setAttribute('required', 'true');
                                                     if (ingredientAmt !== '') input.setAttribute('value',ingredientAmt);
                                                     div3.appendChild(label3);
@@ -344,7 +344,7 @@
                                     </fieldset>
                                 </form>
                                 <div class="formfield" style="margin-top:25px;padding-left:50%;">
-                                    <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink">Create</button>
+                                    <button id="createDrink" class="btn btn-outline-primary" type="submit" form="newDrink"><g:message code="default.button.create.label" default="Create"/></button>
                                 </div>
                             </g:form>
                         </fieldset>
@@ -370,7 +370,7 @@
                 let removeButton = document.getElementById('removeIngredientBtn'+ingredientId);
                 addButton.classList.remove('btn-success', 'fa-solid', 'fa-check');
                 addButton.classList.add('btn-outline-info');
-                addButton.innerHTML = "Add";
+                addButton.innerHTML = "${g.message(code:'default.button.add.label', default:'Add')}";
                 removeButton.hidden = true;
             }
             function isValid() {

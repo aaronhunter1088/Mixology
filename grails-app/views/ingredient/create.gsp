@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Create Ingredients</title>
+        <title><g:message code="create.ingredients" default="Create Ingredients"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -34,7 +34,7 @@
                 position: relative;
             }
             fieldset::before {
-                content: "Use this form to create a new ingredient";
+                content: "${g.message(code:'create.ingredients.before', default:'Use this form to create a new ingredient')}";
                 position: absolute;
                 margin-top: -45px;
                 right: 10px;
@@ -46,7 +46,7 @@
             }
         </style>
     </head>
-    <g:set var="entityName" value="${message(code: 'ingredient.label', default: 'Ingredient')}" />
+    <g:set var="entityName" value="${g.message(code: 'ingredient.label', default: 'Ingredient')}" />
     <g:set var="darkMode" value="${user.darkMode}"/>
     <g:if test="${darkMode}">
         <style>
@@ -65,6 +65,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 console.log("page loaded");
+                $("#ingredientRow1 > div:nth-child(4) > a").css('visibility', 'hidden');
             });
             let rowId = 1;
         </script>
@@ -90,8 +91,8 @@
                     <div style="display:flex;justify-content:center;">
                         <fieldset style="border:thick solid #008011;width:750px;" class="no-before">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
-                                &emsp14;Create An Ingredient&emsp14;<a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success" href="javascript:addRow('ingredientTable', 'ingredient')"><b>+</b></a>
-                                <i class='fa-solid fa-circle-info' title="${g.message(code:'drink.create.on.the.fly.ingredients', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
+                                &emsp14;<g:message code="create.an.ingredient" default="Create an Ingredient"/>&emsp14;<a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success" href="javascript:addRow('ingredientTable', 'ingredient')"><b>+</b></a>
+                                <i class='fa-solid fa-circle-info' title="${g.message(code:'create.ingredients.help', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                 <hr style="height:1px;background-color:#008011">
                             </legend>
                             <div id="ingredientErrorMessagesDiv" style="display:block;">
@@ -100,20 +101,20 @@
                                 <div id="ingredientTable" style="position:relative;display:block;padding:20px;">
                                     <div id="ingredientRow1" style="position:relative;display:flex;justify-content:space-evenly;">
                                         <div id="ingredientNameColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <label for="ingredientName">Name&nbsp;<span class='required-indicator'>*</span></label>
+                                            <label for="ingredientName"><g:message code="create.ingredients.name" default="Name"/>&nbsp;<span class='required-indicator'>*</span></label>
                                             <input type="text" id="ingredientName" name="ingredientName" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         </div>
                                         <div id="ingredientUnitColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <label for="ingredientUnitSelect">Unit&nbsp;<span class='required-indicator'>*</span></label>
+                                            <label for="ingredientUnitSelect"><g:message code="create.ingredients.unit" default="Unit"/>&nbsp;<span class='required-indicator'>*</span></label>
                                             <select id="ingredientUnitSelect" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
-                                                <option value="" label="Select One" selected disabled>Select One</option>
+                                                <option value="" label="${g.message(code:'select.one', default:'Select One')}" selected disabled><g:message code="select.one" default="Select One"/></option>
                                                 <g:each in="${Arrays.asList(Unit.values()).findAll{it.type == 'S'}}" var="unit" name="ingredientUnit">
                                                     <option value="${unit}">${unit}</option>
                                                 </g:each>
                                             </select>
                                         </div>
                                         <div id="ingredientAmountColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
-                                            <label for="ingredientAmount">Amount&nbsp;<span class='required-indicator'>*</span></label>
+                                            <label for="ingredientAmount"><g:message code="create.ingredients.amount" default="Amount"/>&nbsp;<span class='required-indicator'>*</span></label>
                                             <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         </div>
                                         <div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
@@ -137,7 +138,7 @@
                                         nameDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                         let labelForName = document.createElement('label');
                                         labelForName.setAttribute('for', prefix + 'NameColumn' + rowId);
-                                        labelForName.innerHTML = 'Name' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        labelForName.innerHTML = '${g.message(code:'create.ingredients.name', default:'Name')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                         let input = document.createElement('input');
                                         input.setAttribute('type', 'text');
                                         input.setAttribute('id', prefix + 'Name');
@@ -156,7 +157,7 @@
                                         unitDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                         let labelForUnit = document.createElement('label');
                                         labelForUnit.setAttribute('for', prefix + 'Unit' + rowId);
-                                        labelForUnit.innerHTML = 'Unit' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        labelForUnit.innerHTML = '${g.message(code:'create.ingredients.unit', default:'Unit')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                         let select = document.createElement('select');
                                         select.setAttribute('name', prefix + 'Unit' + rowId);
                                         select.setAttribute('required', 'true');
@@ -164,7 +165,7 @@
                                         select.setAttribute('class', 'form-control')
                                         //style="background-color:${darkMode?'black':'white'};" name="ingredientUnit" class="form-control" required="required">
                                         let first = document.createElement('option');
-                                        first.setAttribute('label', 'Select One');
+                                        first.setAttribute('label', '${g.message(code:'select.one', default:'Select One')}');
                                         first.selected = true;
                                         first.disabled = true;
                                         first.setAttribute('text', 'Select One');
@@ -187,7 +188,7 @@
                                         amountDiv.setAttribute('style', 'position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};');
                                         let labelForAmount = document.createElement('label');
                                         labelForAmount.setAttribute('for', prefix + 'Amount' + rowId);
-                                        labelForAmount.innerHTML = 'Amount' + '&nbsp;<span class=\'required-indicator\'>*</span>';
+                                        labelForAmount.innerHTML = '${g.message(code:'create.ingredients.amount', default:'Amount')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                         input = document.createElement('input');
                                         input.setAttribute('type', 'text');
                                         input.setAttribute('id', prefix + 'Amount');
@@ -227,7 +228,7 @@
                                 New rows will be added here
                                 -->
                                 <div class="formfield" style="margin-top:25px;padding-left:10px;text-align:center;">
-                                    <input class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save" value="Create Ingredients"/>
+                                    <input class="btn btn-outline-primary" type="submit" form="newIngredient" formaction="/mixology/ingredient/save" value="${g.message(code:'create.ingredients', default:'Create Ingredients')}"/>
                                 </div>
                             </g:form>
                         </fieldset>

@@ -89,9 +89,6 @@
                         <div id="navigation">
                             <g:render template="../navigation" model="[user:user]"/>
                         </div>
-                        <!--<div style="margin:auto;padding-top:10px;vertical-align:middle;">
-                                    <h1 style="color:$ {darkMode?'white':'black'};"><g :message code="default.list.label" args="[drink]" /></h1>
-                                </div>-->
                     </div>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
@@ -102,26 +99,26 @@
                             <g:form action="${params.action}" controller="ingredient" name="filterIngredients" method="get">
                                 <div id="filterIngredientsFormDiv" style="display:flex;">
                                     <label for="id"></label>
-                                    <input type="text" name="id" id="id" placeholder="id" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
+                                    <input type="text" name="id" id="id" placeholder="${g.message(code:'ingredient.search.id', default:'id')}" value="${params.id}" style="width:50px;text-align:center;" class="form-control" />
                                     <label for="name"></label>
-                                    <input type="text" name="name" id="name" placeholder="ingredient name" value="${params.name}" style="text-align:center;" class="form-control" />
+                                    <input type="text" name="name" id="name" placeholder="${g.message(code:'ingredient.search.name', default:'ingredient name')}" value="${params.name}" style="text-align:center;" class="form-control" />
                                     <label for="unit"></label>
                                     <select id="unit" name="unit" style="width:100px;text-align:center;" class="form-control">
-                                        <option label="units" <g:if test="${!params.unit}">selected</g:if> disabled>units</option>
+                                        <option label="units" <g:if test="${!params.unit}">selected</g:if> disabled><g:message code="ingredient.search.unit" default="units"/></option>
                                         <g:each in="${Unit.values()}" var="unit">
                                             <option value="${unit}" <g:if test="${(params.unit as String) == unit.value.toUpperCase()}">selected</g:if>>${unit}</option>
                                         </g:each>
                                     </select>
                                     <label for="amount"></label>
-                                    <input type="text" name="amount" id="amount" placeholder="amount" value="${params.amount}" style="text-align:center;width:100px;" class="form-control" />
+                                    <input type="text" name="amount" id="amount" placeholder="${g.message(code:'ingredient.search.amount', default:'amount')}" value="${params.amount}" style="text-align:center;width:100px;" class="form-control" />
                                     <g:if test="${!customIngredients}">
-                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultIngredient">Default Ingredient? </label>
+                                        <label style="color:${darkMode?'white':'black'};margin: auto 10px;" for="defaultIngredient"><g:message code="ingredient.search.default" default="Default Ingredient?"/></label>
                                         <input type="checkbox" name="defaultIngredient" id="defaultIngredient"
                                                <g:if test="${params.defaultIngredient && isOn(params.defaultIngredient as String)}">checked="checked"</g:if>
                                                onclick="triggerCustomCheckbox();" />
                                     </g:if>
-                                    <button style="margin: auto 10px;" id="filterIngredientBtn" class="btn btn-primary btn-xs" type="submit" form="filterIngredients">Filter</button>
-                                    <g:link class="btn btn-outline-primary btn-xs" controller="ingredient" action="${params.action}" style="text-align:center;margin-top:auto;margin-bottom:auto;">Clear</g:link>
+                                    <button style="margin: auto 10px;" id="filterIngredientBtn" class="btn btn-primary btn-xs" type="submit" form="filterIngredients"><g:message code="default.button.filter.label" default="Filter"/></button>
+                                    <g:link class="btn btn-outline-primary btn-xs" controller="ingredient" action="${params.action}" style="text-align:center;margin-top:auto;margin-bottom:auto;"><g:message code="default.button.clear.label" default="Clear"/></g:link>
                                 </div>
                             </g:form>
                         </div>
@@ -139,11 +136,11 @@
                             <table id="ingredientsTable">
                                 <thead>
                                 <tr id="ingredientsHeaderRow">
-                                    <th>Count (${ingredientCount})</th>
-                                    <th>Name</th>
-                                    <th>Unit</th>
-                                    <th>Amount</th>
-                                    <th>Drinks</th>
+                                    <th><g:message code="ingredient.index.count" default="Count"/> (${ingredientCount})</th>
+                                    <th><g:message code="ingredient.index.name" default="Name"/></th>
+                                    <th><g:message code="ingredient.index.unit" default="Unit"/></th>
+                                    <th><g:message code="ingredient.index.amount" default="Amount"/></th>
+                                    <th><g:message code="ingredient.index.drinks" default="Drinks"/></th>
                                 </tr>
                                 </thead>
                                 <tbody>
