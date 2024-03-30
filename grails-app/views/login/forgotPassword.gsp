@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Mixology Forgot Password</title>
+    <title><g:message code="forgot.password" default="Forgot Password"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
@@ -85,7 +85,7 @@
 <body>
 <div id="login">
     <div class="inner">
-        <div class="fheader">Enter Your Email Address</div>
+        <div class="fheader"><g:message code="enter.email" default="Enter Your Email Address"/></div>
 
         <g:if test='${flash.message}'>
             <div class="login_message">${flash.message}</div>
@@ -99,7 +99,7 @@
             <p>
                 <a class="btn btn-secondary" id="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
                 &emsp;
-                <input class="btn btn-primary" type="submit" id="submit" value="Send Email"/>
+                <input class="btn btn-primary" type="submit" id="submit" value="${g.message(code:"send.email", default:"Send Email")}"/>
             </p>
         </g:form>
     </div>

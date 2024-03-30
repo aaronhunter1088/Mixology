@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Mixology Reset Password</title>
+    <title><g:message code="reset.password" default="Reset Password"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
@@ -85,7 +85,7 @@
 <body>
 <div id="login">
     <div class="inner">
-        <div class="fheader">Enter Your New Password</div>
+        <div class="fheader"><g:message code="enter.password" default="Enter Your New Password"/></div>
 
         <g:if test='${flash.message}'>
             <div class="login_message">${flash.message}</div>
@@ -100,11 +100,11 @@
                 <input type="password" class="text_" name="password" id="password"/>
             </p>
             <p>
-                <label for="passwordConfirm">Password Confirm:</label>
+                <label for="passwordConfirm"><g:message code="password.confirm" default="Password Confirm"/>:</label>
                 <input type="password" class="text_" name="passwordConfirm" id="passwordConfirm"/>
             </p>
             <p>
-                <input class="btn btn-primary" type="submit" id="submit" value="Save Password"/>
+                <input class="btn btn-primary" type="submit" id="submit" value="${g.message(code:'save.password', default:'Save Password')}"/>
             </p>
         </g:form>
     </div>

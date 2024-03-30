@@ -141,7 +141,7 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
         db.eachRow("select * from userPasswordReset where token='"+params.token+"';" as String) {
             if (LocalDateTime.now() > (it['tokenExpires'] as Timestamp)?.toLocalDateTime()) {
                 logger.info("The token has expired. User must request a new Reset Link")
-                flash.message = "The token has expired. Please request a new Reset Link."
+                flash.message = "${g.message(code:'token.has.expired.message', default:'The token has expired. Please request a new Reset Link.')}"
                 redirect controller:'login', action:'forgotPassword'
             } else {
                 render view:'resetPassword'
