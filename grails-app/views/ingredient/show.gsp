@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Show An Ingredient</title>
+        <title><g:message code="ingredient.show.an.ingredient" default="Show An Ingredient"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -111,29 +111,29 @@
                                 </legend>
                                 <div id="ingredient" style="width:100%;float:left;color:${darkMode?'white':'black'};">
                                     <div class="formfield" id="name">
-                                        <label for='ingredientName'>Ingredient Name</label>
+                                        <label for='ingredientName'><g:message code="ingredient.show.name" default="Ingredient Name"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="ingredientName" value="${ingredient.name}" required="" id="ingredientName" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="unit">
-                                        <label for='ingredientUnit'>Ingredient Unit</label>
+                                        <label for='ingredientUnit'><g:message code="ingredient.show.unit" default="Ingredient Unit"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="ingredientUnit" value="${ingredient.unit}" required="" id="ingredientUnit" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="amount">
-                                        <label for='ingredientAmount'>Ingredient Amount</label>
+                                        <label for='ingredientAmount'><g:message code="ingredient.show.amount" default="Ingredient Amount"/></label>
                                         <div class="input-wrapper" style="text-align:right;">
                                             <input type="text" disabled name="ingredientAmount" value="${ingredient.amount}" required="" id="ingredientAmount" />
                                         </div>
                                     </div>
                                     <div class="formfield" id="drinks" style="">
                                         <g:if test="${!ingredient.drinks || ingredient.drinks.size() == 0}">
-                                            <label>No Drinks</label>
-                                            <p>Once you add this ingredient to a drink, they'll show here</p>
+                                            <label><g:message code="ingredient.show.no.drinks" default="No Drinks"/></label>
+                                            <p><g:message code="ingredient.show.no.drinks.help" default="Once you add this ingredient to a drink, they'll show here"/></p>
                                         </g:if><g:else>
-                                            <label>Drinks</label><br>
+                                            <label><g:message code="ingredient.show.drinks" default="Drinks"/></label><br>
                                             <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
                                                 <g:each in="${ingredient.drinks.sort{ it.id }}" var="drink" status="i">
                                                     <div style="display:block;">
@@ -146,7 +146,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <fieldset class="buttons" style="text-align:center;width:100%;">
+                            <fieldset class="buttons" style="text-align:left;width:100%;">
                                 <sec:ifLoggedIn>
                                     <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                     <g:if test="${ingredient.custom || role}">

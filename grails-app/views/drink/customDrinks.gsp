@@ -5,7 +5,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>Custom Drinks</title>
+        <title><g:message code="custom.mixology.title" default="Custom Drinks"/></title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <asset:stylesheet src="application.css"/>
         <asset:javascript src="application.js"/>
@@ -76,7 +76,7 @@
                     <div id="column1" style="margin:0;padding:0;width:600px;">
                         <div id="tequilaDrinks" style="margin:0;padding:0;">
                             <div class="card" style="overflow-y:auto;height:1823px;">
-                                <p style="text-align:center;margin-bottom:0;">Custom Tequila Drinks</p>
+                                <p style="text-align:center;margin-bottom:0;"><g:message code="custom.tequila.drinks" default="Custom Tequila Drinks"/></p>
                                 <%
                                     List tequilaDrinks = drinkList.findAll { it.alcohol == Alcohol.TEQUILA}
                                             .sort((d1, d2) -> d1.number <=> d2.number).collect()
@@ -102,7 +102,7 @@
                     </div>
                     <div id="column2" style="margin:0;padding:0;width:2100px;">
                         <div id="title" style="width:1200px;height:600px;">
-                            <h1 id="chartTitle" style="width:2100px;font-size:180px;padding-left:35px;color:${darkMode?'white':'black'};">Periodic Table of Mixology</h1>
+                            <h1 id="chartTitle" style="width:2100px;<g:if test="${user.language=='en'}">font-size:180px;</g:if><g:else>font-size:140px;</g:else>padding-left:35px;color:${darkMode?'white':'black'};"><g:message code="periodic.table.title" default="Periodic Table of Mixology"/></h1>
                             <div id="reference" style="display:inline-flex;">
                                 <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
                                     <g:render template="customReferenceChart" model="[drinks:drinkList,darkMode:darkMode]"/>
@@ -111,7 +111,7 @@
                                     <g:render template="../measurementsCard"/>
                                 </div>
                                 <div id="glasses" style="text-align:center;">
-                                    <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger(${darkMode});"
+                                    <img title="${g.message(code:'click.to.make.bigger', default:'Click me to make me bigger!')}" onclick="makeSuggestedGlassesBigger(${darkMode});"
                                          width="450px" height="300px" style="mix-blend-mode:initial;" alt="All Cocktails"
                                          <g:if test="${darkMode}">
                                              src="${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}"
@@ -119,14 +119,14 @@
                                             src="${resource(dir:'../assets/images',file:'allGlasses-white.png')}"
                                          </g:else>
                                     />
-                                    <p style="font-size:2em;margin:0;color:#a60000;"><b>Suggested Glass Options</b></p>
+                                    <p style="font-size:2em;margin:0;color:#a60000;"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>
                                 </div>
                             </div>
                         </div>
                         <div id="vodkaAndGin" style="display:inline-flex;">
                             <div id="vodkaDrinks" style="margin:0;padding:0;width:1200px;">
                                 <div class="card" style="overflow-y:auto;height:923px;">
-                                    <p style="text-align:center;margin-bottom:0;">Custom Vodka Drinks</p>
+                                    <p style="text-align:center;margin-bottom:0;"><g:message code="custom.vodka.drinks" default="Custom Vodka Drinks"/></p>
                                     <%
                                         List vodkaDrinks = drinkList.findAll { it.alcohol == Alcohol.VODKA}
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
@@ -169,7 +169,7 @@
                             </div>
                             <div id="gin" style="padding-right:5px;width:905px;">
                                 <div class="card" style="overflow-y:auto;height:923px;">
-                                    <p style="text-align:center;margin-bottom:0;">Custom Gin Drinks</p>
+                                    <p style="text-align:center;margin-bottom:0;"><g:message code="custom.gin.drinks" default="Custom Gin Drinks"/></p>
                                     <%
                                         def ginDrinks = drinkList.findAll { it.alcohol == Alcohol.GIN }
                                                 .sort((d1, d2) -> d1.number <=> d2.number).collect()
@@ -195,7 +195,7 @@
                         </div>
                         <div id="shooterDrinks" style="width:2500px;padding:5em;">
                             <div class="card" style="overflow-y:auto;height:623px;">
-                                <p style="text-align:center;margin-bottom:0;">Custom Shooter Drinks</p>
+                                <p style="text-align:center;margin-bottom:0;"><g:message code="custom.shooter.drinks" default="Custom Shooter Drinks"/></p>
                                 <%
                                     List shooterDrinks = drinkList.findAll { it.alcohol == Alcohol.SHOOTER }
                                             .sort((d1, d2) -> d1.number.compareTo(d2.number)).collect()
@@ -236,10 +236,10 @@
                     <div id="column3" style="margin:0;padding:0;width:600px;">
                         <div id="frozenDrinks" style="">
                             <div class="card" style="overflow-y:auto;height:1523px;">
-                                <p style="text-align:center;margin-bottom:0;">Custom  Frozen Drinks</p>
+                                <p style="text-align:center;margin-bottom:0;"><g:message code="custom.frozen.drinks" default="Custom Frozen Drinks"/></p>
                                 <div style="display:inline-flex;">
                                     <div style="width:300px;height:300px;background-color:${darkMode?'black':'white'};">
-                                        <img title="Don't Drink And Drive!" width="290px" height="290px" alt="Don't Drink and Drive"
+                                        <img title="<g:message code="dont.drink.and.drive" default="Don't Drink and Drive!"/>" width="290px" height="290px" alt="${g.message(code:"dont.drink.and.drive", default:"Don't Drink and Drive!")}"
                                              <g:if test="${darkMode}">
                                                  src="${resource(dir:'../assets/images',file:'dontDrinkAndDriveDarkMode.png')}"
                                              </g:if><g:else>
@@ -281,17 +281,15 @@
     });
     function makeSuggestedGlassesBigger(darkMode) {
         let newWindow = window.open("", "glasses", "width=1000,height=800");
-        newWindow.document.write("<head><title>Suggested Glass Options</title></head>");
+        newWindow.document.write("<head><title><g:message code="suggested.glass.options" default="Suggested Glass Options"/></title></head>");
         if (darkMode) {
-            newWindow.document.write("<body style='background-color:black;'>");
-            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b>Suggested Glass Options</b></p>");
-            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
+            newWindow.document.write("<body style=\"background-color:black;\">");
         } else {
-            newWindow.document.write("<body style='background-color:white;'>");
-            newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:black;\"><b>Suggested Glass Options</b></p>");
-            newWindow.document.write("<img style=\"mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.png')}\" alt=\"All Cocktails\"/>");
+            newWindow.document.write("<body style=\"background-color:white;\">");
         }
-        newWindow.document.write("</body>")
+        newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>");
+        newWindow.document.write("<img  style=\"display:block;margin-left:auto;margin-right:auto;mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
+        newWindow.document.write("</body>");
     }
 </script>
     </body>

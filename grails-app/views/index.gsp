@@ -100,7 +100,7 @@
                     </div>
                     <div id="column2" style="margin:0;padding:0;width:2100px;">
                         <div id="title" style="width:1200px;height:600px;">
-                            <h1 id="chartTitle" style="color:${darkMode?'white':'black'};width:2100px;<g:if test="${language=='en'}">font-size:180px;</g:if><g:else>font-size:140px;</g:else>;padding-left:35px;"><g:message code="periodic.table.title" default="Periodic Table of Mixology"/></h1>
+                            <h1 id="chartTitle" style="color:${darkMode?'white':'black'};width:2100px;<g:if test="${language=='en'}">font-size:180px;</g:if><g:else>font-size:140px;</g:else>padding-left:35px;"><g:message code="periodic.table.title" default="Periodic Table of Mixology"/></h1>
                             <div id="reference" style="display:inline-flex;">
                                 <div id="chart" style="margin-left:70px;margin-right:50px;width:1000px;">
                                     <g:render template="/referenceChart" model="[darkMode:darkMode]"/>
@@ -109,7 +109,7 @@
                                     <g:render template="/measurementsCard" model="[darkMode:darkMode]"/>
                                 </div>
                                 <div id="glasses" style="text-align:center;">
-                                    <img title="Click me to make me bigger!" onclick="makeSuggestedGlassesBigger(${darkMode});"
+                                    <img title="${g.message(code:'click.me.to.be.bigger', default:'Click me to make me bigger!')}" onclick="makeSuggestedGlassesBigger(${darkMode});"
                                          width="450px" height="300px" style="mix-blend-mode:initial;" alt="All Cocktails"
                                          <g:if test="${darkMode}">
                                              src="${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}"
@@ -237,7 +237,7 @@
                 }
                 newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>");
                 newWindow.document.write("<img  style=\"display:block;margin-left:auto;margin-right:auto;mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
-                newWindow.document.write("</body>")
+                newWindow.document.write("</body>");
             }
         </script>
     </body>

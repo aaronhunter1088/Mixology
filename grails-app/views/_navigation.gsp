@@ -34,7 +34,7 @@
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <g:set var="userValue" value="${g.message(code:'user.label',default:'User')}"/>
                                 <g:link class="fa-solid fa-list" controller="user" action="index">&nbsp;<g:message code="navigation.show.all.users" default="Show all Users"/></g:link>
-                                <g:link class="fa fa-user" controller="user" action="create">&nbsp;<g:message code="navigation.new.user" default="New User"/></g:link>
+                                <g:link class="fa fa-user" controller="user" action="create" params="[darkMode:user?.darkMode]">&nbsp;<g:message code="navigation.new.user" default="New User"/></g:link>
                             </sec:ifAnyGranted>
                             <g:link class="fa fa-circle-info" controller="user" action="show" params="[id:user?.id]">&nbsp;<g:message code="navigation.user.details" default="User Details"/></g:link>
                             <g:if test="${user?.darkMode}">

@@ -95,6 +95,29 @@
         </style>
     </head>
     <g:set var="user" value="${g.message(code:'user.label', args:" ", default:'User')}" />
+    <g:set var="darkMode" value="${params.darkMode}" />
+    <g:if test="${darkMode}">
+    <style>
+        .input-wrapper .form-control > select,option {
+            background-color:black;
+            border-color:white;
+            color:white;
+            width:100px;
+        }
+        .input-wrapper > textarea {
+            background-color:black;
+            color:white;
+        } /* Required */
+        .input-wrapper > input,textarea:focus {
+            background-color:black;
+            color:white;
+        } /* Required */
+        fieldset::before {
+            background: #000;
+            color:white;
+        }
+    </style>
+    </g:if>
     <body style="padding:50px;background-color:${darkMode?'black':'white'};">
         <div id="content" class="" style="background-color:${darkMode?'black':'white'};">
             <section style="background-color:${darkMode?'black':'white'};">
