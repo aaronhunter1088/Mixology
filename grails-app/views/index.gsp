@@ -67,7 +67,7 @@
         def userService = grailsApplication.mainContext.getBean('userService')
         def user = userService.getByUsername(springSecurityService.getPrincipal().username as String)
     %>
-    <g:set var="language" value="${user?.language ?: 'en'}"/>
+    <g:set var="language" value="${user?.language ?: (params.lang) ?: 'en'}"/>
     <g:set var="darkMode" value="${user?.darkMode ?: (params.darkMode=='true') ?: false}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="">
@@ -109,7 +109,7 @@
                                     <g:render template="/measurementsCard" model="[darkMode:darkMode]"/>
                                 </div>
                                 <div id="glasses" style="text-align:center;">
-                                    <img title="${g.message(code:'click.me.to.be.bigger', default:'Click me to make me bigger!')}" onclick="makeSuggestedGlassesBigger(${darkMode});"
+                                    <img title="${g.message(code:'click.to.make.bigger', default:'Click me to make me bigger!')}" onclick="makeSuggestedGlassesBigger(${darkMode});"
                                          width="450px" height="300px" style="mix-blend-mode:initial;" alt="All Cocktails"
                                          <g:if test="${darkMode}">
                                              src="${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}"
