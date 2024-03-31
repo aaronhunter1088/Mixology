@@ -8,13 +8,27 @@
     .navbar-dark {
         background-color: rgba(0,0,0,0) !important;
     }
+    ::-webkit-scrollbar {
+        -webkit-appearance:none;
+        width: 5px;
+        height: 5px;
+    }
+    .home::-webkit-scrollbar {
+        display:none; /* exclude scrollbar from navbar only */
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: rgb(128, 128, 128);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
 </style>                    <!-- navbar-dark OR navbar-inverse-->
 <div id="home-bar" <g:if test="${user?.darkMode}">class="navbar navbar-expand-sm navbar-dark"</g:if>
                    <g:else>class="navbar navbar-expand-sm navbar-inverse"</g:else>
-     style="padding:30px 0;text-align:center;">
-    <div class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;" id="navbarContent">
-        <ul <g:if test="${user?.darkMode}">class="nav navbar-nav ml-auto navbar-dark" </g:if>
-                                  <g:else>class="nav navbar-nav ml-auto navbar-inverse" </g:else>>
+     style="padding:30px 0;text-align:left;">
+    <div id="navbarContent" class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;">
+        <ul <g:if test="${user?.darkMode}">class="nav navbar-nav ml-auto navbar-dark"</g:if>
+                                  <g:else>class="nav navbar-nav ml-auto navbar-inverse"</g:else>
+            style=""><!--width:90%;height:auto;overflow:hidden;overflow-x:auto;-->
             <div style="display:flex;margin: auto 10px;align-content:center;">
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#home" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="default.home.label" default="Home"/></a>

@@ -232,11 +232,13 @@
                 newWindow.document.write("<head><title><g:message code="suggested.glass.options" default="Suggested Glass Options"/></title></head>");
                 if (darkMode) {
                     newWindow.document.write("<body style=\"background-color:black;\">");
+                    newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>");
+                    newWindow.document.write("<img style=\"display:block;margin-left:auto;margin-right:auto;mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
                 } else {
                     newWindow.document.write("<body style=\"background-color:white;\">");
+                    newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:black;\"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>");
+                    newWindow.document.write("<img  style=\"display:block;margin-left:auto;margin-right:auto;mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-white.png')}\" alt=\"All Cocktails\"/>");
                 }
-                newWindow.document.write("<p style=\"text-align:center;font-size:2em;margin:0;color:white;\"><b><g:message code="suggested.glass.options" default="Suggested Glass Options"/></b></p>");
-                newWindow.document.write("<img  style=\"display:block;margin-left:auto;margin-right:auto;mix-blend-mode:initial;\" src=\"${resource(dir:'../assets/images',file:'allGlasses-darkMode.png')}\" alt=\"All Cocktails\"/>");
                 newWindow.document.write("</body>");
             }
         </script>
