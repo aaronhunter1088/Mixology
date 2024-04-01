@@ -63,6 +63,7 @@
             #filterDrinksFormDiv > select,option {
                 background-color:black;
                 border-color:white;
+                color:#e2e3e5;
             }
             #drinksHeaderRow > *{
                 color:black;

@@ -264,7 +264,7 @@
                                                     let select = document.createElement('select');
                                                     select.setAttribute('name', 'ingredientUnit' + rowId);
                                                     select.setAttribute('required', 'true');
-                                                    select.setAttribute('style', 'background-color:${darkMode?'black':'white'};')
+                                                    select.setAttribute('style', 'background-color:${darkMode?'black':'white'};color:${darkMode?'white':'black'};')
                                                     select.setAttribute('class', 'form-control')
                                                     let first = document.createElement('option');
                                                     first.setAttribute('label', '${g.message(code:'select.one', default:'Select One')}');
@@ -333,6 +333,9 @@
                                                         tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                                         let newFieldSetHeight = rowId === 0 ? 75 : Number.parseInt(tableFieldSetHeight) - 70;
                                                         document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";
+                                                        if (rowId === 0) {
+                                                            $("#ingredientErrorMessagesDiv > h3").hide();
+                                                        }
                                                     }
                                                     console.log("rowId count is at " + rowId)
                                                 }
@@ -373,6 +376,7 @@
                 addButton.innerHTML = "${g.message(code:'default.button.add.label', default:'Add')}";
                 removeButton.hidden = true;
             }
+            let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
             function isValid() {
                 //alert('isValid');
                 //let tableRows = $("#ingredientTableDiv > tbody > tr");
@@ -384,6 +388,7 @@
                 let ajaxCalls = 0;
                 tableRows.each(function () {
                     let row = $(this);
+                    row.removeClass("errors");
                     //let cellValue1 = row.find('td:nth-child(1) > input').val();
                     //let cellValue2 = row.find('td:nth-child(2) > select > option:selected').val();
                     //let cellValue3 = row.find('td:nth-child(3) > input').val();
@@ -411,24 +416,24 @@
                             },
                             400: function(data) {
                                 failCount += 1;
+                                console.log('failCount:' + failCount);
                                 console.log(data);
                                 console.log(JSON.parse(JSON.stringify(data)));
                                 let response = JSON.parse(data['responseText']);
                                 //let response = JSON.parse(JSON.stringify(data['responseJSON']))
                                 //let response = JSON.parse(JSON.stringify(data))
-                                let message;
-                                let addedHeight = 50;
-                                if (failCount === 1) {
+                                let message = "Some ingredients have already been created!";
+                                let addedHeight = 250+(numberOfRows*50);
+                                if (1 === failCount) {
+                                    addedHeight = 250;
                                     message = response.message;
-                                    addedHeight = 75;
-                                } else {
-                                    message = "Some ingredients have already been created!";
                                 }
                                 console.log("FAILED: " + message);
                                 row.addClass("errors");
-                                let errorMessage = $("#ingredientErrorMessagesDiv ingredientErrorMessage").html(message);
+                                let errorMessageDivH3 = $("#ingredientErrorMessagesDiv > h3")
+                                errorMessageDivH3.show();
+                                let errorMessage = errorMessageDivH3.html(message);
                                 errorMessage.addClass("errors");
-                                let tableFieldSetHeight = document.getElementById("ingredientFieldSet").style.height;
                                 tableFieldSetHeight = tableFieldSetHeight.replaceAll("px","");
                                 let newFieldSetHeight = Number.parseInt(tableFieldSetHeight) + addedHeight;
                                 document.getElementById("ingredientFieldSet").style.height = newFieldSetHeight+"px";

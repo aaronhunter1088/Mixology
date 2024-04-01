@@ -62,6 +62,7 @@
             #filterIngredientsFormDiv > select,option {
                 background-color:black;
                 border-color:white;
+                color:#e2e3e5;
             }
             #ingredientsHeaderRow > *{
                 color:black;

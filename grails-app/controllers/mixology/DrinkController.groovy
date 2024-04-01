@@ -192,6 +192,10 @@ class DrinkController extends BaseController {
         def role_admin = userRoleService.getUserRoleIfExists(user as User, Role.findByAuthority(enums.Role.ADMIN.name))
         Drink drink = new Drink()
         try {
+            if (!params.ingredients) {
+                //drink.errors.reject("No ingredients selected")
+                throw new Exception("no ingredients were selected")
+            }
             drink = createDrinkFromParams(params, user, role_admin)
             if (drink.isCustom() || enums.Role.ADMIN.is(role_admin?.role)) {
                 drinkService.save(drink, user, true)
