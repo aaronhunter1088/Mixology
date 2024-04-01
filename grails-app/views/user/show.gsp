@@ -217,7 +217,7 @@
                                         </div>
                                     </div>
                                     <div style="display:flex;width:100%;">
-                                        <div id="userDrinks" style="float:left;padding:10px;width:250px;color:${darkMode?'white':'black'};">
+                                        <div id="userDrinks" style="float:left;padding:10px;width:300px;color:${darkMode?'white':'black'};">
                                             <g:if test="${user.drinks.size() > 0}">
                                                 <label><g:message code="user.show.drinks" default="Users Drinks"/></label><br>
                                                 <div style="height:100px;overflow-y:auto;">
@@ -260,7 +260,8 @@
                             </fieldset>
                             <fieldset class="buttons">
                                 <g:link class="fa-solid fa-pen-to-square" action="edit" resource="${this.user}">&nbsp;<g:message code="default.button.edit.label" default="Edit" /></g:link>
-                                <g:link class="fa-solid fa-trash-can" action="delete" resource="${this.user}">&nbsp;<g:message code="default.button.delete.label" default="Delete" /></g:link>
+                                <!-- Not supporting removing user at this time -->
+                                %{--<g:link class="fa-solid fa-trash-can" action="delete" resource="${this.user}">&nbsp;<g:message code="default.button.delete.label" default="Delete" /></g:link>--}%
                             </fieldset>
                         </div>
                     </div>

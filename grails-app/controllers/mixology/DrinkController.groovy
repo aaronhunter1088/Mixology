@@ -193,8 +193,8 @@ class DrinkController extends BaseController {
         Drink drink = new Drink()
         try {
             if (!params.ingredients) {
-                //drink.errors.reject("No ingredients selected")
-                throw new Exception("no ingredients were selected")
+                if (validIngredients.isEmpty())
+                    throw new Exception("no ingredients were selected")
             }
             drink = createDrinkFromParams(params, user, role_admin)
             if (drink.isCustom() || enums.Role.ADMIN.is(role_admin?.role)) {
