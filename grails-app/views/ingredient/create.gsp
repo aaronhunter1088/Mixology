@@ -97,7 +97,7 @@
                         <fieldset style="border:thick solid #008011;width:750px;" class="no-before">
                             <legend style="margin-left:25px;width:auto;color:${darkMode?'white':'black'};">
                                 &emsp14;<g:message code="create.an.ingredient" default="Create an Ingredient"/>&emsp14;<a style="color:${darkMode?'white':'black'};" class="btn btn-outline-success" href="javascript:addRow('ingredientTable', 'ingredient')"><b>+</b></a>
-                                <i class='fa-solid fa-circle-info' title="${g.message(code:'create.ingredients.help', default:'Use this form to create new ingredients. An already existing ingredient will be used, and not created, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
+                                <i class='fa-solid fa-circle-info' title="${g.message(code:'create.ingredients.help', default:'Use this form to create new ingredients. An already existing ingredient will throw an error, if you attempt to create an existing ingredient. New ingredients are compared against the combination of the Name, Unit and Amount.')}"></i>
                                 <hr style="height:1px;background-color:#008011">
                             </legend>
                             <div id="ingredientErrorMessagesDiv" style="display:block;">
@@ -120,7 +120,7 @@
                                         </div>
                                         <div id="ingredientAmountColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                             <label for="ingredientAmount"><g:message code="create.ingredients.amount" default="Amount"/>&nbsp;<span class='required-indicator'>*</span></label>
-                                            <input type="number" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:${darkMode?'white':'black'};">
+                                            <input type="number" step="any" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};border-color:${darkMode?'white':'black'};">
                                         </div>
                                         <div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                             <a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>

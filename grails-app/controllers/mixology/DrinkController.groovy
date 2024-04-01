@@ -520,11 +520,11 @@ class DrinkController extends BaseController {
      * @param ingredient
      * @return
      */
-    def alreadyExists(ingredient) {
+    def alreadyExists(Ingredient ingredient) {
         boolean exists = false
         List<Ingredient> ingredients = Ingredient.list()
         ingredients?.each {
-            if (ingredient.compareTo(it) == 0) {
+            if (ingredient == it) {
                 exists = true
             }
         }
@@ -579,11 +579,11 @@ class DrinkController extends BaseController {
         }
         def validIngredientIds = []
         validIngredients.eachWithIndex{ Ingredient i, int idx ->
-            logger.info("${idx+1}) Ingredient ${i.name} being saved...")
+            logger.info("${idx+1}) Ingredient being saved...")
             i = ingredientService.save(i, user, true)
             def result = user.ingredients.contains( i )
             validIngredientIds << i.id
-            logger.info("Ingredient saved to user:: $result")
+            logger.info("${idx+1}) Ingredient ${i.id}:${i.name} being saved...")
         }
         validIngredientIds
     }

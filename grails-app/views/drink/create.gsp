@@ -155,7 +155,7 @@
                                     </div> <!-- Drink Alcohol -->
                                     <div class="formfield" style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         <label for='symbol'><span class='required-indicator'>*</span> <g:message code="drink.create.symbol" default="Drink Symbol"/></label>
-                                        <div class="input-wrapper">
+                                        <div class="input-wrapper" style="color:${darkMode?'black':'white'};background-color:${darkMode?'black':'white'};">
                                             <input type="text" name="symbol" value="${params?.symbol}" required id="symbol" />
                                         </div>
                                     </div> <!-- Drink Symbol -->
@@ -294,6 +294,7 @@
                                                     label3.innerHTML = '${g.message(code:'drink.create.amount', default:'Amount')}' + '&nbsp;<span class=\'required-indicator\'>*</span>';
                                                     input = document.createElement('input');
                                                     input.setAttribute('type', 'number');
+                                                    input.setAttribute('step', 'any');
                                                     input.setAttribute('id', prefix + 'Amount');
                                                     input.setAttribute('name', prefix + 'Amount' + rowId);
                                                     input.setAttribute('class', 'form-control');
