@@ -65,6 +65,7 @@
         def userService = grailsApplication.mainContext.getBean('userService')
         def user = userService.getByUsername(springSecurityService.authentication.getPrincipal().username as String)
     %>
+    <g:set var="language" value="${user?.language ?: (params.lang) ?: 'en'}"/>
     <g:set var="darkMode" value="${user.darkMode}"/>
     <body style="overflow-x:scroll;padding:50px;margin:0;background-color:${darkMode?'black':'white'};">
         <div id="container" style="">

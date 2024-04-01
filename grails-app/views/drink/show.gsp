@@ -161,7 +161,7 @@
                                     <div class="formfield" id="ingredients">
                                         <g:if test="${!drink.ingredients || drink.ingredients.size() == 0}">
                                             <label><g:message code="drink.show.no.ingredients" default="No Ingredients"/></label>
-                                            <p>Once you add this drink to an ingredient, they'll show here</p>
+                                            <p style="text-align:right;">Once you add this drink to an ingredient, they'll show here</p>
                                         </g:if><g:else>
                                             <label><g:message code="drink.show.ingredients" default="Ingredients"/></label><br/>
                                             <div style="margin-top:-25px;height:100px;padding-right:10px;overflow-y:auto;text-align:right;">
@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <fieldset class="buttons" style="text-align:center;">
+                            <fieldset class="buttons" style="text-align:left;display:inline-flex;">
                                 <sec:ifLoggedIn>
                                     <g:if test="${!drink.custom}">
                                         <g:link class="fa fa-clone" action="copy" resource="${this.drink}">&nbsp;<g:message code="default.button.addToYourDrinks.label" default="Add To Your Drinks"/></g:link>

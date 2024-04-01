@@ -115,7 +115,7 @@
                                         </div>
                                         <div id="ingredientAmountColumn1" style="position:relative;display:block;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                             <label for="ingredientAmount"><g:message code="create.ingredients.amount" default="Amount"/>&nbsp;<span class='required-indicator'>*</span></label>
-                                            <input type="text" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
+                                            <input type="number" id="ingredientAmount" name="ingredientAmount" class="form-control" required style="color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                         </div>
                                         <div style="padding:5px;position:relative;display:block;margin-top:22px;color:${darkMode?'white':'black'};background-color:${darkMode?'black':'white'};">
                                             <a style="height:35px;width:auto;color:${darkMode?'white':'black'};text-decoration:none;" class="btn btn-outline-danger btn-xs" href="javascript:removeRow('rowId')"><b>X</b></a>

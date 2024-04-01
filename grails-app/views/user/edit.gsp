@@ -42,7 +42,7 @@
                 width:550px;
             }
             fieldset::before {
-                content: "Use this form to edit a user";
+                content: "${g.message(code:'user.edit.help', default:'Use this form to edit a user')}";
                 position: absolute;
                 margin-top: -45px;
                 right: 10px;
@@ -91,7 +91,7 @@
                 background: #000000;
                 color: #fff;
             }
-            .input-wrapper > select,option {
+            .input-wrapper > select,option,label {
                 background-color:black;
                 border-color:white;
                 color:white;
@@ -132,65 +132,89 @@
                                 <g:if test="${!user.photo}"><div id="user" style="width:100%;"></g:if>
                                 <g:else><div id="user" style="width:50%;float:left;"></g:else>
                                 <div class="formfield" id="firstName">
-                                    <label for='firstName'>First Name</label>
+                                    <label for='firstName'><g:message code="user.edit.first.name" default="First Name"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="firstName" value="${user.firstName}" required=""/>
                                     </div>
                                 </div>
                                 <div class="formfield" id="lastName">
-                                    <label for='lastName'>LastName</label>
+                                    <label for='lastName'><g:message code="user.edit.last.name" default="LastName"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="lastName" value="${user.lastName}" required=""/>
                                     </div>
                                 </div>
                                 <div class="formfield" id="email">
-                                    <label for='email'>Email</label>
+                                    <label for='email'><g:message code="user.edit.email" default="Email"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="email" value="${user.email}" required=""/>
                                     </div>
                                 </div>
                                 <div class="formfield" id="cellphone">
-                                    <label for='cellphone'>Cellphone</label>
+                                    <label for='cellphone'><g:message code="user.edit.cellphone" default="Cellphone"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="cellphone" value="${user.mobileNumber}" />
                                     </div>
                                 </div>
                                 <div class="formfield">
-                                    <label for='password'>Password</label>
+                                    <label for='password'><g:message code="user.edit.password" default="Password"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="password" value="" id="password" />
                                     </div>
                                 </div>
                                 <div class="formfield">
-                                    <label for='passwordConfirm'>Confirm Password</label>
+                                    <label for='passwordConfirm'><g:message code="user.edit.confirm.password" default="Confirm Password"/></label>
                                     <div class="input-wrapper">
                                         <input type="text" name="passwordConfirm" value="" id="passwordConfirm" />
                                     </div>
                                 </div>
                                 <g:if test="${!user.photo}">
                                     <div class="formfield">
-                                        <label for='photo'><span>&nbsp;&nbsp;</span> Photo</label>
+                                        <label for='photo'><g:message code="user.edit.photo" default="Photo"/></label>
                                         <div id="uploadPhoto1" onclick="upload();" class="btn btn-outline-primary btn-xs" style="width:43%;height:32px;">
-                                            <span id="uploadSpan" style="margin-top:5px;">Upload</span>
+                                            <span id="uploadSpan" style="margin-top:5px;"><g:message code="default.button.upload.label" default="Upload"/></span>
                                             <input class="input-wrapper" type="file" name="photo" id="photo" style="vertical-align:middle;text-align:center;"/>
                                         </div>
                                     </div>
                                     <g:if test="${user.drinks.size() > 0}">
                                         <div class="formfield" id="drinks" style="display:block;">
-                                            <label>Users Drinks</label><br>
+                                            <label style="width:auto;"><g:message code="user.edit.drinks" default="Users Drinks"/></label><br>
                                             <div style="margin-top:-15px;height:100px;overflow-y:auto;">
                                                 <g:each in="${user.drinks}" var="drink" status="i">
                                                     <div style="display:block;">
                                                         <div style="display:inline-flex;width:100%;">
-                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');">Remove</button>
-                                                            <input hidden type="checkbox" name="drinks" id="drink${drink.id}" checked value="${drink.id}"/>
+                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');"><g:message code="default.button.remove.label" default="Remove"/></button>
+                                                            <input hidden type="checkbox" name="drinksToRemove" id="drink${drink.id}" value="${drink.id}"/>
                                                             <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
                                                         </div>
                                                     </div>
                                                 </g:each>
                                             </div>
                                         </div>
-                                    </g:if>
+                                    </g:if><g:else>
+                                        <div class="formfield" style="text-align:center;">
+                                            <label><g:message code="no.drinks.found" default="No drinks found"/></label>
+                                        </div>
+                                    </g:else>
+                                    <g:if test="${user.ingredients.size() > 0}">
+                                        <div class="formfield" id="drinks" style="display:block;">
+                                            <label style="width:auto;"><g:message code="user.edit.ingredients" default="Users Ingredients"/></label><br>
+                                            <div style="margin-top:-15px;height:100px;overflow-y:auto;">
+                                                <g:each in="${user.ingredients}" var="ingredient" status="i">
+                                                    <div style="display:block;">
+                                                        <div style="display:inline-flex;width:100%;">
+                                                            <button id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');"><g:message code="default.button.remove.label" default="Remove"/></button>
+                                                            <input hidden type="checkbox" name="ingredientsToRemove" id="ingredient${ingredient.id}" value="${ingredient.id}"/>
+                                                            <input style="width:100%;" type="text" disabled name="ingredient" id="${ingredient.id}" checked value="${ingredient}"/>
+                                                        </div>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </g:if><g:else>
+                                        <div class="formfield" style="text-align:center;">
+                                            <label><g:message code="no.ingredients.found" default="No ingredients found"/></label>
+                                        </div>
+                                    </g:else>
                                 </g:if>
                                 </div>
                                 <g:if test="${user.photo}">
@@ -200,9 +224,53 @@
                                     </div>
                                 </g:if>
                                 </div>
+                                <g:if test="${user.photo}">
+                                <div class="formfield" style="margin-top:25px;text-align:center;">
+                                    <g:if test="${user.drinks.size() > 0}">
+                                        <div class="formfield" id="drinks" style="display:block;">
+                                            <label style="width:auto;"><g:message code="user.edit.drinks" default="Users Drinks"/></label><br>
+                                            <div style="margin-top:-15px;height:100px;overflow-y:auto;">
+                                                <g:each in="${user.drinks}" var="drink" status="i">
+                                                    <div style="display:block;">
+                                                        <div style="display:inline-flex;width:100%;">
+                                                            <button id="removeDrinkBtn${drink.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeDrink('${drink.id}');"><g:message code="default.button.remove.label" default="Remove"/></button>
+                                                            <input hidden type="checkbox" name="drinksToRemove" id="drink${drink.id}" checked value="${drink.id}"/>
+                                                            <input style="width:100%;" type="text" disabled name="drink" id="${drink.id}" checked value="${drink}"/>
+                                                        </div>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </g:if><g:else>
+                                        <div class="formfield" style="text-align:center;">
+                                            <label><g:message code="no.drinks.found" default="No drinks found"/></label>
+                                        </div>
+                                    </g:else>
+                                    <g:if test="${user.ingredients.size() > 0}">
+                                        <div class="formfield" id="drinks" style="display:block;">
+                                            <label style="width:auto;"><g:message code="user.edit.ingredients" default="Users Ingredients"/></label><br>
+                                            <div style="margin-top:-15px;height:100px;overflow-y:auto;">
+                                                <g:each in="${user.ingredients}" var="ingredient" status="i">
+                                                    <div style="display:block;">
+                                                        <div style="display:inline-flex;width:100%;">
+                                                            <button id="removeIngredientBtn${ingredient.id}" type="button" class="btn btn-outline-danger btn-xs" onclick="removeIngredient('${ingredient.id}');"><g:message code="default.button.remove.label" default="Remove"/></button>
+                                                            <input hidden type="checkbox" name="ingredientsToRemove" id="ingredient${ingredient.id}" checked value="${ingredient.id}"/>
+                                                            <input style="width:100%;" type="text" disabled name="ingredient" id="${ingredient.id}" checked value="${ingredient}"/>
+                                                        </div>
+                                                    </div>
+                                                </g:each>
+                                            </div>
+                                        </div>
+                                    </g:if><g:else>
+                                        <div class="formfield" style="text-align:center;">
+                                            <label><g:message code="no.ingredients.found" default="No ingredients found"/></label>
+                                        </div>
+                                    </g:else>
+                                </div>
+                                </g:if>
                                 <div class="formfield" style="margin-top:25px;text-align:center;">
                                     <a style="margin-right:10px;" class="btn btn-outline-danger" id="cancel" href="${createLink(uri: "/user/show/${user.id}")}"><g:message code="default.cancel.label" default="Cancel"/></a>
-                                    <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser">Update</button>
+                                    <button id="updateUser" class="btn btn-outline-primary" type="submit" form="updateUser"><g:message code="default.button.update.label" default="Update"/></button>
                                 </div>
                                 <input type="hidden" name="clearedImage" id="clearedImage" value="false"/>
                                 <input type="hidden" name="id" id="id" value="${user.id}"/>
@@ -217,18 +285,33 @@
                 console.log("edit-user loaded");
             });
             function removeDrink(drinkId) {
-                if ( document.getElementById('drink'+drinkId).checked ) {
-                    document.getElementById('drink'+drinkId).checked = false;
-                    console.log('checkbox for drink'+drinkId+ ' unchecked');
+                if ( !document.getElementById('drink'+drinkId).checked ) {
+                    document.getElementById('drink'+drinkId).checked = true;
+                    console.log('checkbox for drink'+drinkId+ ' checked');
                     document.getElementById('removeDrinkBtn'+drinkId).classList.remove('btn-outline-danger');
                     document.getElementById('removeDrinkBtn'+drinkId).classList.add('btn-outline-info');
                     document.getElementById('removeDrinkBtn'+drinkId).innerHTML = "Will be removed"
                 } else {
-                    document.getElementById('drink'+drinkId).checked = true;
-                    console.log('checkbox for drink'+drinkId+ ' checked');
+                    document.getElementById('drink'+drinkId).checked = false;
+                    console.log('checkbox for drink'+drinkId+ ' unchecked');
                     document.getElementById('removeDrinkBtn'+drinkId).classList.remove('btn-outline-info');
                     document.getElementById('removeDrinkBtn'+drinkId).classList.add('btn-outline-danger');
                     document.getElementById('removeDrinkBtn'+drinkId).innerHTML = "Remove"
+                }
+            }
+            function removeIngredient(ingredientId) {
+                if ( !document.getElementById('ingredient'+ingredientId).checked ) {
+                    document.getElementById('ingredient'+ingredientId).checked = true;
+                    console.log('checkbox for ingredient'+ingredientId+ ' checked');
+                    document.getElementById('removeIngredientBtn'+ingredientId).classList.remove('btn-outline-danger');
+                    document.getElementById('removeIngredientBtn'+ingredientId).classList.add('btn-outline-info');
+                    document.getElementById('removeIngredientBtn'+ingredientId).innerHTML = "${g.message(code:'default.button.will.remove.label', default:'Will be removed')}"
+                } else {
+                    document.getElementById('ingredient'+ingredientId).checked = false;
+                    console.log('checkbox for ingredient'+ingredientId+ ' unchecked');
+                    document.getElementById('removeIngredientBtn'+ingredientId).classList.remove('btn-outline-info');
+                    document.getElementById('removeIngredientBtn'+ingredientId).classList.add('btn-outline-danger');
+                    document.getElementById('removeIngredientBtn'+ingredientId).innerHTML = "${g.message(code:'default.button.remove.label', default:'Remove')}"
                 }
             }
             function upload() {

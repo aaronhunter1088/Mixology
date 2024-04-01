@@ -132,7 +132,7 @@
                                     <div class="formfield" id="drinks" style="">
                                         <g:if test="${!ingredient.drinks || ingredient.drinks.size() == 0}">
                                             <label><g:message code="ingredient.show.no.drinks" default="No Drinks"/></label>
-                                            <p><g:message code="ingredient.show.no.drinks.help" default="Once you add this ingredient to a drink, they'll show here"/></p>
+                                            <p style="text-align:right;"><g:message code="ingredient.show.no.drinks.help" default="Once you add this ingredient to a drink, they'll show here"/></p>
                                         </g:if><g:else>
                                             <label><g:message code="ingredient.show.drinks" default="Drinks"/></label><br>
                                             <div style="margin-top:-25px;height:100px;overflow-y:auto;text-align:right;">
@@ -147,7 +147,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-                            <fieldset class="buttons" style="text-align:left;width:100%;">
+                            <fieldset class="buttons" style="text-align:left;width:100%;display:inline-flex;">
                                 <sec:ifLoggedIn>
                                     <g:link class="fa fa-clone" action="copy" resource="${this.ingredient}">&nbsp;<g:message code="default.button.copy.label" default="Copy"/></g:link>
                                     <g:if test="${ingredient.custom || role}">
@@ -155,9 +155,9 @@
                                     </g:if>
                                     <g:if test="${ingredient.canBeDeleted}">
                                         <div style="display:block;">
-                                            <g:form controller="ingredient" action="delete" method="DELETE">
+                                            <g:form controller="ingredient" action="delete" method="DELETE" id="deleteIngredient">
                                                 <input type="hidden" name="id" value="${ingredient.id}">
-                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit"
+                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit" form="deleteIngredient"
                                                         onclick="return confirm('${message(code:'default.button.delete.confirm.message', default:'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></button>
                                             %{--<g:link class="fa-solid fa-trash-can" action="delete" resource="${this.ingredient}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>--}%
                                             </g:form>

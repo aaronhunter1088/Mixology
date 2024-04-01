@@ -28,12 +28,12 @@ class UserController extends BaseController {
 
     private static Logger logger = LogManager.getLogger(UserController.class)
 
+    def drinkService
+    def ingredientService
     def roleService
     def userService
     def userRoleService
     def springSecurityService
-    def authenticationService
-    def userPasswordEncoderListener
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -191,9 +191,34 @@ class UserController extends BaseController {
             user.mobileNumber = cellphone
         }
         user.email = params?.email ?: user.email
-        params?.drinks?.each {
-            Drink drink = Drink.read(it as Long)
-            user.drinks.add(drink)
+        if (params?.drinks) {
+            params.drinks.each {
+                Drink drink = Drink.read(it as Long)
+                user.drinks.add(drink)
+            }
+        } else if (params?.drinksToRemove) {
+            /* drinksToRemove='id' or drinksToRemove = ['id1','id2']*/
+            if (params.drinksToRemove instanceof String) {
+                drinkService.delete(params.drinksToRemove as long, user, true)
+            } else {
+                params.drinksToRemove.each {
+                    drinkService.delete(it as long, user, true)
+                }
+            }
+        }
+        if (params?.ingredients) {
+            params.ingredients.each {
+                Ingredient ingredient = Ingredient.read(it as Long)
+                user.ingredients.add(ingredient)
+            }
+        } else if (params?.ingredientsToRemove) {
+            if (params.ingredientsToRemove instanceof String) {
+                ingredientService.delete(params.ingredientsToRemove as long, user, true)
+            } else {
+                params.ingredientsToRemove.each {
+                    ingredientService.delete(it as Long, user, true)
+                }
+            }
         }
         // only update password if both values are set
         if (params?.passwordConfirm && params?.password == params?.passwordConfirm) {

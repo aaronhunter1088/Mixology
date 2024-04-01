@@ -374,7 +374,7 @@
                 removeButton.hidden = true;
             }
             function isValid() {
-                alert('isValid');
+                //alert('isValid');
                 //let tableRows = $("#ingredientTableDiv > tbody > tr");
                 let tableRows = $("#ingredientTableDiv > div");
                 let numberOfRows = tableRows.length

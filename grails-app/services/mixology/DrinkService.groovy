@@ -64,6 +64,7 @@ class DrinkService {
      * @param validate
      * @return
      */
+    @Transactional
     Drink save(Drink drink, boolean validate = false) {
         try {
             Drink.withNewTransaction {
@@ -89,6 +90,7 @@ class DrinkService {
      * @param validate
      * @return
      */
+    @Transactional
     Drink save(Drink drink, User user, boolean validate = false) {
         if (!drink || !user) null
         try {
@@ -120,6 +122,7 @@ class DrinkService {
         }
         else {
             if (!user?.drinks?.contains(drink)) {
+                // TODO: rework, throw exception as this shouldn't be allowed
                 logger.warn("A user, id:: ${user.id} is deleting a drink they did not create.")
                 logger.warn("Drink belongs to user, id:: ${drink?.user?.id}")
                 drink.user = null
@@ -135,7 +138,7 @@ class DrinkService {
                 Drink.withNewTransaction {
                     drink.delete(flush:flush)
                 }
-                logger.info("Drink '${drink.name}' deleted!")
+                logger.info("Drink '${drink.id}:${drink.name}' deleted!")
             } catch (Exception e) {
                 logger.error("Could not delete drink:: $drink", e)
                 e

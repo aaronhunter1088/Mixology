@@ -216,7 +216,7 @@ class DrinkController extends BaseController {
             respond drink.errors, view:'create', status:BAD_REQUEST
         }
         else {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink'), drink.name])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'drink.label', default: 'Drink', args:' '), drink.name])
             redirect(controller:'drink',action:'show',params:[id:drink.id])
         }
     }
@@ -260,7 +260,7 @@ class DrinkController extends BaseController {
                    drinkToUpdate.isCustom() && (!adminRole || !userRole) ) {
                 drinkToUpdate.name = params?.drinkName ?: drinkToUpdate.name
                 drinkToUpdate.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drinkToUpdate.number
-                drinkToUpdate.alcohol = params.alcoholType ? Alcohol.valueOf(params?.alcoholType as String) : drinkToUpdate.alcohol
+                drinkToUpdate.alcohol = params.alcohol ? Alcohol.valueOf(params?.alcohol as String) : drinkToUpdate.alcohol
                 drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
                 drinkToUpdate.suggestedGlass = params.suggestedGlass ? GlassType.valueOf(params.suggestedGlass as String) : drinkToUpdate.suggestedGlass
                 drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions

@@ -160,8 +160,8 @@
                                     <hr style="height:1px;background-color:#007bff;">
                                 </legend>
                                 <div style="display:block;justify-content:center;">
-                                    <div style="display:inline-flex;justify-content:center;">
-                                        <div id="user" style="width:auto;color:${darkMode?'white':'black'};">
+                                    <div style="display:flex;justify-content:center;">
+                                        <div id="user" style="width:50%;color:${darkMode?'white':'black'};">
                                             <div class="formfield" id="firstName">
                                                 <label for='firstName'><g:message code="user.show.first.name" default="First Name"/></label>
                                                 <div class="input-wrapper">
@@ -207,9 +207,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="photo" style="width:50%;float:right;text-align:center;padding:10px;">
+                                        <div id="photo" style="width:50%;float:right;text-align:right;padding:10px;">
                                             <g:if test="${!user.photo || user.photo == ''}">
-                                                <p>No image uploaded!</p>
+                                                <p style="text-align:center;"><g:message code="no.image" default="No image uploaded!"/></p>
                                             </g:if>
                                             <g:else>
                                                 <img src="data:image/png;base64, ${user.photo}" style="margin-left:40px;width:200px;height:200px;" alt="photo"/>

@@ -214,7 +214,7 @@ class IngredientController extends BaseController {
         validIngredients.clear()
         if (!ingredientIds.isEmpty()) {
             if (ingredientIds.size() == 1) {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient'), ingredientIds.get(0)])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'ingredient.label', default: 'Ingredient', args:' '), ingredientIds.get(0)])
                 redirect(controller:'ingredient',action:'show',params:[id:ingredientIds.get(0)])
             } else {
                 flash.message = "${ingredientIds.size()} ingredients were created"

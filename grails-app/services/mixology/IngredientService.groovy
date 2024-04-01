@@ -4,6 +4,8 @@ import grails.gorm.services.Service
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
+import javax.transaction.Transactional
+
 @Service(Ingredient)
 class IngredientService {
 
@@ -52,6 +54,7 @@ class IngredientService {
      * @param validate
      * @return
      */
+    @Transactional
     Ingredient save(Ingredient ingredient, boolean validate = false) {
         Ingredient.withNewTransaction {
             try {
@@ -76,6 +79,7 @@ class IngredientService {
      * @param validate
      * @return
      */
+    @Transactional
     Ingredient save(Ingredient ingredient, User user, boolean validate = false) {
         if (!ingredient || !user) null
         try {
@@ -148,6 +152,7 @@ class IngredientService {
         else {
             def iDrinks = ingredient.drinks as List<Drink>
             if (!user?.ingredients?.contains(ingredient)) {
+                // TODO: rework, throw exception as this shouldn't be allowed
                 logger.warn("A user, id:: ${user.id} is deleting an ingredient they did not create.")
                 logger.warn("Ingredient belongs to user, id:: ${ingredient?.user?.id}")
                 ingredient.user = null
@@ -167,7 +172,7 @@ class IngredientService {
                 Ingredient.withNewTransaction {
                     ingredient.delete(flush:flush)
                 }
-                logger.info("Ingredient '${ingredient.name}' deleted!")
+                logger.info("Ingredient '${ingredient.id}:${ingredient.name}' deleted!")
             } catch (Exception e) {
                 logger.error("Could not delete ingredient:: $ingredient", e)
             }
