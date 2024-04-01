@@ -5,7 +5,7 @@
                 <p style="text-align:center;font-size:5em;margin:0;color:navy;">
                     <b>
                         <g:if test="${drink.id}">
-                            <g:link controller="drink" action="show" params="[id:drink.id]">
+                            <g:link controller="drink" action="show" params="[id:drink.id,lang:language,darkMode:darkMode]">
                                 <font color="navy">${drink.number}</font>
                             </g:link>
                         </g:if><g:else>
@@ -19,7 +19,7 @@
                             <g:if test="${opacity == 0.5}">
                                 <p style="margin:0;color:black;">${ingredient}</p>
                             </g:if><g:else>
-                            <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
+                            <g:link controller="ingredient" action="show" params="[id:ingredient.id,lang:language,darkMode:darkMode]">
                                 <p style="margin:0;color:black;">${ingredient.prettyName()}</p>
                             </g:link>
                         </g:else>
@@ -30,7 +30,7 @@
                             <g:if test="${opacity == 0.5}">
                                 <p style="margin:0;color:black;">${ingredient}</p>
                             </g:if><g:else>
-                            <g:link controller="ingredient" action="show" params="[id:ingredient.id]">
+                            <g:link controller="ingredient" action="show" params="[id:ingredient.id,lang:language,darkMode:darkMode]">
                                 <p style="margin:0;color:black;">${ingredient.prettyName()}</p>
                             </g:link>
                         </g:else>

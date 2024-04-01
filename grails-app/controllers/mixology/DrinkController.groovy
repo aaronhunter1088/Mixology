@@ -155,7 +155,7 @@ class DrinkController extends BaseController {
 
     //@Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])
     def showDrinks() {
-        redirect(uri:'/')
+        redirect(uri:'/', params:[lang:params.lang,darkMode:params.darkMode])
     }
 
     @Secured(['ROLE_ADMIN','ROLE_USER','IS_AUTHENTICATED_FULLY'])

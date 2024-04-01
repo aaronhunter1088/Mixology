@@ -4,6 +4,8 @@
     def springSecurityService = grailsApplication.mainContext.getBean('springSecurityService')
     def user = User.findByUsername(springSecurityService.authentication.getPrincipal().username as String)
 %>
+<g:set var="language" value="${user?.language ? user.language : (params.lang) ? params.lang : 'en'}"/>
+<g:set var="darkMode" value="${user?.darkMode || (params.darkMode=='true') ?: false}"/>
 <style>
     .navbar-dark {
         background-color: rgba(0,0,0,0) !important;
@@ -22,19 +24,19 @@
         box-shadow: 0 0 1px rgba(255, 255, 255, .5);
     }
 </style>                    <!-- navbar-dark OR navbar-inverse-->
-<div id="home-bar" <g:if test="${user?.darkMode}">class="navbar navbar-expand-sm navbar-dark"</g:if>
+<div id="home-bar" <g:if test="${darkMode}">class="navbar navbar-expand-sm navbar-dark"</g:if>
                    <g:else>class="navbar navbar-expand-sm navbar-inverse"</g:else>
      style="padding:30px 0;text-align:left;">
     <div id="navbarContent" class="collapse navbar-collapse" aria-expanded="false" style="height: 0.8px;">
-        <ul <g:if test="${user?.darkMode}">class="nav navbar-nav ml-auto navbar-dark"</g:if>
+        <ul <g:if test="${darkMode}">class="nav navbar-nav ml-auto navbar-dark"</g:if>
                                   <g:else>class="nav navbar-nav ml-auto navbar-inverse"</g:else>
             style=""><!--width:90%;height:auto;overflow:hidden;overflow-x:auto;-->
             <div style="display:flex;margin: auto 10px;align-content:center;">
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#home" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="default.home.label" default="Home"/></a>
-                    <ul class="dropdown-menu" id="home" style="background-color:<g:if test="${user?.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                    <ul class="dropdown-menu" id="home" style="background-color:<g:if test="${darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
                         <li class="dropdown-header" style="padding-left:10px;"><g:message code="default.home.label" default="Home"/></li><br/>
-                        <g:link class="fa fa-home" url="${createLink(uri: '/')}">&nbsp;<g:message code="navigation.default.drinks" default="Default Drinks"/> </g:link>
+                        <g:link class="fa fa-home" controller="drink" action="showDrinks" params="[lang:language,darkMode:darkMode]">&nbsp;<g:message code="navigation.default.drinks" default="Default Drinks"/> </g:link>
                         <sec:ifLoggedIn>
                             <g:link class="fa fa-home" controller="drink" action="showCustomDrinks">&nbsp;<g:message code="navigation.your.drinks" default="Your Drinks"/></g:link>
                         </sec:ifLoggedIn>
@@ -43,7 +45,7 @@
                 <sec:ifLoggedIn>
                     <li class="dropdown-btn dropdown">
                         <a href="#" class="fa fa-user dropdown-toggle" data-toggle="dropdown" data-target="#userMgmt" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="user.label" default="User"/> <span class="caret"></span></a>
-                        <ul class="dropdown-menu" id="userMgmt" style="background-color:<g:if test="${user?.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                        <ul class="dropdown-menu" id="userMgmt" style="background-color:<g:if test="${darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
                             <li class="dropdown-header" style="padding-left:10px;"><g:message code="navigation.user.management" default="User Mgmt"/></li><br/>
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <g:set var="userValue" value="${g.message(code:'user.label',default:'User')}"/>
@@ -86,7 +88,7 @@
                 </sec:ifLoggedIn>
                 <li class="dropdown-btn dropdown">
                     <a href="#" class="fa fa-home dropdown-toggle" data-toggle="dropdown" data-target="#api" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="default.swagger.label" default="API & Swagger"/></a>
-                    <ul class="dropdown-menu" id="api" style="background-color:<g:if test="${user?.darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
+                    <ul class="dropdown-menu" id="api" style="background-color:<g:if test="${darkMode}">#000000;</g:if><g:else>ghostwhite;</g:else>">
                         <li class="dropdown-header" style="padding-left:10px;"><g:message code="default.swagger.label" default="API & Swagger"/></li><br/>
                         <g:link class="fa fa-home" url="${createLink(uri: '/swagger-ui/index.html')}">&nbsp;<g:message code="navigation.default.swagger" default="API Swagger UI"/> </g:link>
                         <g:link class="fa fa-home" url="${createLink(uri: '/v3/api-docs')}">&nbsp;<g:message code="navigation.default.apidocs" default="OpenAPI Documentation"/></g:link>

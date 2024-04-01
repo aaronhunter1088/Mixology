@@ -72,7 +72,8 @@
             }
         </style>
     </head>
-    <g:set var="darkMode" value="${user?.darkMode ?: false}"/>
+<g:set var="language" value="${user?.language ? user.language : (params.lang) ? params.lang : 'en'}"/>
+    <g:set var="darkMode" value="${user?.darkMode ?: (params.darkMode=='true') ?: false}"/>
     <g:if test="${darkMode}">
         <style>
             .input-wrapper > input,textarea {
@@ -167,7 +168,7 @@
                                                 <g:each in="${drink.ingredients.sort{ it.id }}" var="ingredient" status="i">
                                                     <div style="display:block;">
                                                         <input hidden type="checkbox" disabled name="ingredients" id="ingredient${ingredient.id}" checked value="${ingredient}"/>
-                                                        <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}"]'>${ingredient}</g:link>
+                                                        <g:link action="show" controller="ingredient" params='[id:"${ingredient.id}",lang:language,darkMode:darkMode]'>${ingredient}</g:link>
                                                     </div>
                                                 </g:each>
                                             </div>
