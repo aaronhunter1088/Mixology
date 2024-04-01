@@ -361,7 +361,7 @@ class IngredientController extends BaseController {
         else {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient'), id])
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'ingredient.label', default: 'ingredient', args:' '), id])
                     redirect action:adminIsLoggedIn?'index':'customIndex', status:NO_CONTENT
                 }
                 '*'{ render status:NO_CONTENT }

@@ -155,9 +155,9 @@
                                     </g:if>
                                     <g:if test="${ingredient.canBeDeleted}">
                                         <div style="display:block;">
-                                            <g:form controller="ingredient" action="delete" method="DELETE" id="deleteIngredient">
+                                            <g:form controller="ingredient" action="delete" method="DELETE">
                                                 <input type="hidden" name="id" value="${ingredient.id}">
-                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit" form="deleteIngredient"
+                                                <button class="fa-solid fa-trash-can btn btn-danger" type="submit"
                                                         onclick="return confirm('${message(code:'default.button.delete.confirm.message', default:'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></button>
                                             %{--<g:link class="fa-solid fa-trash-can" action="delete" resource="${this.ingredient}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">&nbsp;<g:message code="default.button.delete.label" default="Delete"/></g:link>--}%
                                             </g:form>

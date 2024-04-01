@@ -216,8 +216,8 @@
                                             </g:else>
                                         </div>
                                     </div>
-                                    <div style="display:inline-flex;justify-content:center;">
-                                        <div id="userDrinks" style="float:left;padding:10px 10px 0 10px;width:300px;color:${darkMode?'white':'black'};">
+                                    <div style="display:flex;width:100%;">
+                                        <div id="userDrinks" style="float:left;padding:10px;width:250px;color:${darkMode?'white':'black'};">
                                             <g:if test="${user.drinks.size() > 0}">
                                                 <label><g:message code="user.show.drinks" default="Users Drinks"/></label><br>
                                                 <div style="height:100px;overflow-y:auto;">
@@ -236,7 +236,7 @@
                                                 </div>
                                             </g:else>
                                         </div>
-                                        <div id="userIngredients" style="float:right;padding:10px;text-align:right;color:${darkMode?'white':'black'};">
+                                        <div id="userIngredients" style="float:right;padding:10px;width:inherit;text-align:right;color:${darkMode?'white':'black'};">
                                             <g:if test="${user.ingredients.size() > 0}">
                                                 <label><g:message code="user.show.ingredients" default="Users Ingredients"/></label><br>
                                                 <div style="height:100px;overflow-y:auto;text-align:right;">

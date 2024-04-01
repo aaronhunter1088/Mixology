@@ -106,25 +106,27 @@ class UserPasswordEncoderListener {
      * @return the decrypted string
      */
     public static String decrypt(String encrypted) {
-        logger.info("decrypting $encrypted")
-        String decodedPWD = "";
+        logger.info("decrypting password confirm...")
+        //logger.info("decrypting $encrypted")
+        String decodedPWD = ""
         try {
             SecretKey secretKey = generateKey()
             logger.info("secretKey generated")
-            Base64.Decoder decoder = Base64.getDecoder();
-            byte[] encryptedTextByte = decoder.decode(encrypted);
-            Cipher cipher = Cipher.getInstance(ALGO);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            Base64.Decoder decoder = Base64.getDecoder()
+            byte[] encryptedTextByte = decoder.decode(encrypted)
+            Cipher cipher = Cipher.getInstance(ALGO)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey)
             byte[] decryptedByte = cipher.doFinal(encryptedTextByte);
-            decodedPWD = new String(decryptedByte);
-            logger.info("decoded: $decodedPWD")
+            decodedPWD = new String(decryptedByte)
+            //logger.info("decoded: $decodedPWD")
+            logger.info("password decoded...")
             decodedPWD
         } catch (Exception e) {
             logger.error("something went wrong with decryption")
             logger.error("${e.getMessage()}")
             e.printStackTrace()
         }
-        return decodedPWD;
+        return decodedPWD
     }
 
     /**
