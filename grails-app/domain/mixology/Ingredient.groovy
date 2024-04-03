@@ -36,6 +36,7 @@ class Ingredient implements Comparable<Ingredient>, Serializable {
     static belongsTo = Drink
     static mapping = {
         table 'ingredients'
+        //id composite: ['name', 'unit', 'amount']
     }
     static transients = ['fillerIngredient','givenId','prettyName']
 

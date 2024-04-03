@@ -1,5 +1,6 @@
 package mixology
 
+import groovy.transform.CompileStatic
 import validators.*
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
@@ -36,7 +37,7 @@ class User implements Serializable {
         lastName(nullable:false, blank:false, size:2..40)
         username(nullable:false, blank:false, unique:true)
         email(nullable:false, blank:false, unique:true, email:true, validator: EmailValidator.emailValidator) // used as username
-        password(nullable:false, blank:false, password:true, size:6..15, validator: PasswordValidator.passwordValidator)
+        password(nullable:false, blank:false, password:true, size:6..255, validator: PasswordValidator.passwordValidator) //size:6..15
         passwordConfirm(nullable:false, blank:false )
         mobileNumber(size:10..10, nullable:true, blank:true)
         photo(sqlType: 'LONGBLOB', nullable: true, blank: true)

@@ -120,7 +120,7 @@ class DrinksPathItem {
             new Schema()
                 .type('object')
                 .properties([
-                    alcoholType:new Schema()
+                    alcohol:new Schema()
                             .type('string')
                             .example(Alcohol.randomAlcohol),
                     ingredients:new Schema()
@@ -145,7 +145,7 @@ class DrinksPathItem {
                                           "{'name':'ofNewDrink1','unit':'ofNewDrink1','amount':'ofNewDrink1'}",
                                           "{'name':'ofNewDrink2','unit':'ofNewDrink2','amount':'ofNewDrink2'}"]),
                     ),
-                            mixingInstruction:new Schema()
+                    mixingInstruction:new Schema()
                             .type('string')
                             .example('Add existing ingredients by passing in the ID, or add a new ingredient following the object example'),
                     name:new Schema()

@@ -13,7 +13,7 @@ class RoleService {
 
     Role save(String authority, boolean validate = false) {
         logger.info("authority:: $authority\tvalidate:: $validate")
-        Role.withSession {
+        Role.withTransaction {
             new Role(authority:authority).save(validate:validate, flush:validate)
         }
     }

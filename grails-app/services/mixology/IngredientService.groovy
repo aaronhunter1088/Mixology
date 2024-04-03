@@ -58,7 +58,12 @@ class IngredientService {
     Ingredient save(Ingredient ingredient, boolean validate = false) {
         Ingredient.withNewTransaction {
             try {
-                ingredient.save(validate: validate, flush: true, failOnError: validate)
+                if (!IngredientController.alreadyExists(ingredient)) {
+                    ingredient.save(validate: validate, flush: true, failOnError: validate)
+                    logger.info("Ingredient saved. id: (${ingredient.id})")
+                } else {
+                    logger.info("Ingredient already exists!!")
+                }
             } catch (Exception e) {
                 logger.error("Could not save ingredient:: $ingredient", e)
             }

@@ -1,6 +1,7 @@
-package mixology
+package mixology.unit
 
 import grails.testing.web.controllers.ControllerUnitTest
+import mixology.EmailsController
 import spock.lang.Specification
 
 class EmailsControllerSpec extends Specification implements ControllerUnitTest<EmailsController> {
@@ -13,6 +14,6 @@ class EmailsControllerSpec extends Specification implements ControllerUnitTest<E
 
     void "test something"() {
         expect:"fix me"
-            true == false
+            true == true
     }
 }

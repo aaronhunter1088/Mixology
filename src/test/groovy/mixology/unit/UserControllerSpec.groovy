@@ -188,7 +188,8 @@ class UserControllerSpec extends BaseController implements ControllerUnitTest<Us
             controller.params.firstName = unsavedUser.firstName
             controller.params.lastName = unsavedUser.lastName
             controller.params.email = unsavedUser.username
-            controller.params.cellphone = '1234560789'
+            controller.params.mobileNumber = '1234560789'
+            controller.params.languages = 'en'
             controller.roleService = Stub(RoleService) {findByAuthority(enums.Role.USER.name) >> userRole }
             controller.userService = Stub(UserService) {save(_,_) >> regularUser }
         when:

@@ -1,8 +1,8 @@
 package mixology.unit
 
+import api.v1.BaseResource
 import api.v1.DrinkResource
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.testing.gorm.DataTest
 import mixology.AuthTokenService
 import mixology.Drink
 import mixology.DrinkService
@@ -19,25 +19,24 @@ import org.junit.BeforeClass
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.ContextConfiguration
-import spock.lang.Specification
+import org.junit.runner.RunWith
 
-@ContextConfiguration
-class DrinkResourceTest extends BaseController {//extends Specification implements DataTest {
+class DrinkResourceTest extends BaseResource {
 
     private static def logger = LogManager.getLogger(DrinkResourceTest.class)
     private DrinkResource resource
     private User adminUser
 
-    def drinkService = new DrinkService()
-    def ingredientService = new IngredientService()
+    def drinkService
+    def ingredientService
     def userService
     def roleService
     def userRoleService
-    def authTokenService = new AuthTokenService()
+    def authTokenService
+
     Class<?>[] getDomainClassesToMock(){ return [Drink, Role, User, UserRole] as Class[] }
 
-    static void beforeAll() {
+    void beforeAll() {
         logger.info("DrinkResourceTests starting")
     }
 
@@ -46,14 +45,18 @@ class DrinkResourceTest extends BaseController {//extends Specification implemen
         beforeAll()
         getDomainClassesToMock()
         resource = new DrinkResource()
+        drinkService = new DrinkService()
+        ingredientService = new IngredientService()
         userService = new UserService()
         roleService = new RoleService()
         userRoleService = new UserRoleService()
+        authTokenService = new AuthTokenService()
 
         adminUser = createUser('admin')
-        userService.save(adminUser, false)
+        adminUser.save()
+        logger.info("adminUser saved: id-${adminUser.id}")
         def roleAdmin = roleService.save('ROLE_ADMIN')
-        userRoleService.save(adminUser, roleAdmin)
+        UserRole.create(roleAdmin, roleOfUser, true)
 
         //controller.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> testUser}
         drinkService.springSecurityService = Stub(SpringSecurityService) {getPrincipal() >> adminUser}

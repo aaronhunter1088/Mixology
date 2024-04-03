@@ -275,12 +275,14 @@
                 $('#languages').on('change', function(){
                     let chosenLanguage = $(this).val();
                     console.log("chosenLanguage: "+chosenLanguage);
+                    let currentPath = window.location.href
                     let hrefParts = location.href.split('lang=')
                     console.log("href[0]: "+hrefParts[0]);
                     console.log("href[1]: "+hrefParts[1]);
                     let newUrl = "";
                     if (hrefParts[1] !== undefined) newUrl = hrefParts[0] + 'lang=' + chosenLanguage
                     else newUrl = hrefParts[0] + '?lang=' + chosenLanguage;
+                    console.log('newUrl: ' + newUrl);
                     $.ajax({
                         headers: {
                             accept: "application/json",
@@ -288,32 +290,32 @@
                         },
                         async: false,
                         type: "PUT",
-                        url: "${createLink(controller:'user', action:'update')}",
+                        url: "${createLink(controller:'user', action:'updateLanguage')}",
                         data: {
                             id:"${user.id}",
-                            language:chosenLanguage
+                            languages:chosenLanguage
                         },
                         statusCode: {
                             200: function(data) {
                                 console.log(JSON.stringify(data));
-                                //$('#languages').val(chosenLanguage);
+                                $('#languages').val(chosenLanguage);
                                 window.location.href = newUrl;
                             },
                             400: function(data) {
                                 console.log(JSON.stringify(data));
-                                window.location.href = location.href
+                                window.location.href = currentPath
                             },
                             403: function(data) {
                                 console.log(JSON.stringify(data));
-                                window.location.href = location.href
+                                window.location.href = currentPath
                             },
                             404: function(data) {
                                 console.log(JSON.stringify(data));
-                                window.location.href = location.href
+                                window.location.href = currentPath
                             },
                             500: function(data) {
                                 console.log(JSON.stringify(data));
-                                window.location.href = location.href
+                                window.location.href = currentPath
                             }
                         }
                     });

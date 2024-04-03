@@ -15,6 +15,7 @@ import validators.PasswordValidator
 
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import java.awt.Graphics2D
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -35,7 +36,11 @@ class UserController extends BaseController {
     def userRoleService
     def springSecurityService
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+    static allowedMethods = [save: "POST",
+                             update: "PUT",
+                             updateLanguage: "PUT",
+                             updatePassword: "PUT",
+                             delete: "DELETE"]
 
     @Secured(['ROLE_ADMIN','IS_AUTHENTICATED_FULLY'])
     def index() {
@@ -87,7 +92,7 @@ class UserController extends BaseController {
                             model:[user:userToDisplay,
                                    currentUser:currentUser,
                                    showPassword:showPassword
-                            ]
+                            ], status: 200
                 }
             }
             json {
@@ -225,17 +230,37 @@ class UserController extends BaseController {
             user.password = params.password
             user.passwordConfirm = params.passwordConfirm
         }
-        user.language = params?.language ?: 'en'
+        user.language = params?.languages ?: 'en'
         // update photo if photo was cleared. photo may not exist anymore
         // and so user photo may be set to empty string
         user.clearErrors()
         userService.save(user, false)
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
-                redirect (id:user.id, action:'show', status:OK)
-            }
-            '*'{ redirect (id:user.id, action:'show', status:OK) }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
+        redirect (id:user.id, action:'show', status:OK)
+    }
+
+    def updateLanguage() {
+        User user
+        if (!params) {
+            badRequest(flash, request, null, 'No user passed in')
+            return
+        } else {
+            user = userService.get(params?.id as Long)
+        }
+        if (!user) {
+            badRequest(flash, request, '','')
+            return
+        }
+        user.language = params?.languages ?: 'en'
+        String successMessage = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), user.toString()])
+        response.setContentType("text/json")
+        if (userService.save(user, false)) {
+            response.getWriter().append(successMessage)
+            response.getWriter().flush()
+            response.setStatus(HttpServletResponse.SC_OK) // 200
+        }
+        else {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "There was an exception saving the language")
         }
     }
 
@@ -302,7 +327,7 @@ class UserController extends BaseController {
                 email: params.email,
                 password: params.password,
                 passwordConfirm: params.passwordConfirm,
-                mobileNumber: params.cellphone,
+                mobileNumber: params.mobileNumber,
                 photo: reduced ?: '',
                 language: params.chosenLanguage ?: 'en'
         ])

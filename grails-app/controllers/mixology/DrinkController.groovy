@@ -266,7 +266,7 @@ class DrinkController extends BaseController {
                 drinkToUpdate.number = params.drinkNumber ? Integer.valueOf(params.drinkNumber as String) : drinkToUpdate.number
                 drinkToUpdate.alcohol = params.alcohol ? Alcohol.valueOf(params?.alcohol as String) : drinkToUpdate.alcohol
                 drinkToUpdate.symbol = params?.drinkSymbol ?: drinkToUpdate.symbol
-                drinkToUpdate.suggestedGlass = params.suggestedGlass ? GlassType.valueOf(params.suggestedGlass as String) : drinkToUpdate.suggestedGlass
+                drinkToUpdate.suggestedGlass = params.glass ? GlassType.valueOf(params.glass as String) : drinkToUpdate.suggestedGlass
                 drinkToUpdate.mixingInstructions = params?.mixingInstructions ?: drinkToUpdate.mixingInstructions
                 //drinkToUpdate.version = (params?.version as Long) ?: drinkToUpdate.version
                 validIngredients = obtainFromParams(params)

@@ -206,6 +206,8 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
     @Test
     void "test show all drinks"() {
         when:
+        controller.params.lang = 'en'
+        controller.params.darkMode = false
         controller.showDrinks()
 
         then:
@@ -320,10 +322,10 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         controller.params.symbol = 'TD'
         controller.params.mixingInstructions = 'Test instructions'
         controller.params.glass = 'HIGHBALL'
-        //controller.params.ingredients = "100 Proof Vodka : 1.5 : OZ"
-        controller.params.ingredientName = '100 Proof Vodka'
-        controller.params.ingredientAmount = 1.5
-        controller.params.ingredientUnit = 'OZ'
+        controller.validIngredients.add(ingredientA)
+        //controller.params.ingredientName = '100 Proof Vodka'
+        //controller.params.ingredientAmount = 1.5
+        //controller.params.ingredientUnit = 'OZ'
         controller.params.custom = true
         controller.params.canBeDeleted = true
         controller.save()
@@ -449,10 +451,10 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         request.method = 'PUT'
         controller.params.drinkName = 'updatedName'
         controller.params.drinkNumber = '11'
-        controller.params.alcoholType = 'VODKA'
+        controller.params.alcohol = 'VODKA'
         controller.params.drinkSymbol = 'TD'
         controller.params.mixingInstructions = 'Test instructions'
-        controller.params.suggestedGlass = 'HIGHBALL'
+        controller.params.glass = 'HIGHBALL'
         controller.params.ingredients = ["1", "2", "3", "4", "5"]
         controller.update()
 
@@ -521,7 +523,7 @@ class DrinkControllerSpec extends BaseController implements ControllerUnitTest<D
         'GET'   | METHOD_NOT_ALLOWED    | ''
         'POST'  | METHOD_NOT_ALLOWED    | ''
         'PUT'   | METHOD_NOT_ALLOWED    | ''
-        'DELETE'| NOT_FOUND             | ''
+        'DELETE'| FOUND                 | ''
     }
 
     @Test

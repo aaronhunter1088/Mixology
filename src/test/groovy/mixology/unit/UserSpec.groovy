@@ -209,7 +209,7 @@ class UserSpec extends BaseController implements DomainUnitTest<User> {
         assertFalse user.validate()
 
         and: 'user has error code'
-        user.errors['password']?.code == 'size.toobig'
+        user.errors['password']?.code == 'default.invalid.user.password.criteria'
 
         when: 'update password to fail custom validator'
         user.password = 'failsValidator'

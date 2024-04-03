@@ -165,9 +165,9 @@
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">
-                                        <label for='cellphone'>&emsp;<g:message code="user.create.cellphone" default="Cellphone"/></label>
+                                        <label for='mobileNumber'>&emsp;<g:message code="user.create.cellphone" default="Cellphone"/></label>
                                         <div class="input-wrapper">
-                                            <input type="text" name="cellphone" value="" id="cellphone" />
+                                            <input type="text" name="mobileNumber" value="" id="mobileNumber" />
                                         </div>
                                     </div>
                                     <div class="formfield" style="color:${darkMode?'white':'black'};">

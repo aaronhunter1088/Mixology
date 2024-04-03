@@ -394,7 +394,7 @@ class IngredientController extends BaseController {
      * @param ingredient
      * @return
      */
-    def alreadyExists(ingredient) {
+    def static alreadyExists(ingredient) {
         boolean exists = false
         List<Ingredient> ingredients = ingredient.list()
         ingredients.each {

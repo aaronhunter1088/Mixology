@@ -8,5 +8,8 @@ class PasswordValidator {
         if (!val.find(passwordRegex)) {
             return ["default.invalid.user.password.criteria"]
         }
+        else if (val.length() < 6 || val.length() > 15) {
+            return ["default.invalid.user.password.criteria"]
+        }
     }
 }
