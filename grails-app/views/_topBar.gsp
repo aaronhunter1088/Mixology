@@ -47,7 +47,7 @@
     <sec:ifLoggedIn>
         <div id="loggedInDiv" style="display:inline-flex;">
             <img style="width:100px;height:100px;" src="${resource(dir:'../assets/images',file:'martiniGlass.png')}" alt="Cocktail Logo"/>
-            <div id="nameAndNav" style="display:inline-block;color:${user?.darkMode?'white':'black'};">
+            <div id="nameAndNav" style="display:inline-block;color:${darkMode?'white':'black'};">
                 <h1>${greet} ${user}</h1>
                 <g:render template="/navigation" />
             </div>
