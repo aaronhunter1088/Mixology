@@ -14,8 +14,13 @@ class BootStrap {
     def userService
 
     def init = { servletContext ->
-        // This will start the app using the H2 embedded database with these default drinks, ingredients, and users*
-        if (Environment.DEVELOPMENT == Environment.current) {
+        /*
+        This will start the app using the H2 embedded database with these default drinks, ingredients, and users
+        Simply add '&& false' to the if statement to stop this block from executing when
+        you are using a real database and in development, or remove it when you want to use it.
+        If you do use this, make sure to update the application.yml environments.development.dataSource too.
+        */
+        if (Environment.DEVELOPMENT == Environment.current && false) {
             // Test admin user and regular user
             def adminRole = roleService.save(enums.Role.ADMIN.name, true)
             User adminUser = new User([version:1, firstName:'Admin', passwordExpired: false, photo:null, accountExpired:false,

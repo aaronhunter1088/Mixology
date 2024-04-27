@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 
 class LoginController extends grails.plugin.springsecurity.LoginController implements GrailsConfigurationAware {
 
-    private static Logger logger = LogManager.getLogger(UserController.class)
+    private static Logger logger = LogManager.getLogger(LoginController.class)
 
     def springSecurityService
 
