@@ -1,3 +1,11 @@
+//forkConfig = [maxMemory: 1024, minMemory: 64, debug: true, maxPerm: 256]
+//grails.project.fork = [
+//		test: forkConfig, // configure settings for the test-app JVM
+//		run: forkConfig, // configure settings for the run-app JVM
+//		war: forkConfig, // configure settings for the run-war JVM
+//		console: forkConfig // configure settings for the Swing console JVM
+//]
+//grails.project.fork.run = true
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.active = true
 grails.plugin.springsecurity.formTokensEnabled = true

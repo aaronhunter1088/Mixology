@@ -98,18 +98,19 @@
                     <li class="dropdown-btn dropdown">
                         <a href="#" class="fa fa-circle-info dropdown-toggle" data-toggle="dropdown" data-target="#appStatus" role="button" aria-haspopup="true" aria-expanded="false">&nbsp;<g:message code="navigation.app.status" default="App Status"/><span class="caret"></span></a>
                         <ul class="dropdown-menu" id="appStatus" style="background-color:#000000;">
-                            <g:link class="fa fa-thin fa-seedling" controller="mixology" action="env">&nbsp;<g:message code="navigation.environment" default="Environment"/>: ${Environment.current.name}</g:link>
-                            <g:link class="fa fa-thin fa-globe" controller="mixology" action="profile">&nbsp;<g:message code="navigation.app.profile" default="App profile"/>: ${grailsApplication.config.getProperty('grails.profile')}</g:link>
-                            <g:link class="fa fa-thin fa-code-branch" controller="mixology" action="appVersion">&nbsp;<g:message code="navigation.app.version" default="App version"/>:<g:meta name="info.app.version"/></g:link>
+                            <g:link class="fa fa-thin fa-seedling" view="/">&nbsp;<g:message code="navigation.environment" default="Environment"/>: ${Environment.current.name}</g:link>
+                            <g:link class="fa fa-thin fa-globe" view="/">&nbsp;<g:message code="navigation.app.profile" default="App profile"/>: ${grailsApplication.config.getProperty('grails.profile')}</g:link>
+                            <g:link class="fa fa-thin fa-code-branch" view="/">&nbsp;<g:message code="navigation.app.version" default="App version"/>:<g:meta name="info.app.version"/></g:link>
                             <li role="separator" class="dropdown-divider"></li>
-                            <g:link class="fa fa-thin fa-code-pull-request" controller="mixology" action="grailsVersion">&nbsp;<g:message code="navigation.grails.version" default="Grails version"/>:<g:meta name="info.app.grailsVersion"/></g:link>
-                            <g:link class="fa fa-thin fa-code-pull-request" controller="mixology" action="groovyVersion">&nbsp;<g:message code="navigation.groovy.version" default="Groovy version"/>: ${GroovySystem.getVersion()}</g:link>
-                            <g:link class="fa fa-thin fa-code-pull-request" controller="mixology" action="jvmVersion">&nbsp;<g:message code="navigation.jvm.version" default="JVM version"/>: ${System.getProperty('java.version')}</g:link>
+                            <g:link class="fa fa-thin fa-code-pull-request" view="/">&nbsp;<g:message code="navigation.grails.version" default="Grails version"/>:<g:meta name="info.app.grailsVersion"/></g:link>
+                            <g:link class="fa fa-thin fa-code-pull-request" view="/">&nbsp;<g:message code="navigation.groovy.version" default="Groovy version"/>: ${GroovySystem.getVersion()}</g:link>
+                            <g:link class="fa fa-thin fa-code-pull-request" view="/">&nbsp;<g:message code="navigation.jvm.version" default="JVM version"/>: ${System.getProperty('java.version')}</g:link>
                             <li role="separator" class="dropdown-divider"></li>
-                            <g:link class="fa fa-circle-info" controller="mixology" action="reloadingActive">&nbsp;<g:message code="navigation.reloading.active" default="Reloading active"/>: ${Environment.reloadingAgentEnabled}</g:link>
-                            <g:link class="fa fa-circle-info" controller="mixology" action="domainsActive">&nbsp;<g:message code="navigation.domain" args="s" default="Domains"/>: ${grailsApplication.domainClasses.size()}</g:link>
-                            <g:link class="fa fa-circle-info" controller="mixology" action="servicesActive">&nbsp;<g:message code="navigation.service" args="s" default="Services"/>: ${grailsApplication.serviceClasses.size()}</g:link>
-                            <g:link class="fa fa-circle-info" controller="mixology" action="tagLibsActive">&nbsp;<g:message code="navigation.tag.libraries" default="Tag Libraries"/>: ${grailsApplication.tagLibClasses.size()}</g:link>
+                            <g:link class="fa fa-circle-info" view="/">&nbsp;<g:message code="navigation.reloading.active" default="Reloading active"/>: ${Environment.reloadingAgentEnabled}</g:link>
+                            <g:link class="fa fa-circle-info" view="/">&nbsp;<g:message code="navigation.domain" args="s" default="Domains"/>: ${grailsApplication.domainClasses.size()}</g:link>
+                            <g:link class="fa fa-circle-info" view="/">&nbsp;<g:message code="navigation.service" args="s" default="Services"/>: ${grailsApplication.serviceClasses.size()}</g:link>
+                            <g:link class="fa fa-circle-info" view="/">&nbsp;<g:message code="navigation.tag.libraries" default="Tag Libraries"/>: ${grailsApplication.tagLibClasses.size()}</g:link>
+                            <g:link class="fa fa-circle-info" view="/">&nbsp;Hello there, world</g:link>
                         </ul>
                     </li> <!-- App Status -->
                     <li class="dropdown-btn dropdown">

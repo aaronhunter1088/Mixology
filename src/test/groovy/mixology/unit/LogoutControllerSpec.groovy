@@ -32,7 +32,7 @@ class LogoutControllerSpec extends BaseController implements ControllerUnitTest<
         testUser = userService.save(testUser, false)
         userRoleService.save(testUser, roleUser)
 
-        controller.userService = userService
+        //controller.userService = userService
         logger = LogManager.getLogger(LogoutControllerSpec.class)
     }
 
@@ -56,6 +56,6 @@ class LogoutControllerSpec extends BaseController implements ControllerUnitTest<
         controller.index()
 
         then:
-        response.status == FOUND.value()
+        response.status == 302
     }
 }

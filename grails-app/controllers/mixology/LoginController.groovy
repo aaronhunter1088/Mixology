@@ -17,22 +17,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-class LoginController extends grails.plugin.springsecurity.LoginController implements GrailsConfigurationAware {
+class LoginController extends grails.plugin.springsecurity.LoginController { //implements GrailsConfigurationAware {
 
     private static Logger logger = LogManager.getLogger(LoginController.class)
 
     def springSecurityService
 
+    // mixology.com/login
     def index = {
         ConfigObject conf = getConf()
         if (springSecurityService.isLoggedIn()) {
-            redirect uri: conf.successHandler.defaultTargetUrl//SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
+            // currently redirecting to '/'
+            redirect uri: conf.successHandler.defaultTargetUrl //SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl
         }
         else {
             redirect action: 'auth', params: params
         }
     }
 
+    // navigated to here after index and not logged in, OR after logging in from 'auth' page
     def auth = {
 
         ConfigObject conf = getConf()
@@ -45,6 +48,7 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
         //Collections.shuffle(coordinatePositions)
         //String position = coordinatePositions.first()
 
+        // postUrl is '/login/authenticate'
         String postUrl = request.contextPath + conf.apf.filterProcessesUrl
         logger.info("postUrl: ${postUrl}")
         render view: 'auth', model: [postUrl: postUrl,
@@ -149,8 +153,8 @@ class LoginController extends grails.plugin.springsecurity.LoginController imple
         }
     }
 
-    @Override
-    void setConfiguration(Config co) {
+    //@Override
+    //void setConfiguration(Config co) {
         //coordinatePositions = co.getProperty('security.coordinate.positions', List, []) as List<String>
-    }
+    //}
 }

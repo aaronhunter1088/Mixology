@@ -1,5 +1,6 @@
 package mixology
 
+import grails.plugins.mail.MailService
 import org.apache.logging.log4j.Logger
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
@@ -18,6 +19,7 @@ abstract class BaseController implements IController {
     protected RoleService roleService
     protected UserRoleService userRoleService
     protected AuthTokenService authTokenService
+    protected MailService mailService
 
     protected static Logger logger = null
 
